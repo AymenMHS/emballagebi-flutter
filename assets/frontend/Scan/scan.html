@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Scanneur QR — Emballage BI</title>
+  <script src="../runtime_config.js"></script>
+  <script>
+    // force explicit API_BASE (tu as déjà ça)
+    window.API_BASE = "https://emballage-b-impression.dz/emballage_bi";
+    // Sauvegarde immédiate de la vraie fetch native AVANT que d'autres scripts puissent l'écraser
+    if (!window.__API_NATIVE_FETCH_BACKUP) {
+      try {
+        window.__API_NATIVE_FETCH_BACKUP = window.fetch.bind(window);
+        console.log('runtime_config forced:', window.API_BASE, ' — native fetch backed up.');
+      } catch (e) {
+        console.warn('Impossible de binder fetch native:', e);
+      }
+    }
+  </script>
+  <!-- api wrapper depends on window.API_BASE -->
+  <script src="../api.js"></script>
+  <!-- verify-connected uses api/buildApiUrl & binds logout -->
+  <script src="../verify-connected.js"></script>
+  <script src="../notification.js"></script>
+  <script src="../ui-shell.js"></script>
+  <style>
+    :root {
+      --accent: rgba(255, 255, 255, 0.95);
+      --frame-size-w: 360px;
+      --frame-size-h: 360px;
+      --error-color: #e74c3c;
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      font-family: "Segoe UI", Roboto, Arial, sans-serif;
+      background: #000;
+      color: var(--accent)
+    }
+
+    #scanner {
+      position: relative;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden
+    }
+
+    #camera-wrapper {
+      position: absolute;
+      inset: 0;
+      display: block;
+      touch-action: manipulation;
+      cursor: crosshair
+    }
+
+    video#video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: none
+    }
+
+    .topbar {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      text-align: center;
+      pointer-events: none
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: center;
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 18px
+    }
+
+    .title {
+      margin: 6px 0 0;
+      color: var(--accent);
+      font-size: 14px;
+      font-weight: 600;
+      opacity: .95
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none
+    }
+
+    .frame {
+      width: var(--frame-size-w);
+      height: var(--frame-size-h);
+      border-radius: 12px;
+      box-shadow: 0 0 0 9999px rgba(0, 0, 0, .25);
+      border: 2px dashed rgba(255, 255, 255, .95);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      box-sizing: border-box;
+      background: linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+      backdrop-filter: blur(2px)
+    }
+
+    .frame.qr-found {
+      box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.06), 0 0 20px rgba(61, 220, 132, 0.35);
+      border-color: #3ddc84;
+      transform: scale(1.02)
+    }
+
+    .controls {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 30;
+      width: 100%;
+      max-width: 520px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      bottom: 22px;
+      padding: 0 18px;
+      pointer-events: auto
+    }
+
+    #status {
+      width: 100%;
+      max-width: 420px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      text-align: center;
+      color: var(--accent);
+      font-size: 16px
+    }
+
+    .loader {
+      position: absolute;
+      z-index: 50;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      display: none;
+      align-items: center;
+      gap: 10px;
+      background: rgba(0, 0, 0, 0.55);
+      color: white;
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-weight: 600
+    }
+
+    .loader.show {
+      display: flex
+    }
+
+    canvas {
+      display: none
+    }
+
+    @media (max-width:420px) {
+      .frame {
+        width: 86vw;
+        height: 86vw
+      }
+    }
+
+    #btnreturn {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: black;
+      border: none;
+      border-radius: 10px;
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 10000;
+      cursor: pointer;
+    }
+
+    #btnreturn:hover {
+      background-color: rgb(66, 66, 66);
+    }
+  </style>
+</head>
+
+<body>
+  <button id="btnreturn" onclick="window.location.href='../index.html'">
+    <img src="../img/icon/retourner.png" style="width: 20px; height: 20px;filter: invert(1);">
+  </button>
+
+  <div id="scanner" aria-label="Interface de scan QR">
+    <div class="topbar">
+      <div class="brand"><img src="logo.png" alt="" style="width:28px;height:28px;filter:brightness(0) invert(1)" />
+        <span>Emballage BI</span>
+      </div>
+      <div class="title">Scannez le QR de la conception</div>
+    </div>
+
+    <div id="camera-wrapper" role="button" tabindex="0" aria-label="Appuyez pour scanner">
+      <video id="video" autoplay playsinline></video>
+      <div class="overlay">
+        <div class="frame" aria-hidden="true"></div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div id="status">Placez le QR code dans le cadre puis touchez l'écran.</div>
+    </div>
+
+    <div class="loader" id="loader">Recherche conception…</div>
+
+    <canvas id="canvas" width="1024" height="1024"></canvas>
+  </div>
+
+  <!-- BarcodeDetector natif utilisé si disponible ; fallback to jsQR if not. -->
+  <script src="jsQR.js"></script> <!-- place jsQR at vendor/jsQR.js -->
+  <script src="scan.js"></script> <!-- ton script (voir ci-dessous) -->
+</body>
+
+</html>

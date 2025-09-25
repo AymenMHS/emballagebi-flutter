@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Annonces - Interface Facebook-like</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
+        rel="stylesheet">
+    <script src="../runtime_config.js"></script>
+    <script>
+        // force explicit API_BASE (tu as déjà ça)
+        window.API_BASE = "https://emballage-b-impression.dz/emballage_bi";
+        // Sauvegarde immédiate de la vraie fetch native AVANT que d'autres scripts puissent l'écraser
+        if (!window.__API_NATIVE_FETCH_BACKUP) {
+            try {
+                window.__API_NATIVE_FETCH_BACKUP = window.fetch.bind(window);
+                console.log('runtime_config forced:', window.API_BASE, ' — native fetch backed up.');
+            } catch (e) {
+                console.warn('Impossible de binder fetch native:', e);
+            }
+        }
+    </script>
+    <!-- api wrapper depends on window.API_BASE -->
+    <script src="../api.js"></script>
+    <!-- verify-connected uses api/buildApiUrl & binds logout -->
+    <script src="../verify-connected.js"></script>
+    <script src="../notification.js"></script>
+    <script src="../ui-shell.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(180deg, rgb(229, 229, 229) 0%, rgb(168, 168, 168) 100%);
+            color: #1c1e21;
+            line-height: 1.34;
+            min-height: calc(100vh - 80px);
+        }
+
+        .header {
+            background-color: #ffffff;
+            padding: 0 16px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c2c2c;
+            display: flex;
+            align-items: center;
+            height: 100%;
+            justify-content: center;
+        }
+
+        .logo img {
+            margin-right: 8px;
+        }
+
+        .logo span {
+            margin: 0;
+            padding: 0;
+            font-family: "Nunito", sans-serif;
+        }
+
+        .header .btnreturn {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+        }
+
+        .header .btnreturn:hover {
+            background-color: rgb(70, 70, 70);
+            transform: translate(0px, -1px);
+            transition: 0.3s ease;
+        }
+
+        .header .btnreturn:active {
+            background-color: rgb(99, 94, 94);
+            transform: translate(0px, 2px);
+            transition: 0.3s ease;
+        }
+
+        .header .btnreturn img {
+            width: 20px;
+            height: 20px;
+            filter: invert(1);
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 76px auto 30px;
+            padding: 0 16px;
+        }
+
+        .create-post {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            padding: 12px 16px 10px;
+            margin-bottom: 16px;
+            box-shadow: 7px 5px 18px 0px rgba(0, 0, 0, 0.50);
+            -webkit-box-shadow: 7px 5px 18px 0px rgba(0, 0, 0, 0.50);
+            -moz-box-shadow: 7px 5px 18px 0px rgba(0, 0, 0, 0.50);
+        }
+
+        .create-post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #ddd;
+            margin-right: 10px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .post-input {
+            flex: 1;
+            background-color: #f0f2f5;
+            border-radius: 20px;
+            padding: 8px 16px;
+            color: #65676b;
+            cursor: pointer;
+            border: none;
+            outline: none;
+            font-size: 15px;
+        }
+
+        .post-input:hover {
+            background-color: #e4e6e9;
+        }
+
+        .create-post-footer {
+            display: flex;
+            border-top: 1px solid #e4e6eb;
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+
+        .post-option {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            border-radius: 4px;
+            color: #65676b;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .post-option:hover {
+            background-color: #f0f2f5;
+        }
+
+        .post-option i {
+            margin-right: 6px;
+            font-size: 18px;
+        }
+
+        .video-option i {
+            color: #f3425f;
+        }
+
+        .photo-option i {
+            color: #45bd62;
+        }
+
+        .feeling-option i {
+            color: #f7b928;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: #ffffff;
+            border-radius: 8px;
+            width: 500px;
+            max-width: 90%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            animation: fadeInUp;
+            animation-duration: 0.5s;
+        }
+
+        .modal-header {
+            padding: 16px;
+            text-align: center;
+            position: relative;
+            border-bottom: 1px solid #e4e6eb;
+            font-weight: 700;
+            font-size: 20px;
+        }
+
+        .close-modal {
+            position: absolute;
+            right: 16px;
+            top: 16px;
+            background-color: #e4e6eb;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 16px;
+        }
+
+        .modal-author {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .modal-author-info {
+            margin-left: 10px;
+        }
+
+        .modal-author-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .visibility-selector {
+            margin-top: 5px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .visibility-button {
+            background-color: #e4e6eb;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .visibility-button i {
+            margin-left: 4px;
+        }
+
+        .visibility-options {
+            display: none;
+            position: absolute;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 8px 0;
+            width: 250px;
+            z-index: 10;
+            top: 100%;
+            left: 0;
+            margin-top: 5px;
+        }
+
+        .visibility-option {
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .visibility-option:hover {
+            background-color: #f0f2f5;
+        }
+
+        .visibility-option i {
+            margin-right: 10px;
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .post-textarea {
+            width: 100%;
+            border: none;
+            resize: none;
+            outline: none;
+            font-size: 18px;
+            min-height: 150px;
+            margin-bottom: 15px;
+        }
+
+        .add-to-post {
+            display: flex;
+            padding: 10px;
+            border: 1px solid #e4e6eb;
+            border-radius: 8px;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .add-option {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #65676b;
+        }
+
+        .add-option:hover {
+            background-color: #f0f2f5;
+        }
+
+        .post-button {
+            background-color: #1877f2;
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            width: 100%;
+            font-family: "Nunito", sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .post-button img {
+            margin-right: 10px;
+        }
+
+        .post-button:disabled {
+            background-color: #e4e6eb;
+            color: #bcc0c4;
+            cursor: not-allowed;
+        }
+
+        .post {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            box-shadow: 7px 5px 18px 0px rgba(0, 0, 0, 0.50);
+            -webkit-box-shadow: 7px 5px 18px 0px rgba(0, 0, 0, 0.50);
+            -moz-box-shadow: 7px 5px 18px 0px rgba(0, 0, 0, 0.50);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .post-author-info {
+            flex: 1;
+            margin-left: 10px;
+        }
+
+        .post-author-name {
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .post-details {
+            display: flex;
+            align-items: center;
+            color: #65676b;
+            font-size: 13px;
+            margin-top: 2px;
+        }
+
+        .post-time {
+            margin-right: 4px;
+        }
+
+        .post-visibility {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            margin-left: 4px;
+        }
+
+        .post-content {
+            margin-bottom: 10px;
+            font-size: 15px;
+            line-height: 1.4;
+        }
+
+        .post-stats {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e4e6eb;
+            color: #65676b;
+            font-size: 14px;
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: space-around;
+            padding: 4px 0;
+        }
+
+        .action-button {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            border-radius: 4px;
+            color: #65676b;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .action-button:hover {
+            background-color: #f0f2f5;
+        }
+
+        .action-button i {
+            margin-right: 6px;
+            font-size: 18px;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 6px;
+        }
+
+        .role-everyone {
+            background-color: #e7f3ff;
+            color: #1877f2;
+        }
+
+        .role-admins {
+            background-color: #d8bcbd;
+            color: #6d0101;
+        }
+
+        .role-machinists {
+            background-color: #fff0c2;
+            color: #ca7a0c;
+        }
+
+        .role-technicians {
+            background-color: #d1f7c4;
+            color: #0f8c2f;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin-top: 66px;
+            }
+
+            .create-post-footer {
+                flex-wrap: wrap;
+            }
+
+            .post-option {
+                flex: 0 0 33.33%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <button class="btnreturn" onclick="window.location.href = '../index.html'">
+            <img src="../img/icon/retourner.png">
+        </button>
+        <div class="logo">
+            <img src="../img/icon/annonce.png" style="width: 30px;height: 30px;">
+            <span>Annonces</span>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="create-post">
+            <div class="create-post-header">
+                <div class="user-avatar">VP</div>
+                <div class="post-input" id="openModal">Quoi de neuf ?</div>
+            </div>
+        </div>
+
+        <div id="postsContainer">
+            <!-- Les posts seront générés ici par JavaScript -->
+        </div>
+    </div>
+
+    <div class="modal" id="postModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>Créer une publication</span>
+                <div class="close-modal" id="closeModal">
+                    <img src="../img/icon/close.png" style="width: 20px;height: 20px;">
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-author">
+                    <div class="user-avatar">VP</div>
+                    <div class="modal-author-info">
+                        <div class="modal-author-name">Votre Profil</div>
+                        <div class="visibility-selector" id="visibilitySelector">
+                            <div class="visibility-button">
+                                <span>Public</span>
+                            </div>
+                            <div class="visibility-options" id="visibilityOptions">
+                                <div class="visibility-option" data-visibility="public">
+                                    <div>
+                                        <div>Public</div>
+                                        <div style="font-size: 12px; color: #65676b;">Tout le monde</div>
+                                    </div>
+                                </div>
+                                <div class="visibility-option" data-visibility="admins">
+                                    <div>
+                                        <div>Admins seulement</div>
+                                        <div style="font-size: 12px; color: #65676b;">Seuls les administrateurs</div>
+                                    </div>
+                                </div>
+                                <div class="visibility-option" data-visibility="machinists">
+                                    <div>
+                                        <div>Machinistes</div>
+                                        <div style="font-size: 12px; color: #65676b;">Machinistes uniquement</div>
+                                    </div>
+                                </div>
+                                <div class="visibility-option" data-visibility="technicians">
+                                    <div>
+                                        <div>Techniciens</div>
+                                        <div style="font-size: 12px; color: #65676b;">Techniciens uniquement</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <textarea class="post-textarea" id="postContent" placeholder="Quoi de neuf ?"></textarea>
+                <button class="post-button" id="publishButton" disabled><img src="../img/icon/annonce.png"
+                        style="width: 20px;height: 20px;opacity: 0.5;"> Publier</button>
+            </div>
+        </div>
+    </div>
+    <script src="annonces.js"></script>
+</body>
+
+</html>

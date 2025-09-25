@@ -1,0 +1,5641 @@
+html,
+body {
+  overflow-x: hidden;
+}
+
+.plaques-bg-overlay {
+  position: fixed;
+  inset: 0;
+  /* top:0; right:0; bottom:0; left:0 */
+  z-index: 99999;
+  pointer-events: none;
+  /* laisse tout interactif pendant l'anim (optionnel) */
+  opacity: 0;
+  transform: scale(1);
+  transition: opacity 650ms ease, transform 650ms cubic-bezier(.2, .9, .3, 1);
+  /* nouveau gradient demandé */
+  background: #639ED4;
+  background: linear-gradient(180deg, rgba(99, 158, 212, 1) 0%, rgba(47, 94, 138, 1) 100%);
+}
+
+.plaques-bg-overlay.show {
+  opacity: 1;
+  transform: scale(1.03);
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  max-width: 100vw;
+  max-height: 100vh;
+}
+
+.icon-start {
+  background-image: url(img/backgroundindex.png);
+  background-size: cover;
+  background-repeat: no-repeat;
+  width: 100vw;
+  height: 100vh;
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+
+.icon-start img {
+  width: 70px;
+  height: 70px;
+  animation: zoomInDown;
+  animation-duration: 2s;
+  animation-fill-mode: both;
+}
+
+.index-start {
+  background: #7A7A7A;
+  background: linear-gradient(180deg, rgba(122, 122, 122, 1) 0%, rgba(54, 54, 54, 1) 100%);
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.index-start .header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 15vh;
+}
+
+.index-start .header .burger {
+  width: 5%;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.index-start .header .burger img {
+  width: 30px;
+  height: 30px;
+}
+
+.index-start .header .burger:hover {
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+
+.index-start .header .logo {
+  width: 20%;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.index-start .header .logo img {
+  width: 35px;
+  height: 35px;
+}
+
+.index-start .header .logo .title-logo {
+  height: 60px;
+  width: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-family: "Nunito", sans-serif;
+  position: relative;
+  margin-left: 5px;
+  
+}
+
+.index-start .header .logo .title-logo h1 {
+  font-size: 22px;
+  color: rgb(255, 255, 255);
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  top: 15px;
+}
+
+.index-start .header .logo .title-logo p {
+  font-size: 14px;
+  color: rgb(255, 36, 36);
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  bottom: 6px;
+  right: 15px;
+  font-weight: 600;
+}
+
+.index-start .header .input-search {
+  width: 40%;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 15px;
+  background-color: rgb(232, 232, 232);
+  position: relative;
+}
+
+.index-start .header .input-search input {
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 15px;
+  padding-left: 20px;
+  font-size: 16px;
+  font-family: "Nunito", sans-serif;
+}
+
+.index-start .header .input-search input:focus {
+  outline: none;
+}
+
+.index-start .header .input-search input::placeholder {
+  color: rgb(150, 150, 150);
+}
+
+.index-start .header .input-search button {
+  position: absolute;
+  right: 0;
+  width: 40px;
+  height: 42px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  background-color: rgb(73, 73, 73);
+  border-radius: 15px;
+}
+
+.index-start .header .input-search button img {
+  width: 20px;
+  height: 20px;
+}
+
+.index-start .header .user-space {
+  width: 20%;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-right: 20px;
+}
+
+.index-start .header .user-space .notif-user {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+}
+
+.index-start .header .user-space .notif-user:hover {
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+
+.index-start .header .user-space .notif-user img {
+  width: 30px;
+  height: 30px;
+}
+
+.index-start .header .user-space .notif-user .notif-count {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  font-size: 12px;
+  font-family: "Nunito", sans-serif;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.index-start .header .user-space .user-info {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+}
+
+.index-start .header .user-space .user-info:hover {
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+
+.index-start .header .user-space .user-info img {
+  width: 30px;
+  height: 30px;
+}
+
+
+
+.index-start .index-elements {
+  height: 80vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.index-start .index-elements .index-btns {
+  width: 500px;
+  height: 500px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  padding: 5px;
+}
+
+.index-start .index-elements .index-btns .up-btns {
+  width: 100%;
+  height: 80%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.index-start .index-elements .index-btns .up-btns .left-btn {
+  width: 70%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.index-start .index-elements .index-btns .up-btns .left-btn button {
+  width: calc(100% - 5px);
+  height: calc(100% - 5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(99, 158, 212, 1) 0%, rgb(46, 96, 143) 100%);
+  cursor: pointer;
+}
+
+.index-start .index-elements .index-btns .up-btns .left-btn .b-suivi {
+  background: linear-gradient(180deg, rgb(0, 43, 83) 0%, rgb(0, 0, 0) 100%);
+}
+
+.index-start .index-elements .index-btns .up-btns .left-btn .b-suivi:hover {
+  background: linear-gradient(180deg, rgb(0, 65, 127) 0%, rgb(0, 36, 57) 100%);
+  transform: translate(0px, -1px);
+  transition: 0.3s ease;
+}
+
+.index-start .index-elements .index-btns .up-btns .left-btn .b-suivi:active {
+  background: linear-gradient(180deg, rgb(0, 43, 83) 0%, rgb(0, 0, 0) 100%);
+  transform: translate(0px, 2px);
+  transition: 0.3s ease;
+}
+
+.index-start .index-elements .index-btns .up-btns .left-btn .b-suivi img {
+  filter: invert(100%);
+}
+
+.index-start .index-elements .index-btns .up-btns .left-btn button:hover {
+  background: linear-gradient(180deg, rgb(107, 170, 228) 0%, rgb(53, 113, 169) 100%);
+  transform: translate(0px, -1px);
+  transition: 0.3s ease;
+}
+
+.index-start .index-elements .index-btns .up-btns .left-btn button:active {
+  background: linear-gradient(180deg, rgba(99, 158, 212, 1) 0%, rgb(46, 96, 143) 100%);
+  transform: translate(0px, 2px);
+  transition: 0.3s ease;
+}
+
+.index-start .index-elements .index-btns .up-btns .left-btn button img {
+  width: 100px;
+  height: 100px;
+}
+
+.index-start .index-elements .index-btns .up-btns .left-btn button p {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  margin-top: 10px;
+  font-family: "Nunito", sans-serif;
+  font-weight: bold;
+  font-size: 20px;
+  color: white;
+}
+
+.index-start .index-elements .index-btns .up-btns .right-btns {
+  width: 30%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.index-start .index-elements .index-btns .up-btns .right-btns button {
+  width: 100%;
+  height: calc(33.33% - 5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-bottom: 5px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.b1 {
+  background: linear-gradient(180deg, rgb(131, 165, 149) 0%, rgb(63, 110, 87) 100%);
+}
+
+.b1:hover {
+  background: linear-gradient(180deg, rgb(176, 221, 199) 0%, rgb(138, 188, 163) 100%);
+  transform: translate(0px, -1px);
+  transition: 0.3s ease;
+}
+
+.b1:active {
+  background: linear-gradient(180deg, rgb(161, 202, 182) 0%, rgb(105, 143, 124) 100%);
+  transform: translate(0px, 2px);
+  transition: 0.3s ease;
+}
+
+.b2 {
+  background: linear-gradient(180deg, rgb(208, 160, 160) 0%, rgb(136, 102, 102) 100%);
+}
+
+.b2:hover {
+  background: linear-gradient(180deg, rgb(229, 176, 176) 0%, rgb(174, 130, 130) 100%);
+  transform: translate(0px, -1px);
+  transition: 0.3s ease;
+}
+
+.b2:active {
+  background: linear-gradient(180deg, rgb(208, 160, 160) 0%, rgb(136, 102, 102) 100%);
+  transform: translate(0px, 2px);
+  transition: 0.3s ease;
+}
+
+.b3 {
+  background: linear-gradient(180deg, rgb(152, 169, 195) 0%, rgb(68, 82, 124) 100%);
+}
+
+.b3:hover {
+  background: linear-gradient(180deg, rgb(150, 173, 255) 0%, rgb(100, 128, 167) 100%);
+  transform: translate(0px, -1px);
+  transition: 0.3s ease;
+}
+
+.b3:active {
+  background: linear-gradient(180deg, rgb(152, 169, 195) 0%, rgb(68, 82, 124) 100%);
+  transform: translate(0px, 2px);
+  transition: 0.3s ease;
+}
+
+.index-start .index-elements .index-btns .up-btns .right-btns button img {
+  width: 40px;
+  height: 40px;
+  filter: invert(100%);
+}
+
+.index-start .index-elements .index-btns .up-btns .right-btns button p {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  margin-top: 5px;
+  font-family: "Nunito", sans-serif;
+  font-weight: bold;
+  color: white;
+}
+
+.index-start .index-elements .index-btns .bottom-btns {
+  width: 100%;
+  height: 20%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.index-start .index-elements .index-btns .bottom-btns button {
+  width: calc(50% - 5px);
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-right: 5px;
+  position: relative;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgb(228, 228, 228) 0%, rgb(179, 179, 179) 100%);
+  cursor: pointer;
+}
+
+.index-start .index-elements .index-btns .bottom-btns button:hover {
+  background: linear-gradient(180deg, rgb(207, 203, 203) 0%, rgb(156, 152, 152) 100%);
+  transform: translate(0px, -1px);
+  transition: 0.3s ease;
+}
+
+.index-start .index-elements .index-btns .bottom-btns button:active {
+  background: linear-gradient(180deg, rgb(228, 228, 228) 0%, rgb(179, 179, 179) 100%);
+  transform: translate(0px, 2px);
+  transition: 0.3s ease;
+}
+
+.index-start .index-elements .index-btns .bottom-btns button img {
+  width: 40px;
+  height: 40px;
+}
+
+.index-start .index-elements .index-btns .bottom-btns button p {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  margin-top: 5px;
+  font-family: "Nunito", sans-serif;
+  font-weight: bold;
+}
+
+.index-start .index-elements .index-btns .bottom-btns .scan-btn {
+  margin-right: 0px;
+}
+
+.index-start .index-elements .index-btns .bottom-btns .pin-btn {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 20px;
+  height: 20px;
+  background-color: red;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-family: "Nunito", sans-serif;
+  padding: 0;
+  margin: 0;
+}
+
+.plaques-bg-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20000;
+  pointer-events: none;
+  /* empêche les interactions (activable si besoin) */
+  opacity: 0;
+  transform: scale(0.98);
+  transition: opacity 0.65s ease, transform 0.65s ease;
+  will-change: opacity, transform;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+/* classe d'activation */
+.plaques-bg-overlay.show {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+
+
+.filterblack {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 999;
+  background-color: black;
+  width: 100vw;
+  height: 100vh;
+  opacity: 0.8;
+  filter: blur(100px);
+}
+
+.sidebar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  background: #929292;
+  background: linear-gradient(180deg, rgba(146, 146, 146, 1) 0%, rgba(59, 59, 59, 1) 100%);
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  z-index: 1000;
+  transform: translateX(-100%);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.sidebar .close-sidebar {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 10px;
+}
+
+.sidebar .close-sidebar:hover {
+  opacity: 0.2;
+  transition: opacity 0.3s ease;
+}
+
+.sidebar .logo {
+  width: 100%;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.sidebar .logo img {
+  width: 35px;
+  height: 35px;
+}
+
+.sidebar .logo .title-logo {
+  height: 60px;
+  width: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-family: "Nunito", sans-serif;
+  position: relative;
+  margin-left: 5px;
+}
+
+.sidebar .logo .title-logo h1 {
+  font-size: 22px;
+  color: rgb(255, 255, 255);
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  top: 15px;
+}
+
+.sidebar .logo .title-logo p {
+  font-size: 14px;
+  color: rgb(255, 36, 36);
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  bottom: 6px;
+  right: 15px;
+  font-weight: 600;
+}
+
+.sidebar .sidebar-nav {
+  width: 100%;
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar .sidebar-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 80%;
+  overflow-y: auto;
+  --sb-track-color: #3c3c3c;
+  --sb-thumb-color: #7d0a00;
+  --sb-size: 5px;
+}
+
+.sidebar .sidebar-nav ul::-webkit-scrollbar {
+  width: var(--sb-size);
+}
+
+.sidebar .sidebar-nav ul::-webkit-scrollbar-track {
+  background: var(--sb-track-color);
+  border-radius: 13px;
+}
+
+.sidebar .sidebar-nav ul::-webkit-scrollbar-thumb {
+  background: var(--sb-thumb-color);
+  border-radius: 13px;
+}
+
+.sidebar .sidebar-nav ul hr {
+  width: 93%;
+  border: 1px solid rgb(137, 137, 137);
+  border-radius: 20px;
+}
+
+.sidebar .sidebar-nav ul li {
+  width: 100%;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.sidebar .sidebar-nav ul li a:hover {
+  background-color: #f0f0f0;
+  color: black;
+  transition: 0.5s ease;
+}
+
+.sidebar .sidebar-nav ul li a:hover img {
+  filter: invert(0%);
+}
+
+.sidebar .sidebar-nav ul li img {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  margin-left: 40px;
+  filter: invert(1);
+}
+
+.sidebar .sidebar-nav ul li a {
+  text-decoration: none;
+  color: white;
+  font-family: "Nunito", sans-serif;
+  font-weight: bold;
+  font-size: 14px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.sidebar-nav a {
+  text-decoration: none;
+  color: white;
+  font-family: "Nunito", sans-serif;
+  font-weight: bold;
+  font-size: 14px;
+  width: 100%;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.sidebar-nav a img {
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+  margin-left: 40px;
+  filter: invert(1);
+}
+
+.sidebar-nav a:hover {
+  background-color: #f0f0f0;
+  color: black;
+  transition: 0.5s ease;
+}
+
+.sidebar-nav a:hover img {
+  filter: invert(0%);
+}
+
+
+.sidenotif {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 25vw;
+  /* même largeur que ta sidebar gauche */
+  height: 100vh;
+  /* pleine hauteur */
+  background-color: #d9d9d9;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  /* cachée hors écran à droite */
+  transition: transform 0.3s ease;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+  font-family: "Nunito", sans-serif;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  overflow-x: hidden;
+}
+
+.sidenotif .notif-elements::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  background-color: #F5F5F5;
+}
+
+.sidenotif .notif-elements::-webkit-scrollbar {
+  width: 12px;
+  background-color: #F5F5F5;
+}
+
+.sidenotif .notif-elements::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+  background-color: #424242;
+}
+
+.sidenotif .notif-header {
+  width: 100%;
+  height: 50px;
+  background-color: #c0c0c0;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.sidenotif .notif-header img {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+  filter: invert(100%);
+}
+
+.sidenotif .notif-header h2 {
+  font-family: "Nunito", sans-serif;
+}
+
+.sidenotif .notif-elements {
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sidenotif .notif-elements .notif-day {
+  width: 100%;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+}
+
+.sidenotif .notif-elements .notif-card {
+  width: 90%;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  margin: 5px;
+}
+
+.sidenotif .notif-elements .notif-card .notif-card-icon {
+  width: 15%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.sidenotif .notif-elements .notif-card .notif-card-icon img {
+  width: 30px;
+  height: 30px;
+}
+
+.sidenotif .notif-elements .notif-card .notif-card-text {
+  width: 70%;
+  height: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.sidenotif .notif-elements .notif-card .notif-card-text p {
+  text-align: start;
+  font-size: 12px;
+}
+
+.sidenotif .notif-elements .notif-card .notif-card-btn {
+  width: 15%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.sidenotif .notif-elements .notif-card .notif-card-btn button {
+  width: 80%;
+  height: 25px;
+  font-size: 8px;
+  border: none;
+  background-color: gray;
+  color: white;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.sidenotif .notif-elements .notif-card .notif-card-btn button:hover {
+  background-color: #c39898;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+  transition: 0.3s ease;
+}
+
+.sidenotif .notif-elements .notif-card .notif-card-btn button:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+
+
+
+
+
+
+
+/*********** Plaques **********/
+
+
+.index-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;
+  height: 80vh;
+}
+
+.index-container .linkpages {
+  width: 85%;
+  height: 20px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-family: "Nunito", sans-serif;
+  font-size: 13px;
+  color: rgb(221, 221, 221);
+  margin-bottom: 10px;
+}
+
+.index-container .linkpages a {
+  color: rgb(221, 221, 221);
+  margin-right: 5px;
+  margin-left: 5px;
+}
+
+.index-container .all-onglets-container {
+  width: 85%;
+  height: 72vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.index-container .all-onglets-container .btns-onglets {
+  width: 100%;
+  height: 40px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.index-container .all-onglets-container .btns-onglets .onglet {
+  width: 200px;
+  height: 40px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #efefef;
+  margin-right: 2px;
+  opacity: 0.6;
+}
+
+.index-container .all-onglets-container .btns-onglets .onglet img {
+  width: 20px;
+  height: 20px;
+}
+
+.index-container .all-onglets-container .btns-onglets .onglet span {
+  font-family: "Nunito", sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  color: rgb(0, 0, 0);
+  margin-left: 5px;
+}
+
+.index-container .all-onglets-container .btns-onglets .onglet:hover {
+  background-color: #efefef;
+  cursor: pointer;
+  transition: 0.3s ease;
+  opacity: 1;
+}
+
+.index-container .all-onglets-container .btns-onglets .onglet.active {
+  background-color: #efefef;
+  color: white;
+  opacity: 1;
+}
+
+.index-container .all-onglets-container .onglet-container {
+  width: 100%;
+  height: calc(100% - 40px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  overflow-y: auto;
+  background-color: #efefef;
+  border-top-right-radius: 10px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  overflow: hidden;
+}
+
+.index-container .all-onglets-container .onglet-container .onglet-header {
+  width: 100%;
+  height: 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #efefef;
+  border-top-right-radius: 10px;
+}
+
+.index-container .all-onglets-container .onglet-container .onglet-header .btns-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.index-container .all-onglets-container .onglet-container .onglet-header .search-plaques {
+  width: 30%;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+  background-color: rgb(255, 255, 255);
+  margin-left: 10px;
+  border: 1px solid black;
+}
+
+.index-container .all-onglets-container .onglet-container .onglet-header .search-plaques img {
+  width: 20px;
+  height: 20px;
+  filter: invert(100%);
+  margin-right: 5px;
+  margin-left: 10px;
+}
+
+.index-container .all-onglets-container .onglet-container .onglet-header .search-plaques input {
+  width: 100%;
+  height: 25px;
+  border: none;
+  border-radius: 15px;
+  font-size: 14px;
+  font-family: "Nunito", sans-serif;
+}
+
+.index-container .all-onglets-container .onglet-container .onglet-header .search-plaques input:focus {
+  outline: none;
+}
+
+.index-container .all-onglets-container .onglet-container .onglet-header .btn-add-plaque {
+  width: 250px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+  background-color: #760202;
+  margin-right: 10px;
+  color: white;
+  border: none;
+  font-weight: bold;
+  font-family: "Nunito", sans-serif;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.index-container .all-onglets-container .onglet-container .onglet-header .btn-add-plaque:hover {
+  background-color: #a00000;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-1px);
+  transition: 0.3s ease;
+}
+
+.index-container .all-onglets-container .onglet-container .onglet-header .btn-add-plaque:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+.index-container .all-onglets-container .onglet-container .onglet-header .btn-add-plaque img {
+  width: 15px;
+  height: 15px;
+  margin-right: 10px;
+  margin-left: 10px;
+  filter: invert(100%);
+}
+
+
+
+.index-container .all-onglets-container .onglet-container .onglet-pagination {
+  width: 98%;
+  height: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #e5e5e5;
+  border-radius: 10px;
+  background-color: #d6d4d4;
+}
+
+.index-container .all-onglets-container .onglet-container .onglet-pagination p {
+  margin-left: 10px;
+  font-family: "Nunito", sans-serif;
+  font-size: 14px;
+}
+
+.index-container .all-onglets-container .onglet-container .onglet-pagination .pagination {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #777676;
+  border-radius: 10px;
+  color: white;
+  padding: 0 5px;
+}
+
+.index-container .all-onglets-container .onglet-container .onglet-pagination .pagination button {
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 50%;
+  background-color: transparent;
+  color: white;
+  font-family: "Nunito", sans-serif;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.index-container .all-onglets-container .onglet-container .onglet-pagination .pagination button:hover {
+  background-color: #a0a0a0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-1px);
+  transition: 0.3s ease;
+}
+
+.index-container .all-onglets-container .onglet-container .onglet-pagination .pagination button:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+.index-container .all-onglets-container .onglet-container .onglet-pagination .pagination button.active {
+  background-color: #ffffff;
+  color: black;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-1px);
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.main-row {
+  border-bottom: 1px solid #ccc;
+  /* Ajouter une bordure */
+}
+
+.sub-row {
+  margin-top: 10px;
+  /* Espacement entre les lignes de conception */
+}
+
+:root {
+  --dark: #4a4a4a;
+  --dark-2: #3b3b3b;
+  --muted: #efefef;
+  --accent: #00b7d9;
+  --ok: #29c15a;
+  --warn: #ffcc00;
+  --err: #ff4d4f;
+  --table-bg: #f7f7f7;
+  --border: #d7d7d7;
+}
+
+.container {
+  width: 98%;
+  height: 80%;
+  margin: 0 auto;
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(15, 20, 30, 0.06);
+  background: white;
+  font-family: "Nunito", sans-serif;
+  margin-bottom: 5px;
+}
+
+.table-wrapper {
+  max-height: 100%;
+  /* <- hauteur maximale demandée */
+  overflow-y: auto;
+  /* scroll vertical si le tbody dépasse */
+  overflow-x: auto;
+  /* permet aussi le scroll horizontal si besoin */
+  width: 100%;
+}
+
+table.main {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  /* important pour conserver l'alignement des colonnes */
+  /* retire l'overflow sur la table (n'en fait pas le conteneur scrollable) */
+  overflow: visible;
+  position: relative;
+}
+
+table.main thead th {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  /* au-dessus des lignes */
+  background: #3b3b3b;
+  /* ton background d'entête (garde le même) */
+  color: white;
+}
+
+table.main .main-head {
+  position: static;
+}
+
+table.main .lignes-table {
+  overflow: visible;
+}
+
+thead.main-head th {
+  background: var(--table-bg);
+  padding: 8px 10px;
+  text-align: left;
+  position: relative;
+  font-size: 13px;
+  background-color: #3b3b3b;
+  color: white;
+}
+
+/* each thead th contains a small input + sort buttons */
+.th-wrap {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-direction: column;
+}
+
+.th-wrap .col-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  height: 30px;
+  padding: 0 8px;
+}
+
+.th-wrap .col-title:hover {
+  background-color: #4a4a4a;
+  transition: 0.2s ease-in-out;
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+.col-filter {
+  margin-left: auto;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  width: 100%;
+  background-color: white;
+  border-radius: 5px;
+}
+
+.col-filter input {
+  width: 80%;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 13px;
+  border: none;
+  margin-top: 5px;
+}
+
+.col-filter input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.col-filter img {
+  width: 16px;
+  height: 16px;
+  filter: invert(100%);
+}
+
+.sort-btn {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  margin-left: 6px;
+  cursor: pointer;
+  user-select: none;
+  color: #666;
+  font-size: 10px;
+}
+
+.sort-btn.asc {
+  color: var(--accent);
+  transform: rotate(0deg);
+}
+
+.sort-btn.desc {
+  color: var(--accent);
+  transform: rotate(180deg);
+}
+
+tbody tr.main-row {
+  cursor: pointer;
+  background: white;
+  z-index: -55;
+}
+
+tbody tr.main-row:hover {
+  background: #efefef;
+  transition: 0.3s ease;
+}
+
+tbody tr.main-row td {
+  font-size: 14px;
+}
+
+tbody tr.main-row .actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 30px;
+}
+
+tbody tr.main-row .actions .btn {
+  width: 30px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  margin-right: 5px
+}
+
+tbody tr.main-row .actions .btn img {
+  width: 15px;
+  height: 15px;
+  padding: 0;
+}
+
+tbody tr.main-row td img {
+  width: 10px;
+  height: 10px;
+  padding-left: 5px;
+}
+
+tbody td {
+  vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.btn.view {
+  background: #068da5;
+  color: white;
+}
+
+.btn.view img {
+  margin-right: 5px;
+}
+
+.btn.edit {
+  background: #038d33;
+  color: #222;
+}
+
+.btn.del {
+  background: #ff4d4f;
+}
+
+tbody tr.main-row .actions .btn:hover {
+  opacity: 0.8;
+  transform: translate(0px, -1px);
+  transition: 0.3s ease;
+}
+
+tbody tr.main-row .actions .btn:active {
+  opacity: 0.6;
+  transform: translate(0px, 1px);
+  transition: 0.1s ease;
+}
+
+
+/* sub-row style */
+tr.sub-row td {
+  padding: 0;
+  background: #c2c0c0;
+}
+
+.sub-wrapper {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height .35s ease, padding .25s ease;
+  padding: 0 12px;
+}
+
+tr.main-row.expanded+tr.sub-row td .sub-wrapper {
+  padding: 12px;
+  max-height: 1000px;
+  /* big enough */
+}
+
+/* internal sub table */
+table.sub {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.02) inset;
+}
+
+table.sub thead {
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  background: #353535;
+}
+
+table.sub thead tr {
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  background: #353535;
+}
+
+table.sub thead th {
+  background: #353535;
+  font-weight: 600;
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-top: 5px;
+}
+
+table.sub tbody td {
+  padding: 8px;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* small search inside subthead */
+table.sub thead th .col-title img {
+  width: 16px;
+  height: 16px;
+  filter: invert(100%);
+}
+
+table.sub thead th .sub-head-row input {
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: 4px;
+  border: 1px solid #d0d0d0;
+}
+
+table.sub thead th .col-filter {
+  margin-left: auto;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  width: 100%;
+  background-color: white;
+  border-radius: 5px;
+}
+
+table.sub thead th .col-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  height: 20px;
+  color: white;
+}
+
+table.sub thead th .col-title:hover {
+  background-color: #4a4a4a;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.sub-body tr {
+  height: 20px;
+  padding: 0;
+  margin: 0;
+}
+
+.sub-body tr:hover {
+  transform: translate(0px, -1px);
+  transition: 0.3s ease;
+}
+
+.sub-body tr td {
+  border: none;
+  background-color: #f5f5f5;
+  height: 15px;
+  padding: 0;
+  margin: 0;
+}
+
+/* availability dot */
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 8px;
+  vertical-align: middle;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08) inset;
+}
+
+.sub-body .tred {
+  background-color: rgb(255, 225, 225);
+}
+
+.sub-body .twar {
+  background-color: rgb(250, 255, 202);
+}
+
+.dot.ok {
+  background: var(--ok);
+}
+
+.dot.warn {
+  background: var(--warn);
+}
+
+.dot.err {
+  background: var(--err);
+}
+
+.sub-body tr td .btn {
+  width: 30px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  margin-right: 5px;
+  cursor: pointer;
+}
+
+.sub-body tr td .btn img {
+  width: 15px;
+  height: 15px;
+  padding: 0;
+}
+
+.sub-body tr td .btn:hover {
+  opacity: 0.8;
+  transform: translate(0px, -1px);
+  transition: 0.3s ease;
+}
+
+.sub-body tr td .btn:active {
+  opacity: 0.6;
+  transform: translate(0px, 1px);
+  transition: 0.1s ease;
+}
+
+.main-row td .arrow {
+  display: inline-block;
+  /* nécessaire pour que transform fonctionne proprement */
+  transition: transform .25s ease;
+  transform-origin: 50% 50%;
+}
+
+/* état ouvert */
+.main-row.expanded td .arrow {
+  transform: rotate(90deg);
+  /* adapte l'angle si tu veux 180deg etc. */
+}
+
+.no-results-row td,
+.sub-no-results-row td {
+  text-align: center;
+  padding: 14px 8px;
+  color: #666;
+  font-style: italic;
+  background: #d4d4d4;
+  border-top: 1px dashed #eee;
+}
+
+/* responsive */
+@media (max-width:860px) {
+  .col-filter input {
+    width: 80px;
+  }
+
+  .btn {
+    padding: 6px 6px;
+    font-size: 12px;
+  }
+}
+
+/*********** Nouvelle plaque *********/
+
+.container-new-plaque {
+  width: 85%;
+  height: 90%;
+  background-color: #e1e1e1;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.container-new-plaque .logonewplaque {
+  width: 98%;
+  height: 50px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.container-new-plaque .logonewplaque .Container-logonewplaque {
+  width: 300px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: row;
+}
+
+.container-new-plaque .logonewplaque .Container-logonewplaque img {
+  width: 30px;
+  height: 30px;
+}
+
+.container-new-plaque .logonewplaque .Container-logonewplaque h1 {
+  margin-left: 5px;
+  font-family: "Nunito", sans-serif;
+  font-size: 20px;
+}
+
+.container-new-plaque .all-info-plaque-container {
+  width: 98%;
+  height: calc(100% - 100px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.container-new-plaque .all-info-plaque-container .left-info {
+  width: 50%;
+  height: 100%;
+}
+
+.container-new-plaque .all-info-plaque-container .left-info .first-info {
+  width: 100%;
+  min-height: 70px;
+  height: auto;
+  border-radius: 10px;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.container-new-plaque .all-info-plaque-container .left-info .first-info .clientproduit-plaque {
+  width: 100%;
+  max-width: 49%;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.container-new-plaque .all-info-plaque-container .left-info .first-info .clientproduit-plaque span {
+  width: calc(100% - 10px);
+  height: 20%;
+  margin-left: 5px;
+  margin-top: 5px;
+  display: flex;
+  font-family: "Nunito", sans-serif;
+  font-weight: bold;
+  align-items: center;
+}
+
+.container-new-plaque .all-info-plaque-container .left-info .first-info .clientproduit-plaque .choose-client-plaque {
+  width: 100%;
+  height: 80%;
+  margin-bottom: 5px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  position: relative;
+}
+
+.conception-plaque {
+  width: 98%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.conception-plaque span {
+  width: 98%;
+  margin-left: 5px;
+  margin-top: 5px;
+  font-family: "Nunito", sans-serif;
+  font-weight: bold;
+}
+
+.choose-conception-plaque {
+  width: 98%;
+  margin-left: 5px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+
+/* bouton ajouter */
+.add-conception-btn {
+  width: 70px;
+  height: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 0;
+  background-color: black;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-left: 8px;
+}
+
+.add-conception-btn img {
+  width: 18px;
+  height: 18px;
+  filter: invert(100%);
+}
+
+.add-conception-btn p {
+  font-size: 8px;
+  color: white;
+  margin: 0;
+  font-family: "Nunito", sans-serif;
+  font-weight: bold;
+}
+
+/* custom select */
+.custom-select {
+  position: relative;
+  width: calc(100% - 80px);
+  max-width: 100%;
+}
+
+.select-toggle {
+  height: 60px;
+  border-radius: 5px;
+  border: 1px solid rgb(196, 196, 196);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+  background: white;
+}
+
+.select-toggle:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(156, 10, 10, 0.12);
+}
+
+.selected-thumb {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.selected-label {
+  flex: 1;
+  font-family: "Nunito", sans-serif;
+  font-weight: 600;
+  color: #333;
+  min-width: calc(100% - 90px);
+}
+
+.caret {
+  font-size: 18px;
+  color: #666;
+}
+
+/* dropdown */
+.dropdown {
+  position: absolute;
+  top: 70px;
+  left: 0;
+  right: 0;
+  z-index: 10000;
+  background: rgb(227, 227, 227);
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+  padding: 10px;
+  display: none;
+  max-height: 200px;
+  overflow: auto;
+}
+
+.select-search {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: "Nunito", sans-serif;
+}
+
+.section {
+  margin-top: 6px;
+}
+
+.section-title {
+  margin: 6px 0;
+  font-size: 13px;
+  color: #666;
+  font-family: "Nunito", sans-serif;
+  font-weight: 700;
+}
+
+/* options */
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.option:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.option img {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.option-text {
+  font-family: "Nunito", sans-serif;
+  font-weight: 600;
+  color: #222;
+}
+
+/* small screens */
+@media (max-width:600px) {
+  .custom-select {
+    width: 100%;
+  }
+
+  .add-conception-btn {
+    margin-left: 6px;
+  }
+
+  .dropdown {
+    top: 68px;
+  }
+}
+
+
+.suggestions {
+  position: absolute;
+  top: calc(100% + 6px);
+  /* juste sous l'input */
+  left: 20px;
+  /* correspond au margin-left de ton input */
+  width: calc(80% - 30px);
+  /* aligné avec la largeur de l'input (s'adapte au style existant) */
+  max-height: 220px;
+  overflow-y: auto;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  border-radius: 6px;
+  z-index: 50;
+  display: none;
+  /* caché par défaut */
+  padding: 6px 0;
+}
+
+/* chaque ligne */
+.suggestion-item {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-family: "Nunito", sans-serif;
+}
+
+.suggestion-item:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+/* image à gauche */
+.suggestion-item img {
+  width: 34px;
+  height: 34px;
+  object-fit: cover;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+/* nom */
+.suggestion-item .name {
+  font-size: 14px;
+  color: #222;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* petite note si aucun résultat */
+.suggestions .no-result {
+  padding: 8px 12px;
+  color: #666;
+  font-size: 13px;
+}
+
+/* style pour la ligne proposer de créer */
+.create-item {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 10px;
+  cursor: pointer;
+  border-top: 1px dashed rgba(0, 0, 0, 0.06);
+}
+
+.create-item:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.create-item img {
+  width: 22px;
+  height: 22px;
+  object-fit: cover;
+  flex-shrink: 0;
+  opacity: 0.9;
+}
+
+.create-item .label {
+  font-size: 14px;
+  color: #0a66c2;
+  font-weight: 600;
+}
+
+.all-info-plaque-container {
+  position: relative;
+  overflow: visible;
+  /* important : le scroll est dans .scroll-inner */
+}
+
+/* wrapper interne qui scrollera */
+.all-info-plaque-container .scroll-inner {
+  width: 100%;
+  height: 100%;
+  /* occupe la hauteur du parent */
+  overflow-y: auto;
+  /* VOILA le vrai scroll */
+  overflow-x: hidden;
+  box-sizing: border-box;
+  padding-bottom: 8px;
+  display: flex;
+  /* laisse un peu d'espace sous le contenu si besoin */
+}
+
+/* ombres — enfants du parent (donc fixes par rapport au viewport interne) */
+.all-info-plaque-container .inner-shadow {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 36px;
+  pointer-events: none;
+  z-index: 30;
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+
+.all-info-plaque-container .inner-shadow.top {
+  top: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2));
+}
+
+.all-info-plaque-container .inner-shadow.bottom {
+  bottom: 0;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2));
+}
+
+.all-info-plaque-container.show-top .inner-shadow.top {
+  opacity: 1;
+}
+
+.all-info-plaque-container.show-bottom .inner-shadow.bottom {
+  opacity: 1;
+}
+
+.container-new-plaque .all-info-plaque-container .left-info .first-info .clientproduit-plaque .choose-client-plaque .input-choose {
+  width: 80%;
+  height: 25px;
+  margin-left: 5px;
+  border-radius: 5px;
+  border: 1px solid rgb(196, 196, 196);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  margin-right: 5px;
+  position: relative;
+}
+
+.container-new-plaque .all-info-plaque-container .left-info .first-info .clientproduit-plaque .choose-client-plaque .input-choose input {
+  width: 95%;
+  height: 20px;
+  padding-left: 5px;
+  border-radius: 5px;
+  border: none;
+}
+
+.container-new-plaque .all-info-plaque-container .left-info .first-info .clientproduit-plaque .choose-client-plaque .delete-input {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: -6px;
+  right: -10px;
+  cursor: pointer;
+}
+
+.container-new-plaque .all-info-plaque-container .left-info .first-info .clientproduit-plaque .choose-client-plaque .delete-input img {
+  width: 15px;
+  height: 15px;
+  filter: invert(0%);
+  position: absolute;
+}
+
+.container-new-plaque .all-info-plaque-container .left-info .first-info .clientproduit-plaque .choose-client-plaque .input-choose:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: 0.3s ease;
+}
+
+.container-new-plaque .all-info-plaque-container .left-info .first-info .clientproduit-plaque .choose-client-plaque .input-choose input:focus {
+  outline: none;
+}
+
+.container-new-plaque .all-info-plaque-container .left-info .first-info .clientproduit-plaque .choose-client-plaque button {
+  width: 25px;
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 5px;
+  background-color: #760202;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.container-new-plaque .all-info-plaque-container .left-info .first-info .clientproduit-plaque .choose-client-plaque button:hover {
+  transform: translate(0px, -1px);
+  background-color: #9c0a0a;
+  transition: 0.3s ease;
+  box-shadow: 0px 0px 0px 0px rgb(34, 34, 34, 0.2);
+}
+
+.container-new-plaque .all-info-plaque-container .left-info .first-info .clientproduit-plaque .choose-client-plaque button:active {
+  transform: translate(0px, 2px);
+  transition: 0.3s ease;
+}
+
+.container-new-plaque .all-info-plaque-container .left-info .first-info .clientproduit-plaque .choose-client-plaque button img {
+  width: 15px;
+  height: 15px;
+  filter: invert(100%);
+}
+
+.container-new-plaque .all-info-plaque-container .right-info {
+  width: 50%;
+  height: 99%;
+  margin-left: 5px;
+  border-radius: 10px;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.container-new-plaque .all-info-plaque-container .right-info .num-plaque {
+  width: 100%;
+  height: 25%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.container-new-plaque .all-info-plaque-container .right-info .num-plaque span {
+  width: 100%;
+  height: 20%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-family: "Nunito", sans-serif;
+  font-weight: bold;
+  margin-left: 20px;
+  margin-top: 5px;
+}
+
+.container-new-plaque .all-info-plaque-container .right-info .num-plaque .ecrit-num-plaque {
+  width: 100%;
+  height: 80%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container-new-plaque .all-info-plaque-container .right-info .num-plaque .ecrit-num-plaque input {
+  width: 30%;
+  height: 50px;
+  border-radius: 5px;
+  margin-left: 20px;
+  border: 1px solid rgb(196, 196, 196);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  margin-right: 5px;
+  padding-left: 5px;
+  font-size: 50px;
+}
+
+.container-new-plaque .all-info-plaque-container .right-info .num-plaque .ecrit-num-plaque input:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: 0.3s ease;
+}
+
+.container-new-plaque .all-info-plaque-container .right-info .num-plaque .ecrit-num-plaque button {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 5px;
+  background-color: #760202;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.container-new-plaque .all-info-plaque-container .right-info .num-plaque .ecrit-num-plaque button:hover {
+  transform: translate(0px, -1px);
+  transition: 0.3s ease;
+}
+
+.container-new-plaque .all-info-plaque-container .right-info .num-plaque .ecrit-num-plaque button:active {
+  transform: translate(0px, 2px);
+  transition: 0.3s ease;
+}
+
+.container-new-plaque .all-info-plaque-container .right-info .num-plaque .ecrit-num-plaque button img {
+  width: 30px;
+  height: 30px;
+  filter: invert(100%);
+}
+
+.container-new-plaque .all-info-plaque-container .right-info .type-plaque {
+  width: 100%;
+  height: 23%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.container-new-plaque .all-info-plaque-container .right-info .type-plaque span {
+  width: 100%;
+  height: 30%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-family: "Nunito", sans-serif;
+  font-weight: bold;
+  margin-left: 20px;
+}
+
+.container-new-plaque .all-info-plaque-container .right-info .type-plaque .chooser {
+  width: 100%;
+  height: 70%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container-new-plaque .all-info-plaque-container .right-info .type-plaque .choose-type-plaque {
+  width: 50%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container-new-plaque .all-info-plaque-container .right-info .type-plaque .choose-type-plaque p {
+  margin-left: 5px;
+  font-family: "Nunito", sans-serif;
+}
+
+.container-new-plaque .all-info-plaque-container .right-info .container-couleur-pose-plaque {
+  width: 100%;
+  height: 23%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container-new-plaque .all-info-plaque-container .right-info .container-couleur-pose-plaque .couleur-pose-plaque {
+  width: 50%;
+  height: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+.container-new-plaque .all-info-plaque-container .right-info .container-couleur-pose-plaque .couleur-pose-plaque span {
+  height: 30%;
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-family: "Nunito", sans-serif;
+  font-weight: bold;
+  margin-left: 10px;
+}
+
+.container-new-plaque .all-info-plaque-container .right-info .container-couleur-pose-plaque .couleur-pose-plaque input {
+  height: 30px;
+  width: 30px;
+  border: none;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-left: 10px;
+  margin-top: 5px;
+  border: 1px solid rgb(196, 196, 196);
+  border-radius: 5px;
+}
+
+.container-new-plaque .all-info-plaque-container .right-info .container-couleur-pose-plaque .couleur-pose-plaque .inputnombre {
+  height: 25px;
+  width: 200px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  border-radius: 5px;
+}
+
+.container-new-plaque .all-info-plaque-container .right-info .machine-add-plaque {
+  width: 100%;
+  height: 23%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.container-new-plaque .all-info-plaque-container .right-info .machine-add-plaque .machine-plaque {
+  width: calc(50% - 10px);
+  margin-left: 5px;
+  margin-right: 5px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.container-new-plaque .all-info-plaque-container .right-info .machine-add-plaque .machine-plaque span {
+  width: 100%;
+  height: 30%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-family: "Nunito", sans-serif;
+  font-weight: bold;
+}
+
+.container-new-plaque .all-info-plaque-container .right-info .machine-add-plaque .machine-plaque select {
+  width: 100%;
+  height: 30px;
+  border: 1px solid rgb(196, 196, 196);
+  margin-top: 5px;
+  border-radius: 5px;
+  font-family: "Nunito", sans-serif;
+}
+
+.container-new-plaque .all-info-plaque-container .right-info .btnadd-plaque {
+  width: calc(100% - 20px);
+  margin-left: 10px;
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 10px;
+}
+
+.container-new-plaque .all-info-plaque-container .right-info .btnadd-plaque button {
+  width: 200px;
+  height: 35px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+  border: none;
+  background-color: #760202;
+  color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  font-family: "Nunito", sans-serif;
+}
+
+.container-new-plaque .all-info-plaque-container .right-info .btnadd-plaque button img {
+  width: 15px;
+  height: 15px;
+  margin-right: 10px;
+  filter: invert(100%);
+}
+
+.container-new-plaque .all-info-plaque-container .right-info .btnadd-plaque button:hover {
+  transform: translate(0px, -1px);
+  transition: 0.3s ease;
+  box-shadow: 0px 0px 0px 0px rgb(34, 34, 34, 0.2);
+}
+
+.container-new-plaque .all-info-plaque-container .right-info .btnadd-plaque button:active {
+  transform: translate(0px, 2px);
+  transition: 0.3s ease;
+}
+
+.container-new-plaque .all-info-plaque-container .left-info .second-info {
+  border-radius: 5px;
+  margin-top: 5px;
+  height: auto;
+  background-color: #cecece;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.container-new-plaque .all-info-plaque-container .left-info .second-info p {
+  width: 100%;
+  height: 10px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding-left: 10px;
+  font-size: 20px;
+  font-family: "Nunito", sans-serif;
+  font-weight: bold;
+}
+
+.container-new-plaque .all-info-plaque-container .left-info .second-info .plaque-added {
+  width: 100%;
+  height: calc(100% - 40px);
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  margin-bottom: 20px;
+  font-family: "Nunito", sans-serif;
+}
+
+.container-new-plaque .all-info-plaque-container .left-info .second-info .plaque-added .plaque-added-container {
+  width: 98%;
+  height: 60px;
+  border-radius: 10px;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  margin-bottom: 5px;
+  animation: fadeInRight;
+  animation-duration: 0.5s;
+  padding-left: 5px;
+  cursor: pointer;
+}
+
+.container-new-plaque .all-info-plaque-container .left-info .second-info .plaque-added .plaque-added-container:hover {
+  transform: translate(0px, -1px);
+  background-color: rgb(212, 212, 212);
+  transition: 0.3s ease;
+}
+
+.container-new-plaque .all-info-plaque-container .left-info .second-info .plaque-added .plaque-added-container:active {
+  background-color: rgb(180, 178, 178);
+  transform: translate(0px, 2px);
+  transition: 0.3s ease;
+}
+
+.container-new-plaque .all-info-plaque-container .left-info .second-info .plaque-added .plaque-added-container .delete-plaque-added {
+  width: 20px;
+  height: 20px;
+  background-color: rgb(119, 2, 2);
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 20px;
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  cursor: pointer;
+}
+
+.container-new-plaque .all-info-plaque-container .left-info .second-info .plaque-added .plaque-added-container .delete-plaque-added:hover {
+  background-color: rgb(213, 0, 0);
+  transform: translate(0px, -1px);
+  transition: 0.3s ease;
+}
+
+.container-new-plaque .all-info-plaque-container .left-info .second-info .plaque-added .plaque-added-container .delete-plaque-added:active {
+  background-color: rgb(213, 0, 0);
+  transform: translate(0px, 2px);
+  transition: 0.3s ease;
+}
+
+.container-new-plaque .all-info-plaque-container .left-info .second-info .plaque-added .plaque-added-container .delete-plaque-added img {
+  width: 10px;
+  height: 10px;
+}
+
+.container-new-plaque .all-info-plaque-container .left-info .second-info .plaque-added .plaque-added-container .left-plaque-added {
+  width: 80%;
+  height: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.container-new-plaque .all-info-plaque-container .left-info .second-info .plaque-added .plaque-added-container .left-plaque-added p {
+  width: 100%;
+  height: 50%;
+  font-size: 15px;
+  font-weight: bold;
+  margin: 0;
+  padding: 0;
+  margin-left: 10px;
+}
+
+.container-new-plaque .all-info-plaque-container .left-info .second-info .plaque-added .plaque-added-container .right-plaque-added {
+  width: 20%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: red;
+  border-radius: 10px;
+}
+
+.container-new-plaque .all-info-plaque-container .left-info .second-info .plaque-added .plaque-added-container .right-plaque-added img {
+  width: 30px;
+  height: 30px;
+}
+
+.left-plaque-added p .status-label {
+  font-weight: 600;
+  margin-right: 10px;
+  color: #222;
+}
+
+.left-plaque-added p span {
+  display: inline-block;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+/* assure que la pin garde la même taille que dans le JS */
+.left-plaque-added p .status-pin {
+  box-shadow: none;
+}
+
+.container-new-plaque .btns-save-plaque {
+  width: 98%;
+  height: 40px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.container-new-plaque .btns-save-plaque button {
+  width: 150px;
+  height: 30px;
+  background-color: #760202;
+  border: none;
+  border-radius: 10px;
+  margin-left: 5px;
+  color: white;
+  font-family: "Nunito", sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+.container-new-plaque .btns-save-plaque button:hover {
+  transform: translate(0px, -1px);
+  transition: 0.3s ease;
+  box-shadow: 0px 0px 0px 0px rgb(34, 34, 34, 0.2);
+}
+
+.container-new-plaque .btns-save-plaque button:active {
+  transform: translate(0px, 2px);
+  transition: 0.3s ease;
+}
+
+.container-new-plaque .btns-save-plaque button img {
+  width: 15px;
+  height: 15px;
+  filter: invert(100%);
+  margin-right: 5px;
+}
+
+.add-conception {
+  width: 80vw;
+  height: 80vh;
+  background-color: white;
+  position: absolute;
+  top: 10vh;
+  left: 10vw;
+  z-index: 10000;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.add-conception .title-addconception {
+  width: 100%;
+  height: 100px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: "Nunito", sans-serif;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.add-conception .title-addconception .title-addconception-container {
+  width: 60%;
+  height: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding-left: 20px;
+}
+
+.add-conception .title-addconception .title-addconception-container h1 {
+  margin: 0;
+  padding: 0;
+  font-size: 30px;
+}
+
+.add-conception .title-addconception .title-addconception-container img {
+  width: 30px;
+  margin-right: 10px;
+}
+
+.add-conception .title-addconception img {
+  width: 20px;
+  height: 20px;
+  margin-right: 20px;
+}
+
+.add-conception .form-addconception {
+  width: 100%;
+  height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-conception .form-addconception .form-addconception-container {
+  height: 100%;
+  width: 98%;
+  background-color: #d9d9d9;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: row;
+  overflow-y: auto;
+}
+
+.add-conception .form-addconception .btns-form {
+  width: 98%;
+  height: 50px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.add-conception .form-addconception .btns-form button {
+  width: 200px;
+  height: 30px;
+  background-color: #760202;
+  border: none;
+  border-radius: 10px;
+  margin-left: 5px;
+  color: white;
+  font-family: "Nunito", sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+.add-conception .form-addconception .btns-form button:hover {
+  transform: translate(0px, -1px);
+  background-color: #9c0a0a;
+  transition: 0.3s ease;
+  box-shadow: 0px 0px 0px 0px rgb(34, 34, 34, 0.2);
+}
+
+.add-conception .form-addconception .btns-form button:active {
+  transform: translate(0px, 2px);
+  transition: 0.3s ease;
+}
+
+.add-conception .form-addconception .btns-form button img {
+  width: 15px;
+  height: 15px;
+  filter: invert(100%);
+  margin-right: 5px;
+}
+
+.add-conception .form-addconception .form-addconception-container .left-addconception {
+  width: 50%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding-top: 10px;
+}
+
+.add-conception .form-addconception .form-addconception-container .left-addconception .container-addconception {
+  width: calc(100% - 20px);
+  margin-left: 10px;
+  margin-right: 10px;
+  height: auto;
+  background-color: #ebebeb;
+  border-radius: 10px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.add-conception .form-addconception .form-addconception-container .left-addconception .container-addconception .clientproduit-plaque {
+  width: 100%;
+  max-width: 49%;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.add-conception .form-addconception .form-addconception-container .left-addconception .container-addconception .clientproduit-plaque span {
+  width: calc(100% - 10px);
+  height: 20%;
+  margin-left: 5px;
+  margin-top: 5px;
+  display: flex;
+  font-family: "Nunito", sans-serif;
+  font-weight: bold;
+  align-items: center;
+}
+
+.add-conception .form-addconception .form-addconception-container .left-addconception .container-addconception .clientproduit-plaque .choose-client-plaque {
+  width: 100%;
+  height: 80%;
+  margin-bottom: 5px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  position: relative;
+}
+
+.add-conception .form-addconception .form-addconception-container .left-addconception .container-addconception .clientproduit-plaque .choose-client-plaque .input-choose {
+  width: 80%;
+  height: 35px;
+  margin-left: 5px;
+  border-radius: 5px;
+  border: 1px solid rgb(196, 196, 196);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  margin-right: 5px;
+  position: relative;
+  background-color: white;
+}
+
+.add-conception .form-addconception .form-addconception-container .left-addconception .container-addconception .clientproduit-plaque .choose-client-plaque .input-choose input {
+  width: 95%;
+  height: 30px;
+  padding-left: 5px;
+  border-radius: 5px;
+  border: none;
+}
+
+.add-conception .form-addconception .form-addconception-container .left-addconception .container-addconception .clientproduit-plaque .choose-client-plaque .input-choose .delete-input {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: -6px;
+  right: -10px;
+  cursor: pointer;
+}
+
+.add-conception .form-addconception .form-addconception-container .left-addconception .container-addconception .clientproduit-plaque .choose-client-plaque .input-choose .delete-input .delete-input img {
+  width: 15px;
+  height: 15px;
+  filter: invert(0%);
+  position: absolute;
+}
+
+.add-conception .form-addconception .form-addconception-container .left-addconception .container-addconception .clientproduit-plaque .choose-client-plaque .input-choose:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: 0.3s ease;
+}
+
+.add-conception .form-addconception .form-addconception-container .left-addconception .container-addconception .clientproduit-plaque .choose-client-plaque .input-choose input:focus {
+  outline: none;
+}
+
+.add-conception .form-addconception .form-addconception-container .left-addconception .container-addconception .clientproduit-plaque .choose-client-plaque button {
+  width: 35px;
+  height: 35px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 5px;
+  background-color: #760202;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.add-conception .form-addconception .form-addconception-container .left-addconception .container-addconception .clientproduit-plaque .choose-client-plaque button:hover {
+  transform: translate(0px, -1px);
+  background-color: #9c0a0a;
+  transition: 0.3s ease;
+  box-shadow: 0px 0px 0px 0px rgb(34, 34, 34, 0.2);
+}
+
+.add-conception .form-addconception .form-addconception-container .left-addconception .container-addconception .clientproduit-plaque .choose-client-plaque button:active {
+  transform: translate(0px, 2px);
+  transition: 0.3s ease;
+}
+
+.add-conception .form-addconception .form-addconception-container .left-addconception .container-addconception .clientproduit-plaque .choose-client-plaque button img {
+  width: 15px;
+  height: 15px;
+  filter: invert(100%);
+}
+
+.add-conception .form-addconception .form-addconception-container .left-addconception .container-addconception .input-addconception {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-left: 5px;
+}
+
+.add-conception .form-addconception .form-addconception-container .left-addconception .container-addconception .input-addconception span {
+  width: 100%;
+  height: auto;
+  font-family: "Nunito", sans-serif;
+  font-size: 15px;
+  font-weight: bold;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.add-conception .form-addconception .form-addconception-container .left-addconception .container-addconception .input-addconception input {
+  height: 35px;
+  border-radius: 5px;
+  border: 1px solid rgb(196, 196, 196);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  margin-right: 5px;
+  position: relative;
+  background-color: white;
+  margin-bottom: 10px;
+  padding-left: 5px;
+}
+
+.add-conception .form-addconception .form-addconception-container .right-addconception {
+  width: calc(50% - 40px);
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding-top: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  background-color: #efefef;
+  border-radius: 10px;
+}
+
+.add-conception .form-addconception .form-addconception-container .right-addconception span {
+  width: 100%;
+  height: 30px;
+  font-size: 15px;
+  font-weight: bold;
+  font-family: "Nunito", sans-serif;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.add-conception .form-addconception .form-addconception-container .right-addconception .file-upload-container {
+  width: 100%;
+}
+
+.add-conception .form-addconception .form-addconception-container .right-addconception .file-upload {
+  position: relative;
+  border: 2px dashed #b8bcbf;
+  border-radius: 10px;
+  text-align: center;
+  background-color: rgb(255, 255, 255);
+  transition: background-color 0.3s ease-in-out;
+}
+
+.add-conception .form-addconception .form-addconception-container .right-addconception .file-upload:hover {
+  background-color: #e2e6ea;
+}
+
+.add-conception .form-addconception .form-addconception-container .right-addconception .file-input {
+  display: none;
+}
+
+.add-conception .form-addconception .form-addconception-container .right-addconception .file-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.add-conception .form-addconception .form-addconception-container .right-addconception .upload-icon {
+  font-size: 50px;
+}
+
+.add-conception .form-addconception .form-addconception-container .right-addconception .upload-icon img {
+  width: 40px;
+  height: 40px;
+}
+
+.add-conception .form-addconception .form-addconception-container .right-addconception .file-upload p {
+  margin: 0;
+  font-size: 16px;
+  color: #6c757d;
+}
+
+.add-conception .form-addconception .form-addconception-container .right-addconception .file-upload.dragover {
+  background-color: #007bff;
+  color: white;
+}
+
+.add-conception .form-addconception .form-addconception-container .right-addconception .files-conception {
+  width: 100%;
+  height: 100%;
+  margin-top: 10px;
+  background-color: #c7c6c6;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  overflow-y: auto;
+}
+
+.add-conception .form-addconception .form-addconception-container .right-addconception .files-conception .file-conception {
+  width: calc(100% - 20px);
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  border-radius: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-top: 10px;
+}
+
+.add-conception .form-addconception .form-addconception-container .right-addconception .files-conception .file-conception .file-conception-desc {
+  width: 70%;
+  height: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.add-conception .form-addconception .form-addconception-container .right-addconception .files-conception .file-conception .file-conception-desc .logo-file {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 10px;
+}
+
+.add-conception .form-addconception .form-addconception-container .right-addconception .files-conception .file-conception .file-conception-desc .logo-file img {
+  width: 40px;
+  height: 40px;
+}
+
+.add-conception .form-addconception .form-addconception-container .right-addconception .files-conception .file-conception .file-conception-desc .title-file {
+  width: calc(100% - 40px);
+  height: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  margin-left: 10px;
+}
+
+.add-conception .form-addconception .form-addconception-container .right-addconception .files-conception .file-conception .file-conception-desc .title-file h1 {
+  font-size: 15px;
+  font-family: "Nunito", sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.add-conception .form-addconception .form-addconception-container .right-addconception .files-conception .file-conception .file-conception-desc .title-file p {
+  font-size: 12px;
+  font-family: "Nunito", sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.add-conception .form-addconception .form-addconception-container .right-addconception .files-conception .file-conception .btns-file {
+  width: 30%;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.add-conception .form-addconception .form-addconception-container .right-addconception .files-conception .file-conception .btns-file button {
+  width: 25px;
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 5px;
+  background-color: rgb(105, 3, 3);
+  color: white;
+  font-family: "Nunito", sans-serif;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.add-conception .form-addconception .form-addconception-container .right-addconception .files-conception .file-conception .btns-file button:hover {
+  transform: translate(0px, -1px);
+  opacity: 0.8;
+  transition: 0.3s ease;
+  box-shadow: 0px 0px 0px 0px rgb(34, 34, 34, 0.2);
+}
+
+.add-conception .form-addconception .form-addconception-container .right-addconception .files-conception .file-conception .btns-file button:active {
+  transform: translate(0px, 2px);
+  transition: 0.3s ease;
+}
+
+.add-conception .form-addconception .form-addconception-container .right-addconception .files-conception .file-conception .btns-file button img {
+  width: 15px;
+  height: 15px;
+  filter: invert(100%);
+}
+
+.close-addconception:hover {
+  transform: translate(0px, -1px);
+  opacity: 0.8;
+  transition: 0.3s ease;
+  cursor: pointer;
+}
+
+.close-addconception:active {
+  transform: translate(0px, 2px);
+  transition: 0.3s ease;
+}
+
+.close-addproduct:hover {
+  transform: translate(0px, -1px);
+  opacity: 0.8;
+  transition: 0.3s ease;
+  cursor: pointer;
+}
+
+.close-addproduct:active {
+  transform: translate(0px, 2px);
+  transition: 0.3s ease;
+}
+
+
+.add-product {
+  width: 80vw;
+  height: 80vh;
+  background-color: white;
+  position: absolute;
+  top: 10vh;
+  left: 10vw;
+  z-index: 10000;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.add-product .title-addproduct {
+  width: 100%;
+  height: 100px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: "Nunito", sans-serif;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.add-product .title-addproduct .title-addproduct-container {
+  width: 60%;
+  height: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding-left: 20px;
+}
+
+.add-product .title-addproduct .title-addproduct-container h1 {
+  margin: 0;
+  padding: 0;
+  font-size: 30px;
+}
+
+.add-product .title-addproduct .title-addproduct-container img {
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+}
+
+.add-product .title-addproduct img {
+  width: 20px;
+  height: 20px;
+  margin-right: 20px;
+}
+
+.add-product .form-addproduct {
+  width: 100%;
+  height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-product .form-addproduct .form-addproduct-container {
+  height: 100%;
+  width: 98%;
+  background-color: #d9d9d9;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: row;
+  overflow-y: auto;
+}
+
+.add-product .form-addproduct .form-addproduct-container .left-addproduct-container {
+  width: 50%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding-top: 10px;
+}
+
+.add-product .form-addproduct .form-addproduct-container .left-addproduct-container .input-form-product {
+  width: 100%;
+  height: 60px;
+  display: flex;
+  flex-direction: column;
+}
+
+.add-product .form-addproduct .form-addproduct-container .left-addproduct-container .input-form-product span {
+  width: calc(100% - 60px);
+  margin-left: 30px;
+  margin-right: 30px;
+  height: 25px;
+  font-family: "Nunito", sans-serif;
+  font-size: 18px;
+}
+
+.add-product .form-addproduct .form-addproduct-container .left-addproduct-container .input-form-product input {
+  width: calc(100% - 60px);
+  height: 30px;
+  margin-left: 30px;
+  margin-right: 30px;
+  border-radius: 5px;
+  border: none;
+  padding-left: 10px;
+}
+
+.add-product .form-addproduct .form-addproduct-container .left-addproduct-container .input-form-product select {
+  width: calc(100% - 60px);
+  height: 30px;
+  margin-left: 30px;
+  margin-right: 30px;
+  border-radius: 5px;
+  border: none;
+  padding-left: 10px;
+}
+
+.add-product .form-addproduct .form-addproduct-container .left-addproduct-container .divise-input-form-product {
+  width: calc(100% - 60px);
+  margin-left: 30px;
+  margin-right: 30px;
+  height: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.add-product .form-addproduct .form-addproduct-container .left-addproduct-container .divise-input-form-product .miniinput-form-product {
+  width: 50%;
+  height: 100%;
+}
+
+.add-product .form-addproduct .form-addproduct-container .left-addproduct-container .divise-input-form-product .miniinput-form-product span {
+  width: 100%;
+  height: 25px;
+  font-family: "Nunito", sans-serif;
+  font-size: 18px;
+}
+
+.add-product .form-addproduct .form-addproduct-container .left-addproduct-container .divise-input-form-product .miniinput-form-product input {
+  width: 90%;
+  height: 30px;
+  border-radius: 5px;
+  border: none;
+  padding-left: 10px;
+}
+
+.add-product .form-addproduct .form-addproduct-container .left-addproduct-container .divise-input-form-product .miniinput-form-product select {
+  width: 100%;
+  height: 30px;
+  border-radius: 5px;
+  border: none;
+  padding-left: 10px;
+}
+
+.add-product .form-addproduct .form-addproduct-container .left-addproduct-container .infosupp-form-product {
+  width: calc(100% - 60px);
+  margin-left: 30px;
+  margin-right: 30px;
+  height: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  background-color: ghostwhite;
+  border-radius: 10px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.add-product .form-addproduct .form-addproduct-container .left-addproduct-container .infosupp-form-product:hover {
+  background-color: rgb(234, 234, 235);
+  transition: 0.5s ease
+}
+
+.add-product .form-addproduct .form-addproduct-container .left-addproduct-container .infosupp-form-product span {
+  width: 100%;
+  height: 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: "Nunito", sans-serif;
+  font-size: 18px;
+  padding-left: 5px;
+}
+
+.add-product .form-addproduct .form-addproduct-container .left-addproduct-container .infosupp-form-product span img {
+  width: 15px;
+  height: 15px;
+  margin-right: 20px;
+}
+
+.add-product .form-addproduct .form-addproduct-container .left-addproduct-container .infosupp-form-product .desc-form-product {
+  display: none;
+}
+
+.add-product .form-addproduct .form-addproduct-container .left-addproduct-container .infosupp-form-product.show {
+  height: 400px;
+}
+
+.add-product .form-addproduct .form-addproduct-container .left-addproduct-container .infosupp-form-product.show .desc-form-product {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.add-product .form-addproduct .form-addproduct-container .left-addproduct-container .infosupp-form-product.show .desc-form-product span {
+  width: calc(100% - 20px);
+  margin-left: 10px;
+  margin-right: 10px;
+  height: 25px;
+  font-family: "Nunito", sans-serif;
+  font-size: 18px;
+}
+
+.add-product .form-addproduct .form-addproduct-container .left-addproduct-container .infosupp-form-product.show .desc-form-product textarea {
+  width: calc(100% - 30px);
+  margin-left: 15px;
+  margin-right: 15px;
+  height: 200px;
+  font-family: "Nunito", sans-serif;
+  margin-bottom: 10px;
+  border-radius: 10px;
+}
+
+.add-product .form-addproduct .form-addproduct-container .right-addproduct-container {
+  width: 50%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding-top: 10px;
+}
+
+.add-product .form-addproduct .form-addproduct-container .right-addproduct-container span {
+  width: calc(100% - 20px);
+  margin-left: 10px;
+  margin-right: 10px;
+  height: 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: "Nunito", sans-serif;
+  font-size: 18px;
+  padding-left: 5px;
+}
+
+.add-product .form-addproduct .form-addproduct-container .right-addproduct-container .images-container {
+  width: calc(100% - 20px);
+  height: auto;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  background-color: white;
+  border-radius: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+.add-product .form-addproduct .form-addproduct-container .right-addproduct-container .images-container .image-product {
+  width: 80px;
+  height: 80px;
+  background-color: black;
+  border-radius: 10px;
+  margin: 5px;
+  position: relative;
+}
+
+.add-product .form-addproduct .form-addproduct-container .right-addproduct-container .images-container .image-product button {
+  width: 25px;
+  height: 25px;
+  background-color: rgb(167, 1, 1);
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+}
+
+.add-product .form-addproduct .form-addproduct-container .right-addproduct-container .images-container .image-product button img {
+  width: 15px;
+  height: 15px;
+  filter: invert(0%);
+}
+
+.add-product .form-addproduct .form-addproduct-container .right-addproduct-container .images-container .image-product img {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+}
+
+.add-product .form-addproduct .form-addproduct-container .right-addproduct-container .images-container button {
+  width: 40px;
+  height: 40px;
+  background-color: black;
+  border-radius: 10px;
+  margin: 5px;
+  border: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.add-product .form-addproduct .form-addproduct-container .right-addproduct-container .images-container button:hover {
+  transform: translate(0px, -1px);
+  background-color: #9c0a0a;
+  transition: 0.3s ease;
+  box-shadow: 0px 0px 0px 0px rgb(34, 34, 34, 0.2);
+}
+
+.add-product .form-addproduct .form-addproduct-container .right-addproduct-container .images-container button:active {
+  transform: translate(0px, 2px);
+  transition: 0.3s ease;
+}
+
+.add-product .form-addproduct .form-addproduct-container .right-addproduct-container .images-container button img {
+  width: 20px;
+  height: 20px;
+  filter: invert(100%);
+}
+
+.add-product .form-addproduct .btns-form {
+  width: 98%;
+  height: 50px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.add-product .form-addproduct .btns-form button {
+  width: 200px;
+  height: 30px;
+  background-color: #760202;
+  border: none;
+  border-radius: 10px;
+  margin-left: 5px;
+  color: white;
+  font-family: "Nunito", sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+.add-product .form-addproduct .btns-form button:hover {
+  transform: translate(0px, -1px);
+  background-color: #9c0a0a;
+  transition: 0.3s ease;
+  box-shadow: 0px 0px 0px 0px rgb(34, 34, 34, 0.2);
+}
+
+.add-product .form-addproduct .btns-form button:active {
+  transform: translate(0px, 2px);
+  transition: 0.3s ease;
+}
+
+.add-product .form-addproduct .btns-form button img {
+  width: 15px;
+  height: 15px;
+  filter: invert(100%);
+  margin-right: 5px;
+}
+
+
+
+
+.add-client {
+  width: 80vw;
+  height: 80vh;
+  background-color: white;
+  position: absolute;
+  top: 10vh;
+  left: 10vw;
+  z-index: 10000;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-client .title-addclient {
+  width: 100%;
+  height: 100px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: "Nunito", sans-serif;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.add-client .title-addclient .title-addclient-container {
+  width: 60%;
+  height: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding-left: 20px;
+}
+
+.add-client .title-addclient .title-addclient-container h1 {
+  margin: 0;
+  padding: 0;
+  font-size: 30px;
+}
+
+.add-client .title-addclient .title-addclient-container img {
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+}
+
+.add-client .title-addclient img {
+  width: 20px;
+  height: 20px;
+  margin-right: 20px;
+}
+
+.add-client .form-addclient {
+  width: 100%;
+  height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-client .form-addclient .form-addclient-container {
+  height: 100%;
+  width: 98%;
+  background-color: #d9d9d9;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: row;
+  overflow-y: auto;
+}
+
+.add-client .form-addclient .form-addclient-container .left-form-addclient {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-content: center;
+}
+
+.add-client .form-addclient .form-addclient-container .left-form-addclient .first-left-form-addclient {
+  width: 95%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  background-color: #c7c6c6;
+  margin-left: 10px;
+  margin-top: 10px;
+  border-radius: 10px;
+}
+
+.add-client .form-addclient .form-addclient-container .left-form-addclient .first-left-form-addclient .title-left-form-addclient {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 40px;
+  font-family: "Nunito", sans-serif;
+}
+
+.add-client .form-addclient .form-addclient-container .left-form-addclient .first-left-form-addclient .title-left-form-addclient h1 {
+  font-size: 20px;
+  margin-left: 20px;
+  margin-top: 20px;
+}
+
+.add-client .form-addclient .form-addclient-container .left-form-addclient .first-left-form-addclient .title-left-form-addclient img {
+  width: 30px;
+  height: 30px;
+  margin-right: 20px;
+  margin-top: 20px;
+}
+
+.add-client .form-addclient .form-addclient-container .left-form-addclient .first-left-form-addclient .inputs-form-addclient {
+  width: 100%;
+  height: auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding-bottom: 10px;
+}
+
+.add-client .form-addclient .form-addclient-container .left-form-addclient .first-left-form-addclient .inputs-form-addclient span {
+  width: calc(100% - 30px);
+  font-size: 15px;
+  margin-left: 30px;
+  font-family: "Nunito", sans-serif;
+}
+
+.add-client .form-addclient .form-addclient-container .left-form-addclient .first-left-form-addclient .inputs-form-addclient input {
+  width: calc(100% - 60px);
+  height: 30px;
+  margin-left: 30px;
+  margin-right: 30px;
+  border-radius: 5px;
+  border: none;
+  padding-left: 10px;
+}
+
+.add-client .form-addclient .form-addclient-container .left-form-addclient .first-left-form-addclient .loc-form-addclient {
+  background-color: #d9d9d9;
+  width: 95%;
+  height: auto;
+  min-height: 130px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+
+.add-client .form-addclient .form-addclient-container .left-form-addclient .first-left-form-addclient .loc-form-addclient .locwil-form-addclient {
+  width: 100%;
+  height: auto;
+  min-height: 60px;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  flex-direction: column;
+}
+
+.phone-added {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.add-client .form-addclient .form-addclient-container .left-form-addclient .first-left-form-addclient .loc-form-addclient .locwil-form-addclient .localisation-form {
+  width: 50%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.add-client .form-addclient .form-addclient-container .left-form-addclient .first-left-form-addclient .loc-form-addclient .locwil-form-addclient .localisation-form span {
+  width: calc(100% - 30px);
+  font-size: 15px;
+  margin-left: 30px;
+  font-family: "Nunito", sans-serif;
+}
+
+.add-client .form-addclient .form-addclient-container .left-form-addclient .first-left-form-addclient .loc-form-addclient .locwil-form-addclient .localisation-form input {
+  width: calc(100% - 60px);
+  height: 30px;
+  margin-left: 30px;
+  margin-right: 30px;
+  border-radius: 5px;
+  border: none;
+  padding-left: 10px;
+}
+
+.add-client .form-addclient .form-addclient-container .left-form-addclient .first-left-form-addclient .loc-form-addclient .locwil-form-addclient .wilaya-form {
+  width: 50%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.add-client .form-addclient .form-addclient-container .left-form-addclient .first-left-form-addclient .loc-form-addclient .locwil-form-addclient .wilaya-form span {
+  width: calc(100% - 30px);
+  font-size: 15px;
+  margin-left: 30px;
+  font-family: "Nunito", sans-serif;
+}
+
+.add-client .form-addclient .form-addclient-container .left-form-addclient .first-left-form-addclient .loc-form-addclient .locwil-form-addclient .wilaya-form select {
+  width: calc(100% - 60px);
+  height: 30px;
+  margin-left: 30px;
+  margin-right: 30px;
+  border-radius: 5px;
+  border: none;
+  padding-left: 10px;
+}
+
+.phone-form {
+  width: calc(100%-80px);
+  margin-left: 30px;
+  margin-right: 50px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background-color: #cdcdcd;
+  border-radius: 5px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.phone-form span {
+  width: calc(100% - 10px);
+  margin-left: 5px;
+  margin-right: 5px;
+  font-size: 15px;
+  font-family: "Nunito", sans-serif;
+}
+
+.phone-form .inputs-phone-form {
+  width: calc(100% - 10px);
+  margin-left: 5px;
+  margin-right: 5px;
+  height: 30px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.phone-form .inputs-phone-form input {
+  width: 30%;
+  margin-right: 5px;
+  height: 95%;
+  padding-left: 5px;
+  border: none;
+  border-radius: 5px;
+}
+
+.phone-form .inputs-phone-form p {
+  width: 30%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Nunito", sans-serif;
+  font-size: 14px;
+}
+
+.phone-form .inputs-phone-form input[type="radio"] {
+  width: 15px;
+  height: 15px;
+}
+
+.add-phone {
+  width: 30px;
+  height: 30px;
+  border: none;
+  background-color: black;
+  border-radius: 10px;
+  position: absolute;
+  bottom: 15px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.add-phone:hover {
+  transform: translate(0px, -1px);
+  transition: 0.3s ease;
+  box-shadow: 0px 0px 0px 0px rgb(34, 34, 34, 0.2);
+}
+
+.add-phone:active {
+  transform: translate(0px, 2px);
+  transition: 0.3s ease;
+}
+
+.add-phone img {
+  width: 15px;
+  height: 15px;
+  filter: invert(100%);
+}
+
+/* Ton style existant — on le conserve tel quel (re-collé ici si tu veux) */
+.delete-phone {
+  width: 25px;
+  height: 25px;
+  background-color: #630101;
+  position: absolute;
+  top: -10px;
+  right: -15px;
+  border: none;
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.delete-phone:hover {
+  transform: translate(0px, -1px);
+  background-color: #9c0a0a;
+  transition: 0.3s ease;
+  box-shadow: 0px 0px 0px 0px rgb(34, 34, 34, 0.2);
+}
+
+.delete-phone:active {
+  transform: translate(0px, 2px);
+  transition: 0.3s ease;
+}
+
+.delete-phone img {
+  width: 15px;
+  height: 15px;
+}
+
+
+.first-left-form-addclient .addanotherloc {
+  width: 100%;
+  height: 40px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.first-left-form-addclient .addanotherloc button {
+  width: 230px;
+  height: 30px;
+  margin-left: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  background-color: #760202;
+}
+
+.first-left-form-addclient .addanotherloc button:hover {
+  transform: translate(0px, -1px);
+  transition: 0.3s ease;
+  box-shadow: 0px 0px 0px 0px rgb(34, 34, 34, 0.2);
+}
+
+.first-left-form-addclient .addanotherloc button:active {
+  transform: translate(0px, 2px);
+  transition: 0.3s ease;
+}
+
+.first-left-form-addclient .addanotherloc button p {
+  font-family: "Nunito", sans-serif;
+  margin-left: 5px;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.first-left-form-addclient .addanotherloc button img {
+  width: 20px;
+  height: 20px;
+  filter: invert(100%);
+}
+
+
+.add-client .form-addclient .form-addclient-container .right-form-addclient {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.add-client .form-addclient .form-addclient-container .right-form-addclient .first-right-form-addclient {
+  margin-top: 10px;
+  background-color: #c7c6c6;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  border-radius: 10px;
+  width: 98%;
+  height: auto;
+}
+
+.add-client .form-addclient .form-addclient-container .right-form-addclient .first-right-form-addclient .title-first {
+  width: 100%;
+  height: 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.add-client .form-addclient .form-addclient-container .right-form-addclient .first-right-form-addclient .title-first h1 {
+  font-size: 20px;
+  width: 60%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-left: 20px;
+  font-family: "Nunito", sans-serif;
+}
+
+.add-client .form-addclient .form-addclient-container .right-form-addclient .first-right-form-addclient .title-first img {
+  width: 35px;
+  height: 35px;
+  margin-right: 20px;
+}
+
+.add-client .form-addclient .form-addclient-container .right-form-addclient .first-right-form-addclient .input-first {
+  width: 100%;
+  height: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.add-client .form-addclient .form-addclient-container .right-form-addclient .first-right-form-addclient .input-first span {
+  width: 90%;
+  margin-left: 30px;
+  margin-right: 30px;
+  font-family: "Nunito", sans-serif;
+  font-size: 15px;
+}
+
+.add-client .form-addclient .form-addclient-container .right-form-addclient .first-right-form-addclient .input-first input {
+  width: 89%;
+  margin-left: 30px;
+  margin-right: 30px;
+  border: none;
+  height: 30px;
+  border-radius: 5px;
+  padding-left: 5px;
+}
+
+.add-client .form-addclient .form-addclient-container .right-form-addclient .first-right-form-addclient .input-first1 {
+  width: 93%;
+  display: flex;
+  height: 60px;
+  justify-content: center;
+  align-items: center;
+}
+
+.add-client .form-addclient .form-addclient-container .right-form-addclient .first-right-form-addclient .input-first1 .input12-first {
+  width: 50%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.add-client .form-addclient .form-addclient-container .right-form-addclient .first-right-form-addclient .input-first1 .input12-first span {
+  width: 90%;
+  margin-left: 30px;
+  margin-right: 30px;
+  font-family: "Nunito", sans-serif;
+  font-size: 15px;
+}
+
+.add-client .form-addclient .form-addclient-container .right-form-addclient .first-right-form-addclient .input-first1 .input12-first input {
+  width: 89%;
+  margin-left: 30px;
+  margin-right: 30px;
+  border: none;
+  height: 30px;
+  border-radius: 5px;
+  padding-left: 5px;
+}
+
+.add-client .form-addclient .form-addclient-container .right-form-addclient .second-right-form-addclient {
+  width: 98%;
+  height: auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.add-client .form-addclient .form-addclient-container .right-form-addclient .second-right-form-addclient .title-second {
+  width: 100%;
+  background-color: #c7c6c6;
+  border-radius: 10px;
+  margin-top: 10px;
+  /* fermé : hauteur visible = 60px */
+  max-height: 90px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: max-height 0.35s ease;
+  position: relative;
+}
+
+.add-client .form-addclient .form-addclient-container .right-form-addclient .second-right-form-addclient .title-second:hover {
+  background-color: #a0a0a0;
+  transition: 0.3s ease;
+}
+
+.add-client .form-addclient .form-addclient-container .right-form-addclient .second-right-form-addclient .title-second h1 {
+  font-size: 20px;
+  width: 92%;
+  height: 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-left: 20px;
+  margin-right: 20px;
+  font-family: "Nunito", sans-serif;
+  user-select: none;
+}
+
+.add-client .form-addclient .form-addclient-container .right-form-addclient .second-right-form-addclient .title-second h1 img {
+  width: 15px;
+  height: 15px;
+  transform: rotate(180deg);
+  transition: transform 0.25s ease;
+}
+
+.add-client .form-addclient .form-addclient-container .right-form-addclient .second-right-form-addclient .title-second.open h1 img {
+  transform: rotate(0deg);
+}
+
+.add-client .form-addclient .form-addclient-container .right-form-addclient .second-right-form-addclient .title-second .input-first {
+  width: 100%;
+  height: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.add-client .form-addclient .form-addclient-container .right-form-addclient .second-right-form-addclient .title-second .input-first span {
+  width: 90%;
+  margin-left: 30px;
+  margin-right: 30px;
+  font-family: "Nunito", sans-serif;
+  font-size: 15px;
+}
+
+.add-client .form-addclient .form-addclient-container .right-form-addclient .second-right-form-addclient .title-second .input-first input {
+  width: 89%;
+  margin-left: 30px;
+  margin-right: 30px;
+  border: none;
+  height: 30px;
+  border-radius: 5px;
+  padding-left: 5px;
+}
+
+.add-client .form-addclient .form-addclient-container .right-form-addclient .second-right-form-addclient .title-second .drag-first {
+  width: 100%;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.add-client .form-addclient .form-addclient-container .right-form-addclient .second-right-form-addclient .title-second .drag-first span {
+  width: 90%;
+  margin-left: 30px;
+  margin-right: 30px;
+  font-family: "Nunito", sans-serif;
+  font-size: 15px;
+}
+
+.add-client .form-addclient .form-addclient-container .right-form-addclient .second-right-form-addclient .title-second .drag-first .file-upload-container {
+  width: 90%;
+  height: 150px;
+}
+
+.add-client .form-addclient .form-addclient-container .right-form-addclient .second-right-form-addclient .title-second .drag-first .file-upload {
+  position: relative;
+  border: 2px dashed #b8bcbf;
+  border-radius: 10px;
+  padding: 5px;
+  text-align: center;
+  background-color: rgb(255, 255, 255);
+  transition: background-color 0.3s ease-in-out;
+}
+
+.add-client .form-addclient .form-addclient-container .right-form-addclient .second-right-form-addclient .title-second .drag-first .file-upload:hover {
+  background-color: #e2e6ea;
+}
+
+.add-client .form-addclient .form-addclient-container .right-form-addclient .second-right-form-addclient .title-second .drag-first .file-input {
+  display: none;
+}
+
+.add-client .form-addclient .form-addclient-container .right-form-addclient .second-right-form-addclient .title-second .drag-first .file-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+.add-client .form-addclient .form-addclient-container .right-form-addclient .second-right-form-addclient .title-second .drag-first .upload-icon {
+  font-size: 50px;
+  margin-bottom: 10px;
+}
+
+.add-client .form-addclient .form-addclient-container .right-form-addclient .second-right-form-addclient .title-second .drag-first .upload-icon img {
+  width: 40px;
+  height: 40px;
+}
+
+.add-client .form-addclient .form-addclient-container .right-form-addclient .second-right-form-addclient .title-second .drag-first .file-upload p {
+  margin: 0;
+  font-size: 16px;
+  color: #6c757d;
+}
+
+.add-client .form-addclient .form-addclient-container .right-form-addclient .second-right-form-addclient .title-second .drag-first .file-upload.dragover {
+  background-color: #007bff;
+  color: white;
+}
+
+.add-client .form-addclient .btns-form {
+  width: 98%;
+  height: 50px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.add-client .form-addclient .btns-form button {
+  width: 200px;
+  height: 30px;
+  background-color: #760202;
+  border: none;
+  border-radius: 10px;
+  margin-left: 5px;
+  color: white;
+  font-family: "Nunito", sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+.add-client .form-addclient .btns-form button:hover {
+  transform: translate(0px, -1px);
+  background-color: #9c0a0a;
+  transition: 0.3s ease;
+  box-shadow: 0px 0px 0px 0px rgb(34, 34, 34, 0.2);
+}
+
+.add-client .form-addclient .btns-form button:active {
+  transform: translate(0px, 2px);
+  transition: 0.3s ease;
+}
+
+.add-client .form-addclient .btns-form button img {
+  width: 15px;
+  height: 15px;
+  filter: invert(100%);
+  margin-right: 5px;
+}
+
+
+.deleteanotherloc {
+  width: 25px;
+  height: 25px;
+  background-color: #630101;
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  border: none;
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.deleteanotherloc:hover {
+  transform: translate(0px, -1px);
+  background-color: #9c0a0a;
+  transition: 0.3s ease;
+  box-shadow: 0px 0px 0px 0px rgb(34, 34, 34, 0.2);
+}
+
+.deleteanotherloc:active {
+  transform: translate(0px, 2px);
+  transition: 0.3s ease;
+}
+
+.deleteanotherloc img {
+  width: 15px;
+  height: 15px;
+}
+
+/*********** Login Container *********/
+
+.login-container {
+  width: 100vw;
+  height: 100vh;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  overflow-y: hidden;
+}
+
+.logo-blanc {
+  width: 600px;
+  height: 600px;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  opacity: 0.02;
+  z-index: 0;
+  overflow-y: hidden;
+  display: none;
+}
+
+.login-container h1 {
+  font-family: "League Spartan", sans-serif;
+  font-size: 50px;
+  color: white;
+  margin: 0;
+  z-index: 1;
+  font-weight: bolder;
+}
+
+.login-container p {
+  font-family: "Nunito", sans-serif;
+  font-size: 25px;
+  margin: 0;
+  margin-bottom: 20px;
+  color: #c0c0c0;
+}
+
+.login-container input[type="text"] {
+  width: 500px;
+  height: 40px;
+  border-radius: 5px;
+  border: none;
+  padding-left: 15px;
+  font-size: 16px;
+  font-family: "Nunito", sans-serif;
+  background-color: #9c9c9c;
+  color: rgb(0, 0, 0);
+  margin-bottom: 10px;
+}
+
+.login-container input[type="password"] {
+  width: 500px;
+  height: 40px;
+  border-radius: 5px;
+  border: none;
+  padding-left: 15px;
+  font-size: 16px;
+  font-family: "Nunito", sans-serif;
+  background-color: #9c9c9c;
+  color: rgb(0, 0, 0);
+
+}
+
+.login-container input[type="password"]::placeholder {
+  color: rgb(205, 205, 205)
+}
+
+.login-container input[type="text"]::placeholder {
+  color: rgb(205, 205, 205)
+}
+
+.login-container .savemdp {
+  width: 520px;
+  height: 30px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+  z-index: 1;
+  font-family: "Nunito", sans-serif;
+}
+
+.login-container .savemdp .savemdp-souvenir {
+  width: 50%;
+}
+
+.login-container .savemdp .savemdp-oublier {
+  width: 50%;
+  text-align: right;
+}
+
+.login-container .savemdp .savemdp-oublier a {
+  text-decoration: none;
+  color: white;
+}
+
+.login-container .savemdp .savemdp-oublier a:hover {
+  color: rgb(196, 194, 194);
+  transform: translateY(-2px);
+  transition: color 0.3s ease;
+}
+
+.login-container button {
+  width: 515px;
+  height: 40px;
+  border-radius: 5px;
+  border: none;
+  background-color: #ffffff;
+  color: rgb(0, 0, 0);
+  font-size: 16px;
+  font-family: "Nunito", sans-serif;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.login-container button:hover {
+  background-color: #717171;
+  color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+  transition: 0.3s ease;
+}
+
+.login-container button:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+
+/******* Gestion des clients *********/
+
+.container .trie-clients {
+  width: 100%;
+  height: 40px;
+  background-color: #dfdfdf;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.container .trie-clients select {
+  width: 250px;
+  height: 30px;
+  margin-right: 5px;
+  border-radius: 5px;
+  border: none;
+  font-family: "Nunito", sans-serif;
+}
+
+.container .all-clients {
+  width: 100%;
+  height: calc(100% - 40px);
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  overflow-y: auto;
+}
+
+.container .all-clients .client {
+  width: 200px;
+  height: 250px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #d9d9d9;
+  border-radius: 10px;
+  margin: 10px;
+  cursor: pointer;
+  position: relative;
+}
+
+.container .all-clients .client:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+  transition: 0.3s ease;
+}
+
+.container .all-clients .client:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+.container .all-clients .client .pin-client {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 50px;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.container .all-clients .client .pin-client img {
+  width: 40px;
+  height: 40px;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.empty-clients {
+  width: 100%;
+  opacity: 0.5;
+}
+
+.container .all-clients .client .round-circular {
+  width: 100%;
+  height: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container .all-clients .client .round-circular img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+}
+
+.container .all-clients .client .title-client {
+  width: 100%;
+  height: 25%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.container .all-clients .client .title-client h1 {
+  margin: 0;
+  padding: 0;
+  font-size: 20px;
+}
+
+.container .all-clients .client .title-client h3 {
+  margin: 0;
+  padding: 0;
+  font-size: 15px;
+  font-weight: 300;
+}
+
+.container .all-clients .client .title-client p {
+  margin: 0;
+  padding: 0;
+  font-size: 12px;
+  opacity: 0.5;
+}
+
+.container .all-clients .client .btn-client {
+  width: 100%;
+  height: 25%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container .all-clients .client .btn-client button {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  border: none;
+  margin: 2px;
+  cursor: pointer;
+}
+
+.container .all-clients .client .btn-client button:hover {
+  background-color: #717171;
+  color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+  transition: 0.3s ease;
+}
+
+.container .all-clients .client .btn-client button:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+.container .all-clients .client .btn-client button img {
+  width: 25px;
+  height: 25px;
+}
+
+
+
+/******** Gestion des produits **********/
+
+.header-all-product {
+  width: calc(100% - 10px);
+  height: 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 10px;
+  margin-left: 5px;
+  margin-right: 5px;
+  margin-top: 5px;
+}
+
+.header-all-product .input-search-product {
+  width: 300px;
+  height: 30px;
+  background-color: white;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-left: 10px;
+  padding-left: 10px;
+}
+
+.header-all-product .input-search-product img {
+  width: 20px;
+  height: 20px;
+  filter: invert(100%);
+}
+
+.header-all-product .input-search-product input {
+  width: calc(100% - 35px);
+  height: 80%;
+  border: none;
+  border-radius: 10px;
+}
+
+.header-all-product .input-search-product input:focus {
+  outline: none;
+}
+
+.header-all-product .btn-add-plaque {
+  width: 250px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+  background-color: #760202;
+  margin-right: 10px;
+  color: white;
+  border: none;
+  font-weight: bold;
+  font-family: "Nunito", sans-serif;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.header-all-product .btn-add-plaque:hover {
+  background-color: #920000;
+  color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+  transition: 0.3s ease;
+}
+
+.header-all-product .btn-add-plaque:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+.header-all-product .btn-add-plaque img {
+  width: 20px;
+  height: 20px;
+  filter: invert(100%);
+  margin-right: 10px;
+}
+
+
+.body-all-product {
+  width: 100%;
+  height: 62vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.body-all-product .filter-all-product {
+  width: calc(20% - 10px);
+  height: calc(100% - 10px);
+  background-color: #c7c6c6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  border-radius: 10px;
+  margin: 5px;
+}
+
+.body-all-product .filter-all-product .bloc-filter-product {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.body-all-product .filter-all-product .bloc-filter-product span {
+  width: 100%;
+  height: 30px;
+  font-size: 18px;
+  justify-content: center;
+  align-items: center;
+  font-family: "Nunito", sans-serif;
+  font-weight: bold;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-left: 10px;
+}
+
+.body-all-product .filter-all-product .bloc-filter-product span img {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+}
+
+.body-all-product .filter-all-product .bloc-filter-product select {
+  width: 90%;
+  height: 30px;
+  margin-left: 10px;
+  border: none;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
+.body-all-product .filter-all-product .bloc-filter-product p {
+  width: 80%;
+  height: 30px;
+  font-family: "Nunito", sans-serif;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  margin-left: 20px;
+}
+
+.body-all-product .filter-all-product .bloc-filter-product p input {
+  width: 15px;
+  height: 15px;
+  margin-right: 5px;
+}
+
+.body-all-product .table-all-product {
+  width: calc(80% - 10px);
+  height: calc(100% - 10px);
+  background-color: white;
+  margin: 5px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.body-all-product .table-all-product .header-table-all-product {
+  width: calc(100% - 10px);
+  margin: 5px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.body-all-product .table-all-product .header-table-all-product .title-table {
+  width: 300px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.body-all-product .table-all-product .header-table-all-product .title-table h1 {
+  margin: 0;
+  padding: 0;
+  font-size: 20px;
+  font-family: "Nunito", sans-serif;
+}
+
+.body-all-product .table-all-product .header-table-all-product .title-table p {
+  margin: 0;
+  padding: 0;
+  font-size: 12px;
+  font-family: "Nunito", sans-serif;
+  opacity: 0.5;
+}
+
+.body-all-product .table-all-product .header-table-all-product .triage-table {
+  width: 300px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.body-all-product .table-all-product .header-table-all-product .triage-table span {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  font-size: 12px;
+  font-family: "Nunito", sans-serif;
+  opacity: 0.5;
+}
+
+.body-all-product .table-all-product .header-table-all-product .triage-table select {
+  width: 300px;
+  height: 30px;
+  border: none;
+  border-radius: 5px;
+  background-color: #f2f2f2;
+}
+
+.body-all-product .table-all-product #table-products {
+  width: calc(100% - 10px);
+  max-height: calc(100% - 65px);
+  margin-left: 5px;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.body-all-product .table-all-product #table-products .table {
+  width: 100%;
+  max-height: 100%;
+
+}
+
+.body-all-product .table-all-product #table-products .table .thead {
+  width: 100%;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f2f2f2;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.body-all-product .table-all-product #table-products .table .thead .col {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+  font-family: "Nunito", sans-serif;
+  font-size: 12px;
+}
+
+.body-all-product .table-all-product #table-products .table .thead .col1 {
+  width: 40%;
+  height: 100%;
+}
+
+.body-all-product .table-all-product #table-products .table .thead .col2 {
+  width: 15%;
+  height: 100%;
+}
+
+.body-all-product .table-all-product #table-products .table .thead .col3 {
+  width: 15%;
+  height: 100%;
+}
+
+.body-all-product .table-all-product #table-products .table .thead .col4 {
+  width: 15%;
+  height: 100%;
+}
+
+.body-all-product .table-all-product #table-products .table .thead .col5 {
+  width: 15%;
+  height: 100%;
+}
+
+.body-all-product .table-all-product #table-products .table .tbody {
+  width: 100%;
+  max-height: calc(100% - 40px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #ffffff;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.body-all-product .table-all-product #table-products .table .tbody .tr {
+  width: 100%;
+  min-height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border-bottom: 1px solid #e3e3e3;
+}
+
+.body-all-product .table-all-product #table-products .table .tbody .tr:hover {
+  background-color: rgb(236, 236, 236);
+  transition: 0.3s ease;
+}
+
+.body-all-product .table-all-product #table-products .table .tbody .tr .col {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+  font-family: "Nunito", sans-serif;
+  font-size: 14px;
+}
+
+.body-all-product .table-all-product #table-products .table .tbody .tr .col1 {
+  width: 40%;
+  height: 100%;
+  border-right: 1px solid #e3e3e3;
+}
+
+.body-all-product .table-all-product #table-products .table .tbody .tr .col1 button {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  border: none;
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.body-all-product .table-all-product #table-products .table .tbody .tr .col1 button:hover {
+  opacity: 0.5;
+  transition: 0.3s ease;
+}
+
+.body-all-product .table-all-product #table-products .table .tbody .tr .col1 button img {
+  width: 10px;
+  height: 10px;
+}
+
+.body-all-product .table-all-product #table-products .table .tbody .tr .col1 .image-product {
+  width: 70px;
+  height: 70px;
+  background-color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+  margin-right: 5px;
+}
+
+.body-all-product .table-all-product #table-products .table .tbody .tr .col1 .image-product img {
+  width: 100%;
+  height: 100%;
+}
+
+.body-all-product .table-all-product #table-products .table .tbody .tr .col1 .text-title-product {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0;
+  padding: 0;
+}
+
+.body-all-product .table-all-product #table-products .table .tbody .tr .col1 .details-title-product {
+  margin: 0;
+  padding: 0;
+}
+
+.body-all-product .table-all-product #table-products .table .tbody .tr .col2 {
+  width: 15%;
+  height: 100%;
+  border-right: 1px solid #e3e3e3;
+}
+
+.body-all-product .table-all-product #table-products .table .tbody .tr .col2 .type-product {
+  background: #e6e6e6;
+  background: linear-gradient(304deg, rgb(240, 240, 240) 0%, rgb(213, 213, 213) 100%);
+  border: 1px solid #cbcbcb;
+  color: black;
+  border-radius: 20px;
+  width: 120px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Nunito", sans-serif;
+  font-weight: 600;
+}
+
+.body-all-product .table-all-product #table-products .table .tbody .tr .col3 {
+  width: 15%;
+  height: 100%;
+  border-right: 1px solid #e3e3e3;
+}
+
+.body-all-product .table-all-product #table-products .table .tbody .tr .col4 {
+  width: 15%;
+  height: 100%;
+  border-right: 1px solid #e3e3e3;
+}
+
+.body-all-product .table-all-product #table-products .table .tbody .tr .col5 {
+  width: 15%;
+  height: 100%;
+}
+
+.body-all-product .table-all-product #table-products .table .tbody .tr .col5 button {
+  width: 30px;
+  height: 30px;
+  margin-right: 5px;
+  border: none;
+  background-color: rgb(131, 0, 0);
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+.body-all-product .table-all-product #table-products .table .tbody .tr .col5 button:hover {
+  opacity: 0.6;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+  transition: 0.3s ease;
+}
+
+.body-all-product .table-all-product #table-products .table .tbody .tr .col5 button:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+.body-all-product .table-all-product #table-products .table .tbody .tr .col5 button img {
+  width: 15px;
+  height: 15px;
+}
+
+.body-all-product .table-all-product .pagination-products {
+  width: 100%;
+  height: 30px;
+  background-color: #f2f2f2;
+  border-radius: 5px;
+  position: absolute;
+  bottom: -22px;
+  left: 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  color: white;
+  font-family: "Nunito", sans-serif;
+}
+
+.body-all-product .table-all-product .pagination-products .pages-pagination {
+  width: auto;
+  height: 30px;
+  background-color: rgb(78, 78, 78);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 20px;
+  margin-right: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.body-all-product .table-all-product .pagination-products .pages-pagination p {
+  height: 30px;
+  width: 30px;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  border-radius: 50%;
+  font-family: "Nunito", sans-serif;
+  cursor: pointer;
+}
+
+.body-all-product .table-all-product .pagination-products .pages-pagination p:hover {
+  opacity: 0.5;
+  color: black;
+  background-color: rgb(242, 242, 242);
+  transition: 0.3s ease;
+}
+
+.body-all-product .table-all-product #table-products .table .tbody .tr-open {
+  width: calc(100% - 10px);
+  min-height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  cursor: pointer;
+  border-bottom: 1px solid #e3e3e3;
+  padding: 5px;
+  background-color: #c6c6c6;
+}
+
+.body-all-product .table-all-product #table-products .table .tbody .tr-open .images-product {
+  width: 40%;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  background-color: #f3f3f3;
+  border-radius: 20px;
+  margin-right: 5px;
+}
+
+.body-all-product .table-all-product #table-products .table .tbody .tr-open .images-product h1 {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  padding: 10px;
+  font-family: "Nunito", sans-serif;
+  font-size: 20px;
+}
+
+.body-all-product .table-all-product #table-products .table .tbody .tr-open .images-product .image-product {
+  width: 80px;
+  height: 80px;
+  margin: 5px;
+  border-radius: 5px;
+  background-color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.body-all-product .table-all-product #table-products .table .tbody .tr-open .images-product .image-product img {
+  width: 100%;
+  height: 100%;
+}
+
+.body-all-product .table-all-product #table-products .table .tbody .tr-open .desc-product {
+  width: 60%;
+  height: auto;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: column;
+  background-color: #ececec;
+  border-radius: 20px;
+}
+
+.body-all-product .table-all-product #table-products .table .tbody .tr-open .desc-product h1 {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  padding: 10px;
+  font-family: "Nunito", sans-serif;
+  font-size: 20px;
+}
+
+.body-all-product .table-all-product #table-products .table .tbody .tr-open .desc-product p {
+  width: 90%;
+  margin: 0;
+  padding: 0;
+  padding: 10px;
+  font-family: "Nunito", sans-serif;
+  font-size: 15px;
+}
+
+/******** suivi plaque **********/
+
+.index-container .select-plaque {
+  width: 70%;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.index-container .select-plaque h2 {
+  width: 100%;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Nunito", sans-serif;
+  font-size: 40px;
+  color: white;
+  margin: 0;
+  padding: 0;
+  margin-bottom: 20px;
+  font-weight: 400;
+}
+
+.index-container .select-plaque .container-select-plaque {
+  width: 100%;
+  height: auto;
+  background-color: #2a3f7e;
+  border-radius: 10px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: space-between;
+  flex-wrap: wrap;
+}
+
+.index-container .select-plaque .container-select-plaque .select-clientsproduct {
+  width: 49%;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.index-container .select-plaque .container-select-plaque .select-clientsproduct .bloc-select {
+  width: 40%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  margin-right: 10px;
+}
+
+.index-container .select-plaque .container-select-plaque .select-clientsproduct .bloc-select span {
+  font-size: 15px;
+  font-family: "Nunito", sans-serif;
+  color: white;
+}
+
+.index-container .select-plaque .container-select-plaque .select-clientsproduct .bloc-select select {
+  height: 50px;
+  width: 200px;
+  border-radius: 10px;
+  padding-left: 5px;
+}
+
+.index-container .select-plaque .container-select-plaque .code-select-plaque {
+  width: 49%;
+  height: 100px;
+  display: flex;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.index-container .select-plaque .container-select-plaque .code-select-plaque h1 {
+  width: 100px;
+  height: 100%;
+  font-size: 50px;
+  font-family: "Nunito", sans-serif;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+
+.index-container .select-plaque .container-select-plaque .code-select-plaque input {
+  width: 200px;
+  height: 69px;
+  border: none;
+  border-radius: 10px;
+  padding-left: 5px;
+  font-size: 30px;
+  margin-left: 5px;
+}
+
+.index-container .select-plaque .container-select-plaque .code-select-plaque button {
+  width: 100px;
+  height: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  font-family: "Nunito", sans-serif;
+  border: none;
+  background-color: #d9d9d9;
+  border-radius: 10px;
+  margin-left: 5px;
+  cursor: pointer;
+}
+
+.index-container .select-plaque .container-select-plaque .code-select-plaque button:hover {
+  opacity: 0.6;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+  transition: 0.3s ease;
+}
+
+.index-container .select-plaque .container-select-plaque .code-select-plaque button:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+.index-container .select-plaque .container-select-plaque .code-select-plaque button img {
+  width: 40px;
+  height: 40px;
+}
+
+.index-container .select-plaque .container-select-plaque .code-select-plaque button p {
+  padding: 0;
+  margin: 0;
+  font-family: "Nunito", sans-serif;
+  font-weight: bold;
+}
+
+.index-container .select-plaque .container-select-plaque .plaques {
+  width: calc(100% - 20px);
+  margin-left: 10px;
+  margin-right: 10px;
+  height: 50vh;
+  background-color: white;
+  border-radius: 10px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.index-container .select-plaque .container-select-plaque .plaques .plaque {
+  width: 98%;
+  height: 150px;
+  background-color: #d6d4d4;
+  border-radius: 10px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.index-container .select-plaque .container-select-plaque .plaques .plaque .image-plaque {
+  width: 140px;
+  height: 140px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  border-radius: 10px;
+  margin-left: 5px;
+}
+
+.index-container .select-plaque .container-select-plaque .plaques .plaque .image-plaque img {
+  width: 100px;
+  height: 100px;
+}
+
+.index-container .select-plaque .container-select-plaque .plaques .plaque .infos-plaque {
+  width: 60%;
+  height: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.index-container .select-plaque .container-select-plaque .plaques .plaque .infos-plaque .conception-infos-plaque {
+  display: flex;
+  width: 40%;
+  height: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.index-container .select-plaque .container-select-plaque .plaques .plaque .infos-plaque .conception-infos-plaque h1 {
+  width: calc(100% - 20px);
+  height: 30px;
+  font-size: 20px;
+  font-family: "Nunito", sans-serif;
+  font-weight: bold;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  margin-left: 20px;
+  margin-top: 20px;
+}
+
+.index-container .select-plaque .container-select-plaque .plaques .plaque .infos-plaque .conception-infos-plaque p {
+  width: calc(100% - 20px);
+  height: 30px;
+  font-size: 12px;
+  font-family: "Nunito", sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  margin-left: 20px;
+}
+
+.index-container .select-plaque .container-select-plaque .plaques .plaque .infos-plaque .conception-infos-plaque p b {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.index-container .select-plaque .container-select-plaque .plaques .plaque .infos-plaque .details-infos-plaque {
+  width: 40%;
+  height: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.index-container .select-plaque .container-select-plaque .plaques .plaque .infos-plaque .details-infos-plaque p {
+  width: 100%;
+  height: 30px;
+  font-size: 16px;
+  font-family: "Nunito", sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.index-container .select-plaque .container-select-plaque .plaques .plaque .infos-plaque .details-infos-plaque p input {
+  width: 40px;
+  height: 30px;
+  border-radius: 5px;
+  border: none;
+  margin-left: 5px;
+}
+
+.index-container .select-plaque .container-select-plaque .plaques .plaque .infos-plaque .details-infos-plaque p b {
+  margin-left: 5px;
+}
+
+.index-container .select-plaque .container-select-plaque .plaques .plaque .infos-plaque .status-infos-plaque {
+  width: 20%;
+  height: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.index-container .select-plaque .container-select-plaque .plaques .plaque .infos-plaque .status-infos-plaque p {
+  width: 100%;
+  height: 75px;
+  font-size: 18px;
+  font-family: "Nunito", sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.index-container .select-plaque .container-select-plaque .plaques .plaque .infos-plaque .status-infos-plaque p img {
+  width: 10px;
+  height: 10px;
+  margin-right: 5px;
+}
+
+.index-container .select-plaque .container-select-plaque .plaques .plaque .btns-infos-plaque {
+  width: calc(40% - 140px);
+  height: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.index-container .select-plaque .container-select-plaque .plaques .plaque .btns-infos-plaque button {
+  width: 90%;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(115, 0, 0);
+  color: white;
+  font-family: "Nunito", sans-serif;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.index-container .select-plaque .container-select-plaque .plaques .plaque .btns-infos-plaque button:hover {
+  opacity: 0.6;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+  transition: 0.3s ease;
+}
+
+.index-container .select-plaque .container-select-plaque .plaques .plaque .btns-infos-plaque button:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+.index-container .select-plaque .container-select-plaque .plaques .plaque .btns-infos-plaque button img {
+  width: 20px;
+  height: 20px;
+  filter: invert(100%);
+}
+
+.index-container .select-plaque .container-select-plaque .plaques .plaque .btns-infos-plaque .input-infos-plaque {
+  width: 90%;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 5px;
+}
+
+.index-container .select-plaque .container-select-plaque .plaques .plaque .btns-infos-plaque .input-infos-plaque input {
+  width: calc(100% - 35px);
+  height: 28px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+  border: none;
+  margin-right: 5px;
+  padding-left: 5px;
+}
+
+.index-container .select-plaque .container-select-plaque .plaques .plaque .btns-infos-plaque .input-infos-plaque button {
+  width: 30px;
+  height: 30px;
+}
+
+.index-container .select-plaque .container-select-plaque .plaques .plaque .btns-infos-plaque .input-infos-plaque button img {
+  filter: invert(0%);
+}
+
+
+/******** Plaque selectionné ***********/
+
+.container-new-plaque .title-plaque {
+  width: 100%;
+  height: 70px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-family: "Nunito", sans-serif;
+}
+
+.container-new-plaque .title-plaque h1 {
+  background-color: #334886;
+  width: 300px;
+  height: 50px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  margin-left: 10px;
+}
+
+.container-new-plaque .info-plaque {
+  width: 100%;
+  height: calc(100% - 140px);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.container-new-plaque .info-plaque .blocleft-info-plaque {
+  width: 60%;
+  height: auto;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  background-color: #5471c5;
+  border-radius: 10px;
+  margin-left: 10px;
+}
+
+.container-new-plaque .info-plaque .blocleft-info-plaque .bloc {
+  width: 280px;
+  height: 100px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin: 10px;
+}
+
+.container-new-plaque .info-plaque .blocleft-info-plaque .bloc .image-conception {
+  width: 90px;
+  height: 90px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #efefef;
+  border-radius: 10px;
+  margin-left: 5px;
+}
+
+.container-new-plaque .info-plaque .blocleft-info-plaque .bloc .image-conception img {
+  width: 70px;
+  height: 70px;
+}
+
+.container-new-plaque .info-plaque .blocleft-info-plaque .bloc .conception {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.container-new-plaque .info-plaque .blocleft-info-plaque .bloc .conception h3 {
+  padding: 0;
+  margin: 0;
+  width: auto;
+  background-color: black;
+  color: white;
+  font-family: "Nunito", sans-serif;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-radius: 5px;
+  margin-left: 5px;
+  margin-top: 5px;
+}
+
+.container-new-plaque .info-plaque .blocleft-info-plaque .bloc .conception p {
+  padding: 0;
+  margin: 0;
+  font-family: "Nunito", sans-serif;
+  margin-left: 5px;
+  margin-top: 10px;
+}
+
+.container-new-plaque .info-plaque .blocleft-info-plaque .bloc2 {
+  width: 280px;
+  height: 100px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: column;
+  margin: 10px;
+}
+
+.container-new-plaque .info-plaque .blocleft-info-plaque .bloc2 p {
+  padding: 0;
+  margin: 0;
+  font-family: "Nunito", sans-serif;
+  margin: 5px;
+}
+
+.container-new-plaque .info-plaque .blocleft-info-plaque .bloc3 {
+  width: 280px;
+  height: 150px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: column;
+  margin: 10px;
+}
+
+.container-new-plaque .info-plaque .blocleft-info-plaque .bloc3 p {
+  padding: 0;
+  margin: 0;
+  font-family: "Nunito", sans-serif;
+  margin: 5px;
+}
+
+.container-new-plaque .info-plaque .blocleft-info-plaque .bloc3 p input {
+  width: 50px;
+  height: 30px;
+}
+
+.container-new-plaque .info-plaque .blocleft-info-plaque .bloc3 p b {
+  margin-right: 5px;
+}
+
+.container-new-plaque .info-plaque .blocleft-info-plaque .bloc3 p.type {
+  background-color: black;
+  color: white;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-radius: 5px;
+}
+
+.container-new-plaque .info-plaque .blocright-info-plaque {
+  width: 40%;
+  height: auto;
+  background-color: #334886;
+  border-radius: 10px;
+  margin-left: 5px;
+  margin-right: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.container-new-plaque .info-plaque .blocright-info-plaque .statut {
+  width: 100%;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 40px;
+  font-family: "Nunito", sans-serif;
+  color: white;
+}
+
+.container-new-plaque .info-plaque .blocright-info-plaque .statut img {
+  width: 20px;
+  height: 20px;
+  margin-right: 30px;
+}
+
+.container-new-plaque .info-plaque .blocright-info-plaque p {
+  width: 100%;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Nunito", sans-serif;
+  color: white;
+  font-size: 20px;
+}
+
+.container-new-plaque .btns-plaque {
+  width: 100%;
+  height: 70px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.container-new-plaque .btns-plaque button {
+  width: 300px;
+  height: 40px;
+  background-color: rgb(67, 0, 0);
+  border: none;
+  border-radius: 5px;
+  margin-left: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-family: "Nunito", sans-serif;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.container-new-plaque .btns-plaque button:hover {
+  opacity: 0.8;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+  transition: 0.3s ease;
+}
+
+.container-new-plaque .btns-plaque button:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+.container-new-plaque .btns-plaque button img {
+  width: 26px;
+  height: 26px;
+  margin-right: 10px;
+}
+
+.container-new-plaque .statutfinal {
+  width: 100%;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Nunito", sans-serif;
+  font-size: 40px;
+  color: white;
+}
+
+.container-new-plaque .statutfinal img {
+  width: 20px;
+  height: 20px;
+  margin-right: 30px;
+}
+
+.container-new-plaque .titlevalide {
+  margin: 0;
+  padding: 0;
+  font-family: "Nunito", sans-serif;
+  font-size: 70px;
+  color: white;
+}
+
+.container-new-plaque .valideicon {
+  width: 150px;
+  height: 150px;
+  margin-top: 20px;
+}
+
+.container-new-plaque .parag {
+  color: white;
+  font-family: "Nunito", sans-serif;
+  font-size: 30px;
+}

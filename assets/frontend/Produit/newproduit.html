@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../style-index.css">
+  <title>EmballageBI</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
+    rel="stylesheet">
+  <script src="../runtime_config.js"></script>
+  <!-- api wrapper depends on window.API_BASE -->
+  <script src="../api.js"></script>
+  <!-- verify-connected uses api/buildApiUrl & binds logout -->
+  <script src="../verify-connected.js"></script>
+  <script src="../notification.js"></script>
+  <script src="../ui-shell.js"></script>
+  <script src="newproduit.js?v=2"></script>
+  <link rel="stylesheet" href="../notif.css">
+  <link rel="stylesheet" href="../responsive.css">
+</head>
+<style>
+  .index-start {
+    background: linear-gradient(180deg, rgb(208, 160, 160) 0%, rgb(136, 102, 102) 100%);
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .index-container {
+    animation: fadeInRight;
+    animation-duration: 1s;
+  }
+
+  /* Modal styles */
+  .modal {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+  }
+
+  .modal-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(1px);
+  }
+
+  .modal-panel {
+    position: relative;
+    z-index: 10001;
+    background: #fff;
+    width: 380px;
+    max-width: 90%;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .2);
+    padding: 18px;
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .modal-header h2 {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+
+  .modal-close {
+    background: transparent;
+    border: none;
+    font-size: 1.6rem;
+    cursor: pointer;
+  }
+
+  .modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .modal-body label {
+    font-size: 0.9rem;
+  }
+
+  .modal-body input[type="text"] {
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+  }
+
+  .form-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+  }
+
+  .btn-secondary {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .msg {
+    color: #d00;
+    font-size: 0.9rem;
+    margin-top: 6px;
+    min-height: 1.2em;
+  }
+</style>
+
+<body>
+  <div class="filterblack"></div>
+  <div class="sidenotif" data-user-id="">
+    <div class="notif-header">
+      <img src="../img/icon/notifications.png">
+      <h2>Notifications</h2>
+    </div>
+    <div class="notif-elements" style="width: 360px !important;">
+      <div class="notif-loading">
+        <p>Chargement des notifications...</p>
+      </div>
+    </div>
+  </div>
+  <div class="sidebar">
+    <img src="../img/icon/menu.png" alt="Close" class="close-sidebar">
+    <div class="logo">
+      <img src="../img/logoblanc.png" alt="EmballageBI">
+      <div class="title-logo">
+        <h1>Emballage BI</h1>
+        <p>2026</p>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <ul>
+        <li onclick="window.location.href = '../index.html'" onclick="window.location.href = '../index.html'"><a
+            href="#"><img src="../img/icon/home.png" alt="Home"> Tableau de bord</a></li>
+        <hr>
+        <li onclick="window.location.href = '../Plaque/suiviplaque.html'"><a href="#"><img
+              src="../img/icon/papeterie-papiers-empiles.png" alt="Plaques"> Suivi des Plaques</a></li>
+        <li onclick="window.location.href = '../Plaque/plaques.html'"><a href="#"><img src="../img/icon/plaques.png"
+              alt="Plaques"> Plaques</a></li>
+        <hr>
+        <li onclick="window.location.href = '../Client/clients.html'"><a href="#"><img src="../img/icon/client.png"
+              alt="Client"> Clients</a></li>
+        <li onclick="window.location.href = '../Produit/produits.html'"><a href="#"><img
+              src="../img/icon/produit - Copie.png" alt="Produit"> Produits</a></li>
+        <li onclick="window.location.href = '../Conception/conceptions.html'"><a href="#"><img
+              src="../img/icon/personnalisation1.png" alt="Conception"> Conceptions</a></li>
+        <hr>
+        <li onclick="window.location.href = '../Scan/scan.html'"><a href="#"><img src="../img/icon/qrcode.png" alt="QR">
+            Scan
+            QR</a></li>
+        <li onclick="window.location.href = '../Annonces/annonces.html'"><a href="#"><img src="../img/icon/annonce.png"
+              alt="Annonces"> Annonces</a></li>
+        <hr>
+        <li onclick="window.location.href = '../User/profil.html'"><a href="#"><img src="../img/icon/user.png"
+              alt="User">
+            Profil</a></li>
+        <li onclick="window.location.href = '../Parametres/parametres.html'"><a href="#"><img
+              src="../img/icon/parametres.png" alt="Parametres"> Parametres</a></li>
+
+      </ul>
+      <a href="#" id="logoutBtn"><img src="../img/icon/se-deconnecter.png" alt="Parametres"> Se deconnecter</a>
+    </nav>
+  </div>
+
+  <div class="index-start">
+    <div class="header" style="justify-content: space-evenly;">
+      <div class="user-space" style="display: flex;justify-content: flex-start;width: 15%;">
+        <div class="burger" style="margin-left: 30px;">
+          <img src="../img/icon/menu.png" alt="Menu">
+        </div>
+        <div class="returnBtn"
+          style="margin-left: 40px;width: 40px;height: 40px;display: flex;justify-content: center;align-items: center;"
+          onclick="window.location.href='../Produit/produits.html'">
+          <img src="../img/icon/retourner.png">
+        </div>
+      </div>
+      <div class="logo" onclick="window.location.href='../index.html'">
+        <img src="../img/logoblanc.png" alt="EmballageBI" data-red="../img/logorouge.png" tabindex="0" />
+      </div>
+      <div class="user-space" style="display: flex;justify-content: flex-end;width: 15%;">
+        <div class="notif-user">
+          <img src="../img/icon/notifications.png" alt="Notifications">
+          <span class="notif-count">0</span>
+        </div>
+        <div class="user-info" onclick="window.location.href='../user/profil.html'">
+          <img src="../img/icon/profil.png" alt="User">
+        </div>
+      </div>
+    </div>
+    <div class="index-container">
+      <div class="linkpages">
+        <a href="../index.html">Tableau de bord </a> > <a href="produits.html">Produits</a> > Nouveau Produit
+      </div>
+      <div class="container-new-plaque">
+        <div class="add-product"
+          style="position:static;width: 100%;background-color: transparent;height: 100%;z-index: 0;">
+          <div class="title-addproduct">
+            <div class="title-addproduct-container">
+              <img src="../img/icon/addproduct.png" alt="Add product">
+              <h1>Ajouter un nouveau produit</h1>
+            </div>
+          </div>
+          <form class="form-addproduct">
+            <div class="form-addproduct-container">
+              <div class="left-addproduct-container">
+                <div class="input-form-product">
+                  <span>Nom du produit :</span>
+                  <input type="text" placeholder="Ex: Boite Burger">
+                </div>
+                <div class="input-form-product">
+                  <span>Categorie du produit :</span>
+                  <div class="select-arrow" style="display: flex;justify-content: flex-start;align-items: center;">
+                    <select id="categorySelect" name="id_categorie" style="width: 80%;">
+                      <option value="">--Selectionnez une Categorie--</option>
+                    </select>
+
+                  </div>
+                </div>
+                <div class="input-form-product">
+                  <span>Type de carton :</span>
+                  <select name="type_carton" id="select-type-carton">
+                    <option value="">-- Choisir un type de carton --</option>
+                    <option value="Cartons Offset">Cartons Offset</option>
+                    <option value="Sacs">Sacs</option>
+                    <option value="Papier">Papier</option>
+                    <option value="Ondule">Ondule</option>
+                  </select>
+                </div>
+                <div class="divise-input-form-product">
+                  <div class="miniinput-form-product">
+                    <span>Quantité minimum :</span>
+                    <input type="number" value="0">
+                  </div>
+                  <div class="miniinput-form-product">
+                    <span>Taille du produit :</span>
+                    <select>
+                      <option style="color: #ababab;">--Selectionnez une taille du produit--
+                      </option>
+                      <option>PM</option>
+                      <option>MM</option>
+                      <option>GM</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="input-form-product">
+                  <span>Prix Unitaire (Par default) :</span>
+                  <input type="number" value="0">
+                </div>
+                <div class="infosupp-form-product">
+                  <span>
+                    Informations Supplémentaires
+                    <img src="../img/icon/arrow-down.png" alt="moreInfo">
+                  </span>
+                  <div class="desc-form-product">
+                    <span>Description du produit :</span>
+                    <textarea placeholder="Description..."></textarea>
+                  </div>
+                </div>
+              </div>
+              <div class="right-addproduct-container">
+                <span>Images du produit :</span>
+                <div class="images-container">
+                  <!-- images rajouter -->
+
+                  <button type="button" style="margin-top: 25px;margin-left: 25px;" class="addimage-product">
+                    <img src="../img/icon/plus.png" alt="addImageProduct">
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="btns-form">
+              <button type="button" style="background-color: #ababab;" onclick="window.location.href='produits.html'">
+                <img src="../img/icon/retourner.png" alt="annuler">
+                Annuler
+              </button>
+              <button type="button">
+                <img src="../img/icon/sauvegarder.png" alt="saveClient">
+                Sauvegarder le Produit
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (async () => {
+      const GET_TRIED = ['/api/categorie', '/api/categorie/list'];
+
+      const select = document.getElementById('categorySelect');
+      // --- safe JSON helper
+      async function safeJson(res) {
+        try { return await res.json(); } catch (e) { return null; }
+      }
+
+      // --- populate select with items [{id_categorie, nom_categorie}, ...]
+
+      // --- fetch categories from backend (try multiple endpoints)
+      async function fetchCategories() {
+        for (const url of GET_TRIED) {
+          try {
+            const res = await fetch(url, { credentials: 'same-origin' });
+            if (!res.ok) continue;
+            const body = await safeJson(res);
+            if (!body) continue;
+            // support {items: [...]} or direct array
+            let arr = null;
+            if (Array.isArray(body)) arr = body;
+            else if (Array.isArray(body.items)) arr = body.items;
+            else if (Array.isArray(body.data)) arr = body.data;
+            if (!arr && typeof body === 'object') {
+              // if object with keys -> try convert
+              const tmp = [];
+              for (const k in body) {
+                if (!Object.prototype.hasOwnProperty.call(body, k)) continue;
+                const v = body[k];
+                if (typeof v === 'string') tmp.push({ id_categorie: k, nom_categorie: v });
+                else if (v && v.nom_categorie) tmp.push(v);
+              }
+              if (tmp.length) arr = tmp;
+            }
+            if (!arr) continue;
+            // normalize to expected shape
+            const normalized = arr.map(x => {
+              if (typeof x === 'string') return { id_categorie: null, nom_categorie: x };
+              return x;
+            });
+            return normalized;
+          } catch (e) {
+            continue;
+          }
+        }
+        return null;
+      }
+
+      // --- post new category (returns { status, body })
+      async function postCategory(name) {
+        const payload = { nom_categorie: name };
+        for (const url of POST_TRIED) {
+          try {
+            const res = await fetch(url, {
+              method: 'POST',
+              credentials: 'same-origin',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+            const body = await safeJson(res);
+            return { status: res.status, body };
+          } catch (e) {
+            continue;
+          }
+        }
+        return { status: 0, body: null };
+      }
+
+
+
+      // expose for debug
+      window._Categories = window._Categories || {};
+    })();
+  </script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../style-index.css">
+  <title>EmballageBI</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
+    rel="stylesheet">
+  <script src="../runtime_config.js"></script>
+  <!-- api wrapper depends on window.API_BASE -->
+  <script src="../api.js"></script>
+  <!-- verify-connected uses api/buildApiUrl & binds logout -->
+  <script src="../verify-connected.js"></script>
+  <script src="../notification.js"></script>
+  <script src="../ui-shell.js"></script>
+  <script src="./soustraitant.js"></script>
+  <link rel="stylesheet" href="../notif.css">
+  <link rel="stylesheet" href="../responsive.css">
+</head>
+</head>
+<style>
+  .index-start {
+    background: linear-gradient(180deg, rgb(136, 172, 155) 0%, rgb(105, 143, 124) 100%);
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .index-container {
+    animation: fadeInRight;
+    animation-duration: 1s;
+  }
+</style>
+
+<body>
+  <div class="filterblack"></div>
+  <div class="sidenotif" data-user-id="">
+    <div class="notif-header">
+      <img src="../img/icon/notifications.png">
+      <h2>Notifications</h2>
+    </div>
+    <div class="notif-elements" style="width: 360px !important;">
+      <div class="notif-loading">
+        <p>Chargement des notifications...</p>
+      </div>
+    </div>
+  </div>
+  <div class="sidebar">
+    <img src="../img/icon/menu.png" alt="Close" class="close-sidebar">
+    <div class="logo">
+      <img src="../img/logoblanc.png" alt="EmballageBI">
+      <div class="title-logo">
+        <h1>Emballage BI</h1>
+        <p>2026</p>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <ul>
+        <li onclick="window.location.href = '../index.html'" onclick="window.location.href = '../index.html'"><a
+            href="#"><img src="../img/icon/home.png" alt="Home"> Tableau de bord</a></li>
+        <hr>
+        <li onclick="window.location.href = '../Plaque/suiviplaque.html'"><a href="#"><img
+              src="../img/icon/papeterie-papiers-empiles.png" alt="Plaques"> Suivi des Plaques</a></li>
+        <li onclick="window.location.href = '../Plaque/plaques.html'"><a href="#"><img src="../img/icon/plaques.png"
+              alt="Plaques"> Plaques</a></li>
+        <hr>
+        <li onclick="window.location.href = '../Client/clients.html'"><a href="#"><img src="../img/icon/client.png"
+              alt="Client"> Clients</a></li>
+        <li onclick="window.location.href = '../Produit/produits.html'"><a href="#"><img
+              src="../img/icon/produit - Copie.png" alt="Produit"> Produits</a></li>
+        <li onclick="window.location.href = '../Conception/conceptions.html'"><a href="#"><img
+              src="../img/icon/personnalisation1.png" alt="Conception"> Conceptions</a></li>
+        <hr>
+        <li onclick="window.location.href = '../Scan/scan.html'"><a href="#"><img src="../img/icon/qrcode.png" alt="QR">
+            Scan
+            QR</a></li>
+        <li onclick="window.location.href = '../Annonces/annonces.html'"><a href="#"><img src="../img/icon/annonce.png"
+              alt="Annonces"> Annonces</a></li>
+        <hr>
+        <li onclick="window.location.href = '../User/profil.html'"><a href="#"><img src="../img/icon/user.png"
+              alt="User">
+            Profil</a></li>
+        <li onclick="window.location.href = '../Parametres/parametres.html'"><a href="#"><img
+              src="../img/icon/parametres.png" alt="Parametres"> Parametres</a></li>
+
+      </ul>
+      <a href="#" id="logoutBtn"><img src="../img/icon/se-deconnecter.png" alt="Parametres"> Se deconnecter</a>
+    </nav>
+  </div>
+
+  <div class="index-start">
+    <div class="header" style="justify-content: space-evenly;">
+      <div class="user-space" style="display: flex;justify-content: flex-start;width: 15%;">
+        <div class="burger" style="margin-left: 30px;">
+          <img src="../img/icon/menu.png" alt="Menu">
+        </div>
+        <div class="returnBtn"
+          style="margin-left: 40px;width: 40px;height: 40px;display: flex;justify-content: center;align-items: center;"
+          onclick="window.location.href='../Client/clients.html'">
+          <img src="../img/icon/retourner.png">
+        </div>
+      </div>
+      <div class="logo" onclick="window.location.href='../index.html'">
+        <img src="../img/logoblanc.png" alt="EmballageBI" data-red="../img/logorouge.png" tabindex="0" />
+      </div>
+      <div class="user-space" style="display: flex;justify-content: flex-end;width: 15%;">
+        <div class="notif-user">
+          <img src="../img/icon/notifications.png" alt="Notifications">
+          <span class="notif-count">0</span>
+        </div>
+        <div class="user-info" onclick="window.location.href='../user/profil.html'">
+          <img src="../img/icon/profil.png" alt="User">
+        </div>
+      </div>
+    </div>
+    <div class="index-container">
+      <div class="linkpages">
+        <a href="../index.html">Tableau de bord </a> > <a href="clients.html">Clients</a> > Nouveau Sous-traitant
+      </div>
+      <div class="container-new-plaque">
+        <div class="add-client"
+          style="position:static;width: 100%;background-color: transparent;height: 100%;z-index: 0;">
+          <div class="title-addclient">
+            <div class="title-addclient-container">
+              <img src="../img/icon/accord.png" alt="Add Client">
+              <h1>Ajouter un nouveau Sous-traitant</h1>
+            </div>
+          </div>
+          <form class="form-addclient">
+            <div class="form-addclient-container">
+              <div class="left-form-addclient" style="width: 100%;">
+                <div class="first-left-form-addclient">
+                  <div class="title-left-form-addclient">
+                    <h1>Informations du Sous-traitant :</h1>
+                    <img src="../img/icon/accord.png" alt="Client">
+                  </div>
+                  <div class="inputs-form-addclient">
+                    <span>Nom du sous-traitant:</span>
+                    <input type="text" placeholder="Ex : Zaki...">
+                    <span>Numero de telephone:</span>
+                    <input type="tel" placeholder="Ex : 05555555555...">
+                    <span>Entreprise du sous-traitant:</span>
+                    <input type="text" placeholder="Ex : Emballage Les Zianides...">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="btns-form">
+              <button type="button" style="background-color: #ababab;" onclick="window.location.href='clients.html'">
+                <img src="../img/icon/retourner.png" alt="annuler">
+                Annuler
+              </button>
+              <button type="button" id="saveClientBtn" style="width: 300px;">
+                <img src="../img/icon/sauvegarder.png" alt="saveClient">
+                Sauvegarder le sous-traitant
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

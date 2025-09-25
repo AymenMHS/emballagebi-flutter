@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EmballageBI</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
+    rel="stylesheet">
+  <script src="../runtime_config.js"></script>
+  <script>
+    // force explicit API_BASE (tu as déjà ça)
+    window.API_BASE = "https://emballage-b-impression.dz/emballage_bi";
+    // Sauvegarde immédiate de la vraie fetch native AVANT que d'autres scripts puissent l'écraser
+    if (!window.__API_NATIVE_FETCH_BACKUP) {
+      try {
+        window.__API_NATIVE_FETCH_BACKUP = window.fetch.bind(window);
+        console.log('runtime_config forced:', window.API_BASE, ' — native fetch backed up.');
+      } catch (e) {
+        console.warn('Impossible de binder fetch native:', e);
+      }
+    }
+  </script>
+  <!-- api wrapper depends on window.API_BASE -->
+  <script src="../api.js"></script>
+  <!-- verify-connected uses api/buildApiUrl & binds logout -->
+  <script src="../verify-connected.js"></script>
+  <script src="../notification.js"></script>
+  <script src="../ui-shell.js"></script>
+  <style>
+    /* === Variables couleur === */
+    :root {
+      --brand-deep-red: #8B0000;
+      /* rouge foncé */
+      --brand-red: #B30000;
+      --bg: #ffffff;
+      --muted: #6b6b6b;
+      --card-bg: #f7f7f7;
+      --border: #e6e6e6;
+      --black: #111111;
+      --success: #0b8457;
+      --danger: #c0392b;
+      --glass: rgba(255, 255, 255, 0.85);
+      --radius: 12px;
+      --shadow: 0 6px 18px rgba(17, 17, 17, 0.08);
+      font-family: "Nunito", sans-serif;
+      color-scheme: light;
+    }
+
+    /* === Reset + base === */
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      height: 100vh !important;
+      overflow: hidden;
+    }
+
+    body {
+      margin: 0;
+      background: linear-gradient(180deg, rgb(229, 229, 229) 0%, rgb(168, 168, 168) 100%);
+      color: var(--black);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      font-size: 16px;
+      overflow-y: scroll !important;
+    }
+
+    .container {
+      width: calc(100% - 20px) !important;
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 24px;
+      align-items: start;
+      margin: 10px !important;
+    }
+
+    /* Sidebar card */
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 20px;
+      border: 1px solid var(--border);
+      box-shadow: 7px 5px 18px 0px rgba(0, 0, 0, 0.50);
+    }
+
+    .profile-hero {
+      display: flex;
+      gap: 16px;
+      align-items: center
+    }
+
+    .avatar {
+      width: 88px;
+      height: 88px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 28px;
+      color: var(--bg);
+      background: linear-gradient(135deg, var(--brand-deep-red), var(--brand-red))
+    }
+
+    .profile-meta h2 {
+      margin: 0;
+      font-size: 20px
+    }
+
+    .profile-meta p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 14px
+    }
+
+    .role-badge {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(139, 0, 0, 0.1);
+      color: var(--brand-deep-red);
+      font-weight: 600;
+      font-size: 13px;
+      margin-top: 10px;
+      border: 1px solid rgba(139, 0, 0, 0.12)
+    }
+
+    .contact-list {
+      margin-top: 18px;
+      display: grid;
+      gap: 10px
+    }
+
+    .contact-item {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      font-size: 14px;
+      color: var(--muted)
+    }
+
+    .contact-item strong {
+      color: var(--black);
+    }
+
+    /* Quick stats */
+    .stats {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px
+    }
+
+    .stat {
+      flex: 1;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.01));
+      padding: 10px;
+      border-radius: 10px;
+      text-align: center
+    }
+
+    .stat h3 {
+      margin: 0;
+      font-size: 14px
+    }
+
+    .stat p {
+      margin: 6px 0 0;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--brand-deep-red)
+    }
+
+    /* Main content */
+    .main {
+      min-height: 480px
+    }
+
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .page-title {
+      font-size: 20px;
+      font-weight: 700
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px
+    }
+
+    .btn {
+      background: var(--brand-deep-red);
+      color: white;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      gap: 8px;
+      align-items: center
+    }
+
+    .btn.secondary {
+      background: transparent;
+      color: var(--brand-deep-red);
+      border: 1px solid rgba(139, 0, 0, 0.12)
+    }
+
+    .btn.ghost {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--black)
+    }
+
+    /* Tabs - nouveau style */
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 18px
+    }
+
+    .tab {
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: transparent;
+      border: 1px solid transparent;
+      cursor: pointer;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      transition: transform .18s ease, box-shadow .18s ease, background .18s ease, color .18s ease;
+      color: var(--muted);
+      box-shadow: none;
+    }
+
+    .tab:hover {
+      transform: translateY(-3px);
+      color: var(--brand-deep-red);
+    }
+
+    .tab:focus {
+      outline: 3px solid rgba(139, 0, 0, 0.12)
+    }
+
+    .tab.active {
+      background: linear-gradient(90deg, var(--brand-deep-red), var(--brand-red));
+      color: white;
+      box-shadow: 0 8px 24px rgba(179, 0, 0, 0.12);
+      border: none;
+      transform: translateY(-2px);
+    }
+
+    /* Panel base (we'll animate via animate.css) */
+    .panel {
+      background: white;
+      padding: 18px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      /* aria-hidden will be used to hide panels when not visible */
+    }
+
+    .panel[aria-hidden="true"] {
+      display: none;
+    }
+
+    .panel[aria-hidden="false"] {
+      display: block;
+    }
+
+    /* Info grid */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px
+    }
+
+    .info-row {
+      padding: 12px;
+      border-radius: 10px;
+      background: var(--card-bg);
+      border: 1px solid var(--border)
+    }
+
+    .info-row label {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px
+    }
+
+    .info-row div {
+      font-weight: 600
+    }
+
+    /* Activity table */
+    .table {
+      width: 100%;
+      border-collapse: collapse
+    }
+
+    .table thead th {
+      background: #fafafa;
+      padding: 10px 12px;
+      text-align: left;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .table tbody td {
+      padding: 12px;
+      border-bottom: 1px solid #f1f1f1;
+      font-size: 14px
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 13px
+    }
+
+    /* Make activity flux scrollable */
+    .activity-scroll {
+      max-height: 340px;
+      overflow: auto;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      padding: 6px;
+      background: #fff;
+    }
+
+    .activity-scroll .table {
+      margin: 0
+    }
+
+    /* Settings form */
+    form .row {
+      display: flex;
+      gap: 12px
+    }
+
+    form label {
+      font-size: 13px;
+      color: var(--muted)
+    }
+
+    input[type=text],
+    input[type=email],
+    select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: white
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 12px
+    }
+
+    /* Utilities */
+    .small {
+      font-size: 13px;
+      color: var(--muted)
+    }
+
+    /* Responsive */
+    @media (max-width:980px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+
+      .profile-hero {
+        align-items: flex-start
+      }
+
+      .avatar {
+        width: 72px;
+        height: 72px;
+        border-radius: 12px
+      }
+
+      .tabs {
+        flex-wrap: wrap
+      }
+
+      .activity-scroll {
+        max-height: 260px;
+      }
+    }
+
+    /* Return button style in aside */
+    .aside-return {
+      margin-bottom: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      color: white;
+      font-family: "Nunito", sans-serif;
+      text-align: left;
+      width: 50%;
+      height: 34px;
+      background-color: var(--brand-deep-red);
+      font-size: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: none;
+    }
+
+    .aside-return img {
+      width: 18px;
+      height: 18px;
+      margin-right: 8px;
+      filter: invert(1);
+    }
+
+    .aside-return:hover {
+      transform: translateY(-2px);
+      transition: 0.2s ease;
+    }
+
+    @media (max-width:400px) {
+      .container {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+      }
+
+      .card {
+        width: 90% !important;
+      }
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        gap: 12px
+      }
+
+      .main {
+        width: 90% !important;
+      }
+    }
+
+    @media (max-width:350px) {
+      .tabs button {
+        font-size: 10px !important;
+        width: 60px !important;
+        height: 30px !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- SIDEBAR -->
+    <aside class="card" style="animation: fadeInLeft;animation-duration: 1s;">
+      <!-- Retourner en haut de l'aside -->
+      <button id="btnReturnAside" class="aside-return"><img src="../img/icon/retourner.png" alt="" aria-hidden="true">
+        Retourner</button>
+
+      <div class="profile-hero">
+        <div class="avatar" id="avatar">JD</div>
+        <div class="profile-meta">
+          <h2 id="fullName">...</h2>
+          <p id="username">...</p>
+          <div class="role-badge" id="roleBadge">technicien</div>
+        </div>
+      </div>
+
+      <div class="contact-list" aria-label="coordonnées utilisateur">
+        <div class="contact-item"><strong>Email</strong><span id="email">...</span></div>
+        <div class="contact-item"><strong>Téléphone</strong><span id="telephone">...</span></div>
+        <div class="contact-item"><strong>Créé le</strong><span id="createdAt">...</span></div>
+        <div class="contact-item"><strong>Dernière MAJ</strong><span id="updatedAt">...</span></div>
+      </div>
+
+      <div class="stats" aria-hidden="false">
+        <div class="stat">
+          <h3>Rôle</h3>
+          <p id="stat-role">...</p>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <div class="header-row">
+        <div class="page-title">Profil — <span id="pageUser">...</span></div>
+      </div>
+
+      <div class="tabs" role="tablist" aria-label="sections profil">
+        <button class="tab active" data-target="overview" role="tab" aria-selected="true">Aperçu</button>
+        <button class="tab" data-target="activity" role="tab" aria-selected="false">Activité</button>
+        <button class="tab" data-target="settings" role="tab" aria-selected="false">Paramètres</button>
+      </div>
+
+      <div id="overview" class="panel animate__animated animate__fadeInUp" role="tabpanel" aria-hidden="false">
+        <h3 style="margin-top:0">Informations personnelles</h3>
+        <div class="info-grid">
+          <div class="info-row" id="infoNom"><label>Nom</label>
+            <div id="nom">...</div>
+          </div>
+          <div class="info-row"><label>Prénom</label>
+            <div id="prenom">...</div>
+          </div>
+          <div class="info-row" id="infoUsername"><label>Nom d'utilisateur</label>
+            <div id="user_username">...</div>
+          </div>
+          <div class="info-row"><label>Rôle</label>
+            <div id="role">...</div>
+          </div>
+          <div class="info-row" id="infoEmail"><label>Adresse email</label>
+            <div id="user_email">...</div>
+          </div>
+          <div class="info-row"><label>Téléphone</label>
+            <div id="user_telephone">...</div>
+          </div>
+        </div>
+
+        <section style="margin-top:18px">
+          <h4 style="margin-bottom:8px">Dernières actions (journal)</h4>
+          <div class="panel" style="padding:0">
+            <table class="table" aria-describedby="activity-desc">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Action</th>
+                  <th>Cible</th>
+                  <th>IP</th>
+                  <th>Rôle</th>
+                </tr>
+              </thead>
+              <tbody id="auditTable">
+                <!-- Rempli dynamiquement (max 4) -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <div id="activity" class="panel" role="tabpanel" aria-hidden="true">
+        <h3 style="margin-top:0">Flux d'activité détaillé</h3>
+        <p class="small">Affiche les entrées d'audit et les événements du compte.</p>
+
+        <!-- Scrollable wrapper -->
+        <div style="margin-top:12px" class="activity-scroll" role="region" aria-label="Flux d'activité détaillé">
+          <table class="table" id="activityTable">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Action</th>
+                <th>Meta</th>
+                <th>IP</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Rempli dynamiquement -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="settings" class="panel" role="tabpanel" aria-hidden="true">
+        <h3 style="margin-top:0">Paramètres utilisateur</h3>
+        <form id="settingsForm">
+          <div class="row">
+            <div style="flex:1">
+              <label>Nom</label>
+              <input type="text" id="formNom" />
+            </div>
+            <div style="flex:1">
+              <label>Prénom</label>
+              <input type="text" id="formPrenom" />
+            </div>
+          </div>
+
+          <div style="margin-top:10px" class="row">
+            <div style="flex:1">
+              <label>Nom d'utilisateur</label>
+              <input type="text" id="formUsername" readonly />
+            </div>
+            <div style="flex:1">
+              <label>Email</label>
+              <input type="email" id="formEmail" />
+            </div>
+          </div>
+
+          <div style="margin-top:10px" class="row">
+            <div style="flex:1">
+              <label>Téléphone</label>
+              <input type="text" id="formTel" />
+            </div>
+            <div style="flex:1">
+              <label>&nbsp;</label>
+              <div
+                style="font-size:13px;color:var(--muted);padding:10px;background:var(--card-bg);border:1px solid var(--border);border-radius:8px"
+                id="formRoleDisplay"></div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn secondary" id="btnCancel">Annuler</button>
+            <button type="submit" class="btn" id="btnSubmit">Sauvegarder</button>
+          </div>
+        </form>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    /*
+      Script pour profil.html
+      - Récupère /auth/me (GET)
+      - Récupère /auth/me/audit (GET)
+      - Met à jour /auth/me (PUT)
+      - Gère tabs/animations et reset du formulaire
+    */
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const el = id => document.getElementById(id);
+
+      const serverTimeZone = 'UTC'; // <-- change en 'Africa/Algiers' si le serveur enregistre sans offset mais en heure Algérie
+
+      const formatDate = iso => {
+        if (!iso && iso !== 0) return '—';
+        try {
+          // 1) normaliser les nombres (s / ms)
+          if (typeof iso === 'number' || (/^\d+$/.test(String(iso)) && String(iso).length <= 13)) {
+            const n = Number(iso);
+            const ms = (String(iso).length === 10) ? n * 1000 : n;
+            const d = new Date(ms);
+            return new Intl.DateTimeFormat('fr-FR', {
+              timeZone: 'Africa/Algiers',
+              year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit'
+            }).format(d);
+          }
+
+          const s = String(iso).trim();
+
+          // 2) si la chaîne contient un offset explicite (Z ou +HH or -HH) => on parse directement
+          if (/[zZ]|[+\-]\d{2}:\d{2}$/.test(s) || /[+\-]\d{2}$/.test(s)) {
+            const d = new Date(s);
+            if (!isNaN(d.getTime())) {
+              return new Intl.DateTimeFormat('fr-FR', {
+                timeZone: 'Africa/Algiers',
+                year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit'
+              }).format(d);
+            }
+          }
+
+          // 3) CHAÎNE SANS OFFSET (ex: "2025-08-30T12:00:00")
+          // On doit décider comment l'interpréter : comme UTC (serverTimeZone='UTC')
+          // ou comme heure locale du serveur (ex: 'Africa/Algiers').
+          // Nous allons construire l'instant UTC correspondant à la date fournie dans serverTimeZone.
+          const match = s.match(/^(\d{4})-(\d{2})-(\d{2})[T\s](\d{2}):(\d{2})(?::(\d{2})(?:\.\d{1,3})?)?$/);
+          if (match) {
+            const [, Y, M, D, hh, mm, ss = '0'] = match;
+            // crée une Date "represente" au temps UTC correspondant à la même horloge
+            // pour faire ça on calcule epoch = Date.UTC(Y,M-1,D,hh,mm,ss) - offsetServerMinutes*60000
+            // où offsetServerMinutes = (tz time - UTC time) en minutes pour serverTimeZone au moment donné
+            const year = Number(Y), month = Number(M) - 1, day = Number(D), hour = Number(hh), minute = Number(mm), second = Number(ss);
+
+            // helper pour obtenir offset minutes pour une timezone à une date donnée
+            const tzOffsetMinutes = (date, timeZone) => {
+              // difference tz - UTC in minutes
+              const utcStr = date.toLocaleString('en-US', { timeZone: 'UTC' });
+              const tzStr = date.toLocaleString('en-US', { timeZone });
+              const u = new Date(utcStr), t = new Date(tzStr);
+              return Math.round((t.getTime() - u.getTime()) / 60000);
+            };
+
+            // date approximative (use UTC for baseline)
+            const baseline = new Date(Date.UTC(year, month, day, hour, minute, second));
+            const offsetMinutes = tzOffsetMinutes(baseline, serverTimeZone);
+            // epoch such that the clock fields correspond to serverTimeZone local time
+            const epochMs = Date.UTC(year, month, day, hour, minute, second) - offsetMinutes * 60000;
+            const d = new Date(epochMs);
+
+            return new Intl.DateTimeFormat('fr-FR', {
+              timeZone: 'Africa/Algiers',
+              year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit'
+            }).format(d);
+          }
+
+          // Fallback : tenter parse classique en ajoutant 'Z' (assume UTC)
+          let d = new Date(s);
+          if (isNaN(d.getTime())) d = new Date(s + 'Z');
+          if (!isNaN(d.getTime())) {
+            return new Intl.DateTimeFormat('fr-FR', {
+              timeZone: 'Africa/Algiers',
+              year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit'
+            }).format(d);
+          }
+
+          return s;
+        } catch (e) {
+          return String(iso);
+        }
+      };
+
+
+      // ---------- helpers API ----------
+      async function apiGet(path) {
+        const res = await fetch(path, { credentials: 'include' });
+        if (res.status === 401) {
+          // non authentifié -> renvoyer vers login
+          window.location.href = '../login.html';
+          throw new Error('Non authentifié');
+        }
+        if (!res.ok) {
+          const txt = await res.text().catch(() => null);
+          throw new Error(`API GET ${path} failed: ${res.status} ${txt || ''}`);
+        }
+        return res.json();
+      }
+
+      async function apiPut(path, body) {
+        const res = await fetch(path, {
+          method: 'PUT',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        if (res.status === 401) {
+          window.location.href = '../login.html';
+          throw new Error('Non authentifié');
+        }
+        if (!res.ok) {
+          const txt = await res.text().catch(() => null);
+          throw new Error(`API PUT ${path} failed: ${res.status} ${txt || ''}`);
+        }
+        return res.json();
+      }
+
+      // ---------- peupler l'UI ----------
+      function populateUserFromMe(me) {
+        // me: { id, username, nom, prenom, role, email, telephone }
+        const fullname = ((me.prenom || '') + ' ' + (me.nom || '')).trim() || me.username || '—';
+        el('avatar').textContent = (me.prenom ? me.prenom.charAt(0) : (me.username ? me.username.charAt(0) : 'U')) + (me.nom ? me.nom.charAt(0) : '');
+        el('fullName').textContent = fullname;
+        el('pageUser').textContent = fullname;
+        el('username').textContent = '@' + (me.username || '—');
+        el('roleBadge').textContent = me.role || '—';
+
+        el('email').textContent = me.email || '—';
+        el('telephone').textContent = me.telephone || '—';
+
+        // overview
+        el('nom').textContent = me.nom || '—';
+        el('prenom').textContent = me.prenom || '—';
+        el('user_username').textContent = me.username || '—';
+        el('role').textContent = me.role || '—';
+        el('user_email').textContent = me.email || '—';
+        el('user_telephone').textContent = me.telephone || '—';
+
+        const statRoleEl = el('stat-role');
+        if (statRoleEl) statRoleEl.textContent = me.role || '—';
+
+        // settings form
+        if (el('formNom')) el('formNom').value = me.nom || '';
+        if (el('formPrenom')) el('formPrenom').value = me.prenom || '';
+        if (el('formUsername')) el('formUsername').value = me.username || '';
+        if (el('formEmail')) el('formEmail').value = me.email || '';
+        if (el('formTel')) el('formTel').value = me.telephone || '';
+        if (el('formRoleDisplay')) el('formRoleDisplay').textContent = me.role || '—';
+      }
+
+      // Call this with your fetched audit array (par exemple dans init() après apiGet('/auth/me/audit'))
+      function debugAudit(auditList) {
+        (auditList || []).slice(0, 8).forEach(a => {
+          const raw = a.timestamp;
+          const parsedNative = new Date(raw);
+          const iso = parsedNative.toISOString();
+          console.log('RAW:', raw, '\n  new Date(raw):', parsedNative, '\n  toISOString():', iso,
+            '\n  getTimezoneOffset (min):', parsedNative.getTimezoneOffset(),
+            '\n  timestamp ms:', parsedNative.getTime());
+          // Also show what our Algeria formatter would print:
+          console.log('  Algeria view:', new Intl.DateTimeFormat('fr-FR', {
+            timeZone: 'Africa/Algiers', year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit'
+          }).format(parsedNative));
+          console.log('--------------------------------------------');
+        });
+      }
+
+
+      function populateAuditOverview(auditList) {
+        const tbody = el('auditTable');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        (auditList || []).slice(0, 4).forEach(a => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+        <td>${formatDate(a.timestamp)}</td>
+        <td>${a.action}</td>
+        <td class="muted">${a.target || '-'}</td>
+        <td class="small">${a.ip_address || '-'}</td>
+        <td class="small">${a.role || '-'}</td>
+      `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      function populateActivityFull(auditList) {
+        const atbody = document.querySelector('#activityTable tbody');
+        if (!atbody) return;
+        atbody.innerHTML = '';
+        (auditList || []).forEach(a => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+        <td>${formatDate(a.timestamp)}</td>
+        <td>${a.action} <div class="small muted">par ${a.username || '-'}</div></td>
+        <td><pre style="white-space:pre-wrap;margin:0;font-size:13px;color:var(--muted)">${JSON.stringify(a.meta || {}, null, 2)}</pre></td>
+        <td>${a.ip_address || '-'}</td>
+      `;
+          atbody.appendChild(tr);
+        });
+      }
+
+      // ---------- tabs (animate.css) ----------
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          if (tab.classList.contains('active')) return;
+          document.querySelectorAll('.tab').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+          tab.classList.add('active'); tab.setAttribute('aria-selected', 'true');
+
+          const targetId = tab.dataset.target;
+          const targetPanel = document.getElementById(targetId);
+          const currentPanel = document.querySelector('.panel[aria-hidden="false"]');
+
+          if (currentPanel && currentPanel !== targetPanel) {
+            currentPanel.classList.remove('animate__animated', 'animate__fadeInUp', 'animate__faster', 'animate__fadeOutDown');
+            currentPanel.classList.add('animate__animated', 'animate__fadeOutDown', 'animate__faster');
+            const onOutEnd = function () {
+              currentPanel.setAttribute('aria-hidden', 'true');
+              currentPanel.classList.remove('animate__animated', 'animate__fadeOutDown', 'animate__faster');
+              currentPanel.removeEventListener('animationend', onOutEnd);
+            };
+            currentPanel.addEventListener('animationend', onOutEnd);
+          }
+
+          if (targetPanel) {
+            targetPanel.classList.remove('animate__animated', 'animate__fadeInUp', 'animate__faster', 'animate__fadeOutDown');
+            targetPanel.setAttribute('aria-hidden', 'false');
+            targetPanel.classList.add('animate__animated', 'animate__fadeInUp', 'animate__faster');
+            const onInEnd = function () {
+              targetPanel.classList.remove('animate__animated', 'animate__fadeInUp', 'animate__faster');
+              targetPanel.removeEventListener('animationend', onInEnd);
+            };
+            targetPanel.addEventListener('animationend', onInEnd);
+            setTimeout(() => {
+              const focusable = targetPanel.querySelector('input,button,a,select,textarea');
+              if (focusable) focusable.focus({ preventScroll: true });
+            }, 10);
+          }
+        });
+      });
+
+      // ---------- settings form ----------
+      const settingsForm = el('settingsForm');
+      if (settingsForm) {
+        settingsForm.addEventListener('submit', async (ev) => {
+          ev.preventDefault();
+          const payload = {
+            nom: (el('formNom') && el('formNom').value.trim()) || null,
+            prenom: (el('formPrenom') && el('formPrenom').value.trim()) || null,
+            email: (el('formEmail') && el('formEmail').value.trim()) || null,
+            telephone: (el('formTel') && el('formTel').value.trim()) || null
+          };
+
+          // Simple validation: email required
+          // Enlever les clés null pour ne pas écraser côté serveur inutilement
+          Object.keys(payload).forEach(k => { if (payload[k] === null) delete payload[k]; });
+
+          try {
+            const updated = await apiPut('/auth/me', payload);
+            populateUserFromMe(updated);
+            alert('Profil mis à jour.');
+          } catch (err) {
+            console.error(err);
+            alert('Erreur lors de la mise à jour : ' + (err.message || err));
+          }
+        });
+      }
+
+      // Cancel button: refetch server state
+      const btnCancel = el('btnCancel');
+      if (btnCancel) {
+        btnCancel.addEventListener('click', async () => {
+          try {
+            const me = await apiGet('/auth/me');
+            populateUserFromMe(me);
+          } catch (e) {
+            console.warn('Annuler: impossible de refetch', e);
+          }
+        });
+      }
+
+      // Return aside
+      const btnReturnAside = el('btnReturnAside');
+      if (btnReturnAside) btnReturnAside.addEventListener('click', () => history.back());
+
+      // ---------- init: fetch me + audit ----------
+      (async function init() {
+        try {
+          const me = await apiGet('/auth/me');
+          populateUserFromMe(me);
+
+          // récupère les logs de l'utilisateur connecté
+          const audit = await apiGet('/auth/me/audit');
+          populateAuditOverview(audit);
+          populateActivityFull(audit);
+        } catch (err) {
+          // apiGet redirige déjà en cas de 401, on log pour debug
+          console.error('Init error:', err);
+        }
+      })();
+
+    });
+  </script>
+
+</body>
+
+</html>

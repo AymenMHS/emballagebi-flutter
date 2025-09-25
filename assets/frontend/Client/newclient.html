@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../style-index.css">
+  <title>EmballageBI</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
+    rel="stylesheet">
+  <script src="../runtime_config.js"></script>
+  <!-- api wrapper depends on window.API_BASE -->
+  <script src="../api.js"></script>
+  <!-- verify-connected uses api/buildApiUrl & binds logout -->
+  <script src="../verify-connected.js"></script>
+  <script src="../notification.js"></script>
+  <script src="../ui-shell.js"></script>
+  <script src="./clients.js?v=2"></script>
+  <link rel="stylesheet" href="../notif.css">
+  <link rel="stylesheet" href="../responsive.css">
+</head>
+<style>
+  .index-start {
+    background: linear-gradient(180deg, rgb(136, 172, 155) 0%, rgb(105, 143, 124) 100%);
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .index-container {
+    animation: fadeInRight;
+    animation-duration: 1s;
+  }
+</style>
+
+<body>
+
+  <div class="filterblack"></div>
+  <div class="sidenotif" data-user-id="">
+    <div class="notif-header">
+      <img src="../img/icon/notifications.png">
+      <h2>Notifications</h2>
+    </div>
+    <div class="notif-elements" style="width: 360px !important;">
+      <div class="notif-loading">
+        <p>Chargement des notifications...</p>
+      </div>
+    </div>
+  </div>
+  <div class="sidebar">
+    <img src="../img/icon/menu.png" alt="Close" class="close-sidebar">
+    <div class="logo">
+      <img src="../img/logoblanc.png" alt="EmballageBI">
+      <div class="title-logo">
+        <h1>Emballage BI</h1>
+        <p>2026</p>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <ul>
+        <li onclick="window.location.href = '../index.html'" onclick="window.location.href = '../index.html'"><a
+            href="#"><img src="../img/icon/home.png" alt="Home"> Tableau de bord</a></li>
+        <hr>
+        <li onclick="window.location.href = '../Plaque/suiviplaque.html'"><a href="#"><img
+              src="../img/icon/papeterie-papiers-empiles.png" alt="Plaques"> Suivi des Plaques</a></li>
+        <li onclick="window.location.href = '../Plaque/plaques.html'"><a href="#"><img src="../img/icon/plaques.png"
+              alt="Plaques"> Plaques</a></li>
+        <hr>
+        <li onclick="window.location.href = '../Client/clients.html'"><a href="#"><img src="../img/icon/client.png"
+              alt="Client"> Clients</a></li>
+        <li onclick="window.location.href = '../Produit/produits.html'"><a href="#"><img
+              src="../img/icon/produit - Copie.png" alt="Produit"> Produits</a></li>
+        <li onclick="window.location.href = '../Conception/conceptions.html'"><a href="#"><img
+              src="../img/icon/personnalisation1.png" alt="Conception"> Conceptions</a></li>
+        <hr>
+        <li onclick="window.location.href = '../Scan/scan.html'"><a href="#"><img src="../img/icon/qrcode.png" alt="QR">
+            Scan
+            QR</a></li>
+        <li onclick="window.location.href = '../Annonces/annonces.html'"><a href="#"><img src="../img/icon/annonce.png"
+              alt="Annonces"> Annonces</a></li>
+        <hr>
+        <li onclick="window.location.href = '../User/profil.html'"><a href="#"><img src="../img/icon/user.png"
+              alt="User">
+            Profil</a></li>
+        <li onclick="window.location.href = '../Parametres/parametres.html'"><a href="#"><img
+              src="../img/icon/parametres.png" alt="Parametres"> Parametres</a></li>
+
+      </ul>
+      <a href="#" id="logoutBtn"><img src="../img/icon/se-deconnecter.png" alt="Parametres"> Se deconnecter</a>
+    </nav>
+  </div>
+
+  <div class="index-start">
+    <div class="header" style="justify-content: space-evenly;">
+      <div class="user-space" style="display: flex;justify-content: flex-start;width: 15%;">
+        <div class="burger" style="margin-left: 30px;">
+          <img src="../img/icon/menu.png" alt="Menu">
+        </div>
+        <div class="returnBtn"
+          style="margin-left: 40px;width: 40px;height: 40px;display: flex;justify-content: center;align-items: center;"
+          onclick="window.location.href='../Client/clients.html'">
+          <img src="../img/icon/retourner.png">
+        </div>
+      </div>
+      <div class="logo" onclick="window.location.href='../index.html'">
+        <img src="../img/logoblanc.png" alt="EmballageBI" data-red="../img/logorouge.png" tabindex="0" />
+      </div>
+      <div class="user-space" style="display: flex;justify-content: flex-end;width: 15%;">
+        <div class="notif-user">
+          <img src="../img/icon/notifications.png" alt="Notifications">
+          <span class="notif-count">0</span>
+        </div>
+        <div class="user-info" onclick="window.location.href='../user/profil.html'">
+          <img src="../img/icon/profil.png" alt="User">
+        </div>
+      </div>
+    </div>
+    <div class="index-container">
+      <div class="linkpages">
+        <a href="../index.html">Tableau de bord </a> > <a href="clients.html">Clients</a> > Nouveau Client
+      </div>
+      <div class="container-new-plaque">
+        <div class="add-client"
+          style="position:static;width: 100%;background-color: transparent;height: 100%;z-index: 0;">
+          <div class="title-addclient">
+            <div class="title-addclient-container">
+              <img src="../img/icon/addclient.png" alt="Add Client">
+              <h1>Ajouter un nouveau client</h1>
+            </div>
+          </div>
+          <form id="clientForm" class="form-addclient" enctype="multipart/form-data" novalidate>
+            <div class="form-addclient-container">
+              <div class="left-form-addclient">
+                <div class="first-left-form-addclient">
+                  <div class="title-left-form-addclient">
+                    <h1>Informations du client :</h1>
+                    <img src="../img/icon/profilclient.png" alt="Client">
+                  </div>
+                  <div class="inputs-form-addclient">
+                    <span>Client (Restaurant/Fast-food):</span>
+                    <input id="enseigne" name="enseigne" type="text" placeholder="Ex : Chicken street..." />
+                  </div>
+                </div>
+                <div class="first-left-form-addclient" style="align-items: center;">
+                  <div class="title-left-form-addclient">
+                    <h1>Localisation du client :</h1>
+                    <img src="../img/icon/maps.png" style="filter: invert(100%);" alt="Client">
+                  </div>
+                  <div class="loc-form-addclient">
+                    <div class="locwil-form-addclient" style="flex-direction: row;">
+                      <div class="localisation-form">
+                        <span>Adresse Physique :</span>
+                        <input type="text" placeholder="Ex: Rue Benomar 52...">
+                      </div>
+                      <div class="wilaya-form">
+                        <span>Wilaya :</span>
+                        <select>
+                          <option>--Selectionnez une wilaya--</option>
+                          <option>1. Adrar</option>
+                          <option>2. Chlef</option>
+                          <option>3. Laghouat</option>
+                          <option>4. Oum El Bouaghi</option>
+                          <option>5. Batna</option>
+                          <option>6. Béjaïa</option>
+                          <option>7. Biskra</option>
+                          <option>8. Béchar</option>
+                          <option>9. Blida</option>
+                          <option>10. Bouira</option>
+                          <option>11. Tamanrasset</option>
+                          <option>12. Tébessa</option>
+                          <option>13. Tlemcen</option>
+                          <option>14. Tiaret</option>
+                          <option>15. Tizi Ouzou</option>
+                          <option>16. Alger</option>
+                          <option>17. Djelfa</option>
+                          <option>18. Jijel</option>
+                          <option>19. Sétif</option>
+                          <option>20. Saïda</option>
+                          <option>21. Skikda</option>
+                          <option>22. Sidi Bel Abbès</option>
+                          <option>23. Annaba</option>
+                          <option>24. Guelma</option>
+                          <option>25. Constantine</option>
+                          <option>26. Médéa</option>
+                          <option>27. Mostaganem</option>
+                          <option>28. M'Sila</option>
+                          <option>29. Mascara</option>
+                          <option>30. Ouargla</option>
+                          <option>31. Oran</option>
+                          <option>32. El Bayadh</option>
+                          <option>33. Illizi</option>
+                          <option>34. Bordj-Bou-Arreridj</option>
+                          <option>35. Boumerdès</option>
+                          <option>36. El Tarf</option>
+                          <option>37. Tindouf</option>
+                          <option>38. Tissemsilt</option>
+                          <option>39. El Oued</option>
+                          <option>40. Khenchela</option>
+                          <option>41. Souk Ahras</option>
+                          <option>42. Tipaza</option>
+                          <option>43. Mila</option>
+                          <option>44. Aïn Defla</option>
+                          <option>45. Naâma</option>
+                          <option>46. Aïn Témouchent</option>
+                          <option>47. Ghardaïa</option>
+                          <option>48. Relizane</option>
+                          <option>49. Timimoun</option>
+                          <option>50. Bordj Badji Mokhtar</option>
+                          <option>51. Ouled Djellal</option>
+                          <option>52. Béni Abbès</option>
+                          <option>53. In Salah</option>
+                          <option>54. In Guezzam</option>
+                          <option>55. Touggourt</option>
+                          <option>56. Djanet</option>
+                          <option>57. El M'Ghair</option>
+                          <option>58. El Meniaa</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="locwil-form-addclient">
+                      <div class="phone-form">
+                        <span>Numero de téléphone :</span>
+                        <div class="inputs-phone-form">
+                          <input type="tel" placeholder="Ex: 0555 55 55 55" class="inputnumtel">
+                          <input type="text" placeholder="Nom..." class="inputnumtel">
+                          <p>Responsable : </p>
+                          <input type="radio" name="responsable">
+                        </div>
+                        <button type="button" class="delete-phone">
+                          <img src="../img/icon/supprimer1.png" alt=".delete-phone">
+                        </button>
+                      </div>
+                      <button type="button" class="add-phone">
+                        <img src="../img/icon/plus.png" alt="add-phone">
+                      </button>
+                    </div>
+                  </div>
+                  <div class="addanotherloc">
+                    <button type="button">
+                      <img src="../img/icon/plus.png">
+                      <p>Ajouter une autre localisation</p>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="right-form-addclient">
+                <div class="first-right-form-addclient">
+                  <div class="title-first">
+                    <h1>Informations fiscales du client :</h1>
+                    <img src="../img/icon/fiscal.png" alt="infoFiscal">
+                  </div>
+                  <div class="input-first">
+                    <span>Article d'imposition :</span>
+                    <input id="article_imposition" name="article_imposition" type="text"
+                      placeholder="Article d'imposition..." />
+                  </div>
+                  <div class="input-first">
+                    <span>Numero de registre :</span>
+                    <input id="num_registre" name="num_registre" type="text" placeholder="Numero de registre..." />
+                  </div>
+                  <div class="input-first1">
+                    <div class="input12-first">
+                      <span>NIF :</span>
+                      <input id="nif" name="nif" type="text" placeholder="NIF..." class="nif-input">
+                    </div>
+                    <div class="input12-first">
+                      <span>NIS :</span>
+                      <input id="nis" name="nis" type="text" placeholder="NIS..." class="nis-input">
+                    </div>
+                  </div>
+                </div>
+                <div class="second-right-form-addclient">
+                  <div class="title-second">
+                    <h1>
+                      Informations Supplémentaires
+                      <img src="../img/icon/arrow-down.png" alt="More">
+                    </h1>
+                    <div class="input-first">
+                      <span>Email du client :</span>
+                      <input id="email" name="email" type="email" placeholder="Ex : mail@mail.pro ">
+                    </div>
+                    <div class="drag-first">
+                      <span>Logo du client :</span>
+                      <div class="file-upload-container">
+                        <div class="file-upload">
+                          <input multiple class="file-input" id="fileInput" name="logo" type="file" accept="image/*" />
+                          <label class="file-label" for="fileInput"> ... </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="btns-form">
+              <button type="button" style="background-color: #ababab;" onclick="window.location.href='clients.html'">
+                <img src="../img/icon/retourner.png" alt="annuler">
+                Annuler
+              </button>
+              <button type="button" id="saveClientBtn">
+                <img src="../img/icon/sauvegarder.png" alt="saveClient">
+                Sauvegarder le client
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+
+
+    document.addEventListener('DOMContentLoaded', () => {
+      /* ============================================================
+          gestion Add Form client
+          ============================================================ */
+
+      // Parents / templates
+      const firstLoc = document.querySelector('.loc-form-addclient');
+      if (!firstLoc) return;
+      const locsParent = firstLoc.parentElement; // container where .loc-form-addclient live
+      const addAnotherLocBtn = document.querySelector('.first-left-form-addclient .addanotherloc button');
+
+      // Compteurs pour noms uniques
+      let locCounter = 0;
+
+      // UTIL: normaliser un élément phone-form (cache delete pour 1er, radio name unique)
+      function normalizePhoneFormsInLoc(locEl) {
+        const phonesWrapper = locEl.querySelectorAll('.locwil-form-addclient .phone-form');
+        const radioName = `responsable-${locEl.dataset.locId || ++locCounter}`;
+        // ensure dataset.locId exists
+        if (!locEl.dataset.locId) locEl.dataset.locId = locCounter;
+
+        phonesWrapper.forEach((pf, idx) => {
+          const radio = pf.querySelector('input[type="radio"]');
+          if (radio) radio.name = radioName;
+          const delBtn = pf.querySelector('.delete-phone');
+          if (idx === 0) {
+            // masquer le bouton supprimer pour le premier phone
+            if (delBtn) delBtn.style.display = 'none';
+          } else {
+            if (delBtn) delBtn.style.display = '';
+          }
+        });
+      }
+
+      // Setup initial existing location(s)
+      function setupExistingLocations() {
+        const locs = Array.from(document.querySelectorAll('.loc-form-addclient'));
+        locs.forEach((loc, idx) => {
+          if (!loc.dataset.locId) loc.dataset.locId = ++locCounter;
+          normalizePhoneFormsInLoc(loc);
+
+          // si ce n'est pas le premier emplacement, ajouter bouton delete pour la localisation
+          if (idx > 0) ensureDeleteLocButton(loc);
+        });
+      }
+
+      // Ajoute un bouton .deleteanotherloc (en haut à droite) à une location si absent
+      function ensureDeleteLocButton(locEl) {
+        if (locEl.querySelector('.deleteanotherloc')) return;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'deleteanotherloc';
+        btn.innerHTML = `<img src="../img/icon/supprimer1.png" alt="delete-loc">`;
+        // position absolute allowed by CSS (tu as la classe .deleteanotherloc)
+        locEl.style.position = locEl.style.position || 'relative';
+        locEl.appendChild(btn);
+      }
+
+      // Supprime la location avec confirmation + animation
+      function removeLocation(locEl) {
+        if (!locEl) return;
+        const nameInput = locEl.querySelector('.localisation-form input') || { value: 'cette localisation' };
+        const conf = confirm(`Confirmer la suppression de la localisation : "${nameInput.value || ' (sans adresse) '}" ?`);
+        if (!conf) return;
+        // animation de fade + collapse
+        locEl.style.transition = 'opacity 250ms ease, transform 250ms ease, height 250ms ease, margin 250ms ease';
+        locEl.style.opacity = '0';
+        locEl.style.transform = 'translateY(-8px)';
+        const h = locEl.offsetHeight;
+        locEl.style.height = h + 'px';
+        requestAnimationFrame(() => {
+          locEl.style.height = '0px';
+          locEl.style.marginTop = '0px';
+          locEl.style.marginBottom = '0px';
+        });
+        setTimeout(() => {
+          if (locEl && locEl.parentNode) locEl.parentNode.removeChild(locEl);
+        }, 320);
+      }
+
+      // Création d'une nouvelle phone-form (DOM) — renvoie l'élément
+      function createPhoneFormElement(locId) {
+        const pf = document.createElement('div');
+        pf.className = 'phone-form';
+        pf.innerHTML = `
+                <span>Numero de téléphone :</span>
+                <div class="inputs-phone-form">
+                    <input type="tel" placeholder="Ex: 0555 55 55 55" class="inputnumtel">
+                    <input type="text" placeholder="Nom..." class="inputnumtel">
+                    <p>Responsable : </p>
+                    <input type="radio" name="responsable-${locId}">
+                </div>
+                <button type="button" class="delete-phone">
+                    <img src="../img/icon/supprimer1.png" alt=".delete-phone">
+                </button>
+                `;
+        return pf;
+      }
+
+
+      // Création d'une nouvelle localisation (clone propre)
+      function createNewLocation() {
+        const template = firstLoc;
+        const clone = template.cloneNode(true);
+
+        // assign id
+        clone.dataset.locId = ++locCounter;
+
+        // nettoyer valeurs des inputs/selects
+        clone.querySelectorAll('input').forEach(inp => {
+          if (inp.type === 'radio') inp.checked = false;
+          else inp.value = '';
+        });
+        clone.querySelectorAll('select').forEach(sel => { sel.selectedIndex = 0; });
+
+        // dans le clone, garder seulement le premier phone-form (s'il y en a plusieurs)
+        const phonesZone = Array.from(clone.querySelectorAll('.locwil-form-addclient')).pop();
+        if (phonesZone) {
+          const phoneForms = Array.from(phonesZone.querySelectorAll('.phone-form'));
+          // si y en a 0, créer 1
+          if (phoneForms.length === 0) {
+            phonesZone.insertBefore(createPhoneFormElement(clone.dataset.locId), phonesZone.firstChild);
+          } else {
+            // supprimer tous sauf le premier
+            phoneForms.forEach((pf, idx) => {
+              if (idx > 0) pf.parentNode.removeChild(pf);
+            });
+          }
+          // masquer delete du 1er phone
+          const firstPhone = phonesZone.querySelector('.phone-form');
+          if (firstPhone) {
+            const dp = firstPhone.querySelector('.delete-phone');
+            if (dp) dp.style.display = 'none';
+            // s'assurer que radio name ok
+            const radio = firstPhone.querySelector('input[type="radio"]');
+            if (radio) radio.name = `responsable-${clone.dataset.locId}`;
+          }
+          // s'assurer que le bouton add-phone est présent (si cloné ok)
+          let addPhoneBtn = phonesZone.querySelector('.add-phone');
+          if (!addPhoneBtn) {
+            addPhoneBtn = document.createElement('button');
+            addPhoneBtn.type = 'button';
+            addPhoneBtn.className = 'add-phone';
+            addPhoneBtn.innerHTML = `<img src="../img/icon/plus.png" alt="add-phone">`;
+            phonesZone.appendChild(addPhoneBtn);
+          }
+        }
+
+        // ajouter bouton delete pour la localisation (sauf si c'est la toute 1ère)
+        ensureDeleteLocButton(clone);
+
+        // insérer après le dernier template existant (avant le bouton "Ajouter une autre localisation")
+        locsParent.insertBefore(clone, addAnotherLocBtn ? addAnotherLocBtn.closest('.first-left-form-addclient')?.querySelector('.addanotherloc') : null);
+        // NOTE: we inserted clone as sibling before the addAnotherLoc area - to be safe insert at end of locsParent:
+        if (!clone.parentNode) locsParent.appendChild(clone);
+
+        // réglages finaux
+        normalizePhoneFormsInLoc(clone);
+        // focus sur le premier input adresse
+        const addr = clone.querySelector('.localisation-form input');
+        if (addr) addr.focus();
+      }
+
+      // Délégation d'évènements pour add-phone / delete-phone / deleteanotherloc sur locsParent
+      locsParent.addEventListener('click', (ev) => {
+        const btn = ev.target.closest('button');
+        if (!btn) return;
+
+        // ajouter phone
+        if (btn.classList.contains('add-phone')) {
+          ev.preventDefault();
+          const locEl = btn.closest('.loc-form-addclient');
+          addPhoneToLocation(locEl);
+          return;
+        }
+
+        // delete phone
+        if (btn.classList.contains('delete-phone')) {
+          ev.preventDefault();
+          const phoneEl = btn.closest('.phone-form');
+          const locEl = btn.closest('.loc-form-addclient');
+          if (!phoneEl || !locEl) return;
+          // si c'est le premier phone, ne pas supprimer (sécurité)
+          const phones = Array.from(locEl.querySelectorAll('.phone-form'));
+          if (phones.length <= 1) {
+            alert('Impossible de supprimer : au moins un numéro doit être présent.');
+            return;
+          }
+          // confirmation
+          const numInput = phoneEl.querySelector('input.inputnumtel');
+          const num = numInput ? numInput.value.trim() : '';
+          const conf = confirm(`Confirmer la suppression du numéro "${num || 'sans numéro'}" ?`);
+          if (!conf) return;
+          // suppression animée
+          phoneEl.style.transition = 'opacity 200ms ease, height 200ms ease, margin 200ms ease';
+          phoneEl.style.opacity = '0';
+          const h = phoneEl.offsetHeight;
+          phoneEl.style.height = h + 'px';
+          requestAnimationFrame(() => {
+            phoneEl.style.height = '0px';
+            phoneEl.style.marginTop = '0px';
+            phoneEl.style.marginBottom = '0px';
+          });
+          setTimeout(() => {
+            if (phoneEl.parentNode) phoneEl.parentNode.removeChild(phoneEl);
+            // ré-normaliser radios & delete buttons
+            normalizePhoneFormsInLoc(locEl);
+          }, 220);
+          return;
+        }
+
+        // delete location
+        if (btn.classList.contains('deleteanotherloc')) {
+          ev.preventDefault();
+          const locEl = btn.closest('.loc-form-addclient');
+          if (!locEl) return;
+          // protection : ne pas supprimer la 1ere localisation d'origine (on n'ajoute deleteonly aux clones)
+          const allLocs = Array.from(document.querySelectorAll('.loc-form-addclient'));
+          if (allLocs.length <= 1) {
+            alert('Impossible de supprimer : au moins une localisation doit être présente.');
+            return;
+          }
+          removeLocation(locEl);
+          return;
+        }
+      });
+
+      // Bouton "Ajouter une autre localisation"
+      if (addAnotherLocBtn) {
+        addAnotherLocBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          createNewLocation();
+          // after creation, ensure newly appended location has delete button (done inside createNewLocation)
+        });
+      }
+
+      // Initial setup for existing locations & phones
+      setupExistingLocations();
+
+      // Si on ajoute des locations via d'autres scripts / actions, s'assurer que les nouveaux éléments soient initialisés
+      // on observe locsParent pour enfants ajoutés
+      const mo = new MutationObserver((mutations) => {
+        for (const m of mutations) {
+          if (m.type === 'childList' && m.addedNodes.length) {
+            m.addedNodes.forEach(n => {
+              if (n.nodeType === 1 && n.matches && n.matches('.loc-form-addclient')) {
+                // initialise le nouveau
+                if (!n.dataset.locId) n.dataset.locId = ++locCounter;
+                normalizePhoneFormsInLoc(n);
+                // s'assurer qu'il a un bouton delete (tous sauf le tout premier)
+                const allLocs = Array.from(document.querySelectorAll('.loc-form-addclient'));
+                if (allLocs.length > 1) ensureDeleteLocButton(n);
+              }
+            });
+          }
+        }
+      });
+      mo.observe(locsParent, { childList: true });
+
+
+      const titleSecond = document.querySelector('.second-right-form-addclient .title-second');
+      if (titleSecond) {
+        // On cible uniquement le <h1> comme zone de toggle afin que les clics dans les inputs
+        // / upload / etc. ne ferment pas le panneau.
+        const headerH1 = titleSecond.querySelector('h1');
+        if (headerH1) {
+          // s'assurer de l'état initial
+          titleSecond.style.maxHeight = titleSecond.classList.contains('open') ? (titleSecond.scrollHeight + 'px') : '60px';
+
+          headerH1.addEventListener('click', (ev) => {
+            ev.preventDefault();
+            const isOpen = titleSecond.classList.contains('open');
+            if (isOpen) {
+              // fermer : transition de max-height (de scrollHeight -> 60px)
+              titleSecond.style.maxHeight = titleSecond.scrollHeight + 'px';
+              // force frame then collapse
+              requestAnimationFrame(() => {
+                titleSecond.style.maxHeight = '60px';
+                titleSecond.classList.remove('open');
+              });
+            } else {
+              // ouvrir : mettre la classe open puis donner la valeur scrollHeight
+              titleSecond.classList.add('open');
+              // set a value large enough to reveal content
+              const target = titleSecond.scrollHeight > 60 ? (titleSecond.scrollHeight + 'px') : '240px';
+              titleSecond.style.maxHeight = target;
+            }
+          });
+        }
+
+        // Empêcher la fermeture accidentelle si on clique dans les descendants (sécurité)
+        // (utile si d'autres scripts écoutent clicks de parent)
+        titleSecond.addEventListener('click', (ev) => {
+          // si le click n'était pas sur le h1, on stop la propagation pour éviter tout handler parent
+          const onHeader = !!ev.target.closest('h1');
+          if (!onHeader) {
+            ev.stopPropagation && ev.stopPropagation();
+          }
+        });
+      }
+
+      // --- Preview image upload inside the "Logo du client" upload field ---
+      // on sélectionne le input file qui se trouve dans le bloc second-right-form-addclient
+      const fileInput = document.querySelector('.second-right-form-addclient .file-input');
+      const fileUploadContainer = document.querySelector('.second-right-form-addclient .file-upload');
+      if (!fileInput || !fileUploadContainer) return;
+
+      // Créer ou récupérer un container pour les miniatures (on le place après .file-upload)
+      let previewContainer = fileUploadContainer.parentElement.querySelector('.logo-preview');
+      if (!previewContainer) {
+        previewContainer = document.createElement('div');
+        previewContainer.className = 'logo-preview';
+        // style minimal pour que ça s'affiche propre (ne change pas ton style global)
+        previewContainer.style.display = 'flex';
+        previewContainer.style.flexWrap = 'wrap';
+        previewContainer.style.gap = '8px';
+        previewContainer.style.marginTop = '8px';
+        fileUploadContainer.parentElement.appendChild(previewContainer);
+      }
+
+      // Stocke la liste des fichiers "actifs" (objet File) pour permettre suppression individuelle
+      let selectedFiles = [];
+
+      // Helper to format size
+      function formatBytes(bytes) {
+        if (bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+      }
+
+      // Recrée FileList de l'input à partir de selectedFiles (via DataTransfer)
+      function rebuildInputFileList() {
+        try {
+          const dt = new DataTransfer();
+          selectedFiles.forEach(f => dt.items.add(f));
+          fileInput.files = dt.files;
+        } catch (e) {
+          // Certains vieux navigateurs peuvent échouer, dans ce cas on laisse l'input d'origine
+          // mais on continue d'afficher les miniatures hors du input.
+          console.warn('Impossible de réécrire fileInput.files via DataTransfer :', e);
+        }
+      }
+
+      // Met à jour l'affichage des miniatures
+      function refreshPreviews() {
+        previewContainer.innerHTML = '';
+        if (selectedFiles.length === 0) return;
+        selectedFiles.forEach((file, idx) => {
+          const item = document.createElement('div');
+          item.className = 'logo-thumb';
+          item.style.display = 'flex';
+          item.style.flexDirection = 'column';
+          item.style.alignItems = 'center';
+          item.style.width = '70px';
+          item.style.fontFamily = 'Nunito, sans-serif';
+          item.style.fontSize = '11px';
+          item.style.color = '#222';
+
+          const imgWrap = document.createElement('div');
+          imgWrap.style.width = '60px';
+          imgWrap.style.height = '60px';
+          imgWrap.style.borderRadius = '6px';
+          imgWrap.style.overflow = 'hidden';
+          imgWrap.style.display = 'flex';
+          imgWrap.style.alignItems = 'center';
+          imgWrap.style.justifyContent = 'center';
+          imgWrap.style.background = '#ffffff';
+          imgWrap.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
+
+          const thumbImg = document.createElement('img');
+          thumbImg.style.maxWidth = '100%';
+          thumbImg.style.maxHeight = '100%';
+          thumbImg.alt = file.name;
+
+          // si c'est une image on crée la miniature via FileReader
+          if (file.type && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              thumbImg.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+          } else {
+            // si pas image, afficher une icône générique (on réutilise ton icone existant si présent)
+            thumbImg.src = '../img/icon/fichier.png';
+            thumbImg.style.objectFit = 'contain';
+          }
+          imgWrap.appendChild(thumbImg);
+
+          // nom + taille
+          const meta = document.createElement('div');
+          meta.style.textAlign = 'center';
+          meta.style.marginTop = '4px';
+          meta.innerHTML = `<div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:70px">${file.name}</div><div style="opacity:0.7">${formatBytes(file.size)}</div>`;
+
+          // bouton supprimer miniature
+          const delBtn = document.createElement('button');
+          delBtn.type = 'button';
+          delBtn.title = 'Supprimer ce fichier';
+          delBtn.style.position = 'absolute';
+          delBtn.style.width = '18px';
+          delBtn.style.height = '18px';
+          delBtn.style.background = '#630101';
+          delBtn.style.border = 'none';
+          delBtn.style.borderRadius = '50%';
+          delBtn.style.display = 'flex';
+          delBtn.style.alignItems = 'center';
+          delBtn.style.justifyContent = 'center';
+          delBtn.style.cursor = 'pointer';
+          delBtn.style.margin = '0';
+          delBtn.style.padding = '0';
+          delBtn.style.marginLeft = '-88px'; // position top-right of thumbnail
+          delBtn.style.marginTop = '-6px';
+
+          const delImg = document.createElement('img');
+          delImg.src = '../img/icon/supprimer1.png';
+          delImg.style.width = '12px';
+          delImg.style.height = '12px';
+          delImg.alt = 'supprimer';
+          delBtn.appendChild(delImg);
+
+          // wrapper relatif pour positionner delete
+          const wrapper = document.createElement('div');
+          wrapper.style.position = 'relative';
+          wrapper.style.display = 'inline-block';
+
+          wrapper.appendChild(imgWrap);
+
+          // add delete button over thumbnail
+          wrapper.appendChild(delBtn);
+
+          item.appendChild(wrapper);
+          item.appendChild(meta);
+
+          // click suppression de la miniature
+          delBtn.addEventListener('click', (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            // retirer selectedFiles[idx] (identification par référence file)
+            selectedFiles = selectedFiles.filter((f, i) => !(f.name === file.name && f.size === file.size && f.type === file.type && i === idx ? false : false));
+            // Better removal by matching name+size+type and removing the first occurrence:
+            let removed = false;
+            const newFiles = [];
+            for (let i = 0; i < selectedFiles.length + 1; i++) {
+              // build new list manually: we already filtered above, but safer:
+            }
+            // Simpler: remove based on unique signature (name|size|type) first match
+            const signature = `${file.name}__${file.size}__${file.type}`;
+            let found = false;
+            const kept = [];
+            for (const f of selectedFiles) {
+              const sig = `${f.name}__${f.size}__${f.type}`;
+              if (!found && sig === signature) {
+                found = true;
+                continue; // skip first match
+              }
+              kept.push(f);
+            }
+            // if we didn't find in selectedFiles (because selectedFiles was mutated earlier), try alternate approach:
+            if (!found) {
+              // rebuild by removing file by matching against preview nodes count: use index param
+              // recreate selectedFiles by examining fileInput.files
+              const currentFiles = Array.from(fileInput.files || []);
+              if (currentFiles.length > 0) {
+                // remove the file that matches name/size/type at first occurrence
+                let rem = false;
+                const keep2 = [];
+                for (let i = 0; i < currentFiles.length; i++) {
+                  const f2 = currentFiles[i];
+                  if (!rem && f2.name === file.name && f2.size === file.size && f2.type === file.type) {
+                    rem = true;
+                    continue;
+                  }
+                  keep2.push(f2);
+                }
+                selectedFiles = keep2;
+              } else {
+                selectedFiles = kept;
+              }
+            } else {
+              selectedFiles = kept;
+            }
+
+            // rebuild input.files and previews
+            rebuildInputFileList();
+            refreshPreviews();
+          });
+
+          previewContainer.appendChild(item);
+        });
+      }
+
+      // Lors d'un nouveau choix de fichiers
+      fileInput.addEventListener('change', (ev) => {
+        const files = Array.from(ev.target.files || []);
+        if (!files.length) return;
+
+        // ajouter aux selectedFiles (éviter doublons stricts name+size+type)
+        files.forEach(f => {
+          const sig = `${f.name}__${f.size}__${f.type}`;
+          const exists = selectedFiles.some(sf => `${sf.name}__${sf.size}__${sf.type}` === sig);
+          if (!exists) selectedFiles.push(f);
+        });
+
+        // réécrire le FileList de l'input (pratique pour suppression ultérieure)
+        rebuildInputFileList();
+
+        // mettre à jour aperçus
+        refreshPreviews();
+      });
+
+      // Si l'utilisateur fait drag & drop sur la zone .file-upload: on supporte l'ajout
+      const dropArea = fileUploadContainer;
+      ['dragenter', 'dragover'].forEach(evt => {
+        dropArea.addEventListener(evt, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropArea.classList.add('dragover');
+        });
+      });
+      ['dragleave', 'drop'].forEach(evt => {
+        dropArea.addEventListener(evt, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropArea.classList.remove('dragover');
+        });
+      });
+
+      dropArea.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        if (!dt) return;
+        const files = Array.from(dt.files || []);
+        if (files.length === 0) return;
+        files.forEach(f => {
+          const sig = `${f.name}__${f.size}__${f.type}`;
+          const exists = selectedFiles.some(sf => `${sf.name}__${sf.size}__${sf.type}` === sig);
+          if (!exists) selectedFiles.push(f);
+        });
+        rebuildInputFileList();
+        refreshPreviews();
+      });
+
+
+
+      /* ============================================================
+           4) Onglets, sidebar, splash (inchangés mais centralisés)
+           ============================================================ */
+      (function () {
+        const onglets = document.querySelectorAll('.all-onglets-container .btns-onglets .onglet');
+        const containers = document.querySelectorAll('.all-onglets-container .onglet-container');
+
+        onglets.forEach((tab, i) => {
+          if (!tab.hasAttribute('tabindex')) tab.setAttribute('tabindex', '0');
+          if (!tab.hasAttribute('role')) tab.setAttribute('role', 'button');
+
+          tab.addEventListener('click', () => activate(i));
+          tab.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate(i); }
+          });
+        });
+
+        function activate(index) {
+          onglets.forEach((t, i) => t.classList.toggle('active', i === index));
+          containers.forEach((c, i) => c.style.display = (i === index) ? 'flex' : 'none');
+        }
+
+        const current = Array.from(onglets).findIndex(t => t.classList.contains('active'));
+        activate(current === -1 ? 0 : current);
+      })();
+
+      // Notification function
+      function showNotification(message, type = 'success') {
+        const container = document.getElementById('notification-container');
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+
+        notification.innerHTML = `
+                <span class="notification-icon">${type === 'success' ? '✓' : '⚠'}</span>
+                <span>${message}</span>
+            `;
+
+        container.appendChild(notification);
+
+        // Remove notification after animation completes
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+          }
+        }, 3500);
+      }
+
+      // Modified save function with notification
+      async function handleSave(ev) {
+        ev.preventDefault();
+        const saveBtn = document.getElementById('saveClientBtn');
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Enregistrement...';
+
+        const payload = buildPayload();
+
+        // Basic validation
+        if (!payload.enseigne || payload.enseigne.length < 2) {
+          showNotification('Veuillez saisir le nom du client.', 'error');
+          saveBtn.disabled = false;
+          saveBtn.textContent = 'Sauvegarder le client';
+          return;
+        }
+
+        try {
+          const res = await fetch('/clients', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify(payload)
+          });
+
+          if (res.status === 201) {
+            showNotification('Client créé avec succès !', 'success');
+            // Clear form
+            document.getElementById('clientForm').reset();
+
+            // Redirect after a short delay
+            setTimeout(() => {
+              window.location.href = 'clients.html';
+            }, 2000);
+          } else if (res.status === 400 || res.status === 422) {
+            const err = await res.json().catch(() => ({ detail: 'Erreur de validation' }));
+            console.error('Validation error', err);
+            showNotification('Erreur: ' + (err.detail || 'Erreur de validation'), 'error');
+          } else {
+            const txt = await res.text();
+            console.error('Unexpected response', res.status, txt);
+            showNotification('Erreur inattendue du serveur.', 'error');
+          }
+        } catch (e) {
+          console.error(e);
+          showNotification('Impossible de contacter le serveur.', 'error');
+        } finally {
+          saveBtn.disabled = false;
+          saveBtn.textContent = 'Sauvegarder le client';
+        }
+      }
+
+      // Attach event listener when DOM is loaded
+      document.addEventListener('DOMContentLoaded', () => {
+        const saveBtn = document.getElementById('saveClientBtn');
+        if (saveBtn) {
+          saveBtn.addEventListener('click', handleSave);
+        }
+
+      });
+    });
+
+  </script>
+
+
+</body>
+
+</html>

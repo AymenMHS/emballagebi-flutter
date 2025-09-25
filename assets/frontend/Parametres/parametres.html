@@ -1,0 +1,1866 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  <title>Paramètres — GetPrim</title>
+  <script src="../runtime_config.js"></script>
+  <!-- api wrapper depends on window.API_BASE -->
+  <script src="../api.js"></script>
+  <!-- verify-connected uses api/buildApiUrl & binds logout -->
+  <script src="../verify-connected.js"></script>
+  <script src="../notification.js"></script>
+  <script src="../ui-shell.js"></script>
+  <style>
+    :root {
+      --bg: #f7f7f8;
+      --panel: #ffffff;
+      --muted: #9aa0a6;
+      --accent: #950808;
+      --danger: #e04b4b;
+      --shadow: 0 6px 20px rgba(18, 24, 37, 0.08);
+      --radius: 10px;
+      font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      color: #222;
+      background: linear-gradient(180deg, rgb(229, 229, 229) 0%, rgb(168, 168, 168) 100%);
+      font-family: "Nunito", sans-serif;
+      overflow: hidden;
+    }
+
+    .app {
+      display: flex;
+      height: 100vh;
+      gap: 20px;
+      padding: 20px;
+      box-sizing: border-box;
+      width: 100%;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 320px;
+      background: var(--panel);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: calc(100vh - 80px);
+      box-shadow: 7px 5px 18px 0px rgba(0, 0, 0, 0.50);
+      -webkit-box-shadow: 7px 5px 18px 0px rgba(0, 0, 0, 0.50);
+      -moz-box-shadow: 7px 5px 18px 0px rgba(0, 0, 0, 0.50);
+    }
+
+    .sidebar .btnreturn {
+      margin-top: 30px !important;
+    }
+
+    .account {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #db2f2f, #ff5f5f);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 20px;
+      box-shadow: 0 4px 14px rgba(47, 111, 219, 0.12);
+    }
+
+    .acc-info h3 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .acc-info p {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    nav.side-nav {
+      margin-top: 18px;
+    }
+
+    nav.side-nav button {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 0;
+      background: transparent;
+      padding: 10px 8px;
+      border-radius: 8px;
+      width: 100%;
+      text-align: left;
+      color: #27303b;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    nav.side-nav button.active {
+      background: #f1f6ff;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .sidebar .small {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 10px;
+    }
+
+    .logout {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      padding: 12px;
+      border-radius: 8px;
+      background: #fff;
+      border: 1px solid rgba(0, 0, 0, 0.03);
+      cursor: pointer;
+    }
+
+    .logout span {
+      font-weight: 600;
+      color: var(--danger);
+    }
+
+    /* Content */
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 7px 5px 18px 0px rgba(0, 0, 0, 0.50);
+      -webkit-box-shadow: 7px 5px 18px 0px rgba(0, 0, 0, 0.50);
+      -moz-box-shadow: 7px 5px 18px 0px rgba(0, 0, 0, 0.50);
+    }
+
+    .panel h2 {
+      margin: 0 0 10px 0;
+      font-size: 16px;
+    }
+
+    .panel .muted {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    /* Accounts table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th,
+    td {
+      padding: 10px 8px;
+      text-align: left;
+      border-bottom: 1px solid #f1f3f5;
+    }
+
+    th {
+      font-weight: 600;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 6px 8px;
+      border-radius: 8px;
+      font-size: 12px;
+      background: #f1f3f7;
+      color: #334155;
+    }
+
+    .row-actions button {
+      margin-right: 8px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 0;
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: var(--accent);
+      color: #fff;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .btn.ghost {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid rgba(47, 111, 219, 0.12);
+    }
+
+    .controls {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="number"],
+    select,
+    textarea {
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid #e6e9ee;
+      background: #fff;
+      outline: none;
+      font-size: 14px;
+    }
+
+    textarea {
+      min-height: 100px;
+    }
+
+    /* log list */
+    .log-list {
+      max-height: 360px;
+      overflow: auto;
+      border-radius: 8px;
+      padding: 6px;
+      background: #fbfcfd;
+      border: 1px dashed #eef2f7;
+    }
+
+    .log-item {
+      padding: 8px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .log-item:last-child {
+      border-bottom: none;
+    }
+
+    .log-meta {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    /* DB share area */
+    .server-status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .dot.off {
+      background: #e2e8f0;
+    }
+
+    .dot.on {
+      background: #34d399;
+    }
+
+    .clients-list {
+      margin-top: 10px;
+      border-top: 1px solid #f1f3f5;
+      padding-top: 10px;
+    }
+
+    .client-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px dashed #f3f4f6;
+    }
+
+    .client-item:last-child {
+      border-bottom: none;
+    }
+
+    /* modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(8, 12, 20, 0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .modal {
+      width: 720px;
+      max-width: 96%;
+      background: #fff;
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal h3 {
+      margin: 0 0 8px 0;
+    }
+
+    .modal .form-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .modal .form-row>* {
+      flex: 1;
+    }
+
+    /* responsive */
+    @media (max-width:980px) {
+      .sidebar {
+        display: none;
+      }
+
+      .app {
+        padding: 12px;
+      }
+    }
+
+    .btnreturn {
+      width: 100%;
+      height: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .btnreturn button {
+      width: 100%;
+      border: none;
+      border-radius: 10px;
+      background-color: #760202;
+      color: white;
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .btnreturn button:hover {
+      opacity: 0.8;
+      transform: translate(0px, -1px);
+      transition: 0.3s ease;
+      cursor: pointer;
+    }
+
+    .btnreturn button:active {
+      opacity: 1;
+      transform: translate(0px, 2px);
+    }
+
+    .btnreturn button img {
+      width: 20px;
+      height: 20px;
+      filter: invert(100%);
+      margin-right: 10px;
+    }
+
+    /* Simplified UI improvements */
+    .user-friendly-msg {
+      background-color: #f8f9fa;
+      border-left: 4px solid #950808;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 4px;
+    }
+
+    .simplified-table {
+      font-size: 14px;
+    }
+
+    .simplified-table th {
+      background-color: #f1f3f5;
+      position: sticky;
+      top: 0;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .action-buttons button {
+      padding: 6px 10px;
+      font-size: 13px;
+    }
+
+    .log-entry {
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .log-entry:hover {
+      background-color: #f9f9f9;
+    }
+
+    .log-action {
+      font-weight: 600;
+      color: #333;
+    }
+
+    .log-details {
+      color: #666;
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    .log-user {
+      display: inline-block;
+      background-color: #e9ecef;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+
+    .log-time {
+      color: #888;
+      font-size: 12px;
+    }
+
+    .help-text {
+      font-size: 13px;
+      color: #6c757d;
+      margin-top: 4px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .section-title h2 {
+      margin: 0;
+    }
+
+    .section-icon {
+      width: 24px;
+      height: 24px;
+      opacity: 0.7;
+    }
+
+
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      color: #222;
+      background: linear-gradient(180deg, rgb(229, 229, 229) 0%, rgb(168, 168, 168) 100%);
+      font-family: "Nunito", sans-serif;
+      overflow: auto;
+      /* <-- permettre le scroll sur mobile */
+    }
+
+    /* Sidebar (ajouter transitions + position mobile-friendly) */
+    .sidebar {
+      width: 320px;
+      background: var(--panel);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: calc(100vh - 80px);
+      box-shadow: 7px 5px 18px 0px rgba(0, 0, 0, 0.50);
+      transition: transform 280ms ease, opacity 200ms ease;
+      transform: translateX(0);
+      position: relative;
+      /* par défaut */
+      z-index: 1001;
+    }
+
+    /* Quand la sidebar est cachée sur mobile */
+    .sidebar--hidden {
+      transform: translateX(-110%);
+      opacity: 0.98;
+    }
+
+    /* Overlay qui apparaît quand sidebar ouverte sur mobile */
+    .sidebar-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(8, 12, 20, 0.45);
+      display: none;
+      z-index: 1000;
+      touch-action: none;
+    }
+
+    /* quand active */
+    .sidebar-overlay.is-visible {
+      display: block;
+    }
+
+    /* Bouton hamburger (visible sur petits écrans) */
+    #sidebarToggle {
+      height: 40px !important;
+      width: 40px !important;
+      min-height: 40px !important;
+      min-width: 40px !important;
+      background-color: black !important;
+      color: white;
+      display: none;
+      /* visible via media */
+      border: 0;
+      background: transparent;
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Bouton fermer dans la sidebar (petit X) */
+    .sidebar .sidebar-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 36px;
+      height: 36px;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      cursor: pointer;
+      display: none;
+      /* visible en mobile via media */
+    }
+
+    /* Media query pour écran < 1000px */
+    @media (max-width:1000px) {
+      .app {
+        padding: 12px;
+        gap: 12px;
+      }
+
+      /* On passe la sidebar en fixed pour l'animation off-canvas */
+      .sidebar {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        height: calc(100vh - 40px);
+        width: 280px;
+        border-radius: 10px;
+        transform: translateX(-110%);
+        /* cachée par défaut */
+        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+      }
+
+      .sidebar--hidden {
+        transform: translateX(-110%);
+      }
+
+      .sidebar--visible {
+        transform: translateX(0);
+      }
+
+      /* Afficher le bouton hamburger */
+      #sidebarToggle {
+        display: flex;
+      }
+
+      /* Afficher le close dans la sidebar */
+      .sidebar .sidebar-close {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Permet au main de prendre tout l'espace */
+      .content {
+        flex: 1;
+        min-width: 0;
+      }
+
+      /* si tu as d'autres règles qui mettent display:none sur .sidebar -> retire-les */
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="app">
+      <!-- SIDEBAR -->
+      <aside class="sidebar sidebarP" aria-label="Panneau latéral"
+        style="animation: fadeInLeft;animation-duration: 1s;">
+        <button class="sidebar-close" aria-label="Fermer le panneau" title="Fermer">
+          ✕
+        </button>
+        <div>
+          <div class="btnreturn" onclick="window.location.href='../index.html'">
+            <button>
+              Retourner
+            </button>
+          </div>
+          <div class="account">
+            <div class="avatar" id="avatar"></div>
+            <div class="acc-info">
+              <h3 id="acc-name">Nom Compte</h3>
+              <p id="acc-role">Role: Admin</p>
+            </div>
+          </div>
+
+          <nav class="side-nav" role="navigation" aria-label="Navigation paramètres">
+            <button class="active" data-section="comptes">
+              Gestion des comptes
+            </button>
+            <button data-section="nonrep">
+              Journal d'activité
+            </button>
+            <button data-section="about">
+              À propos
+            </button>
+          </nav>
+
+          <div class="small">Connecté en tant que : <strong id="connected-user">admin</strong></div>
+        </div>
+
+        <div style="margin-top:18px;">
+          <div class="logout" id="logoutBtn" title="Se déconnecter">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M16 17l5-5-5-5M21 12H9" stroke="#e04b4b" stroke-width="1.6" stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+            <span>Se déconnecter</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- CONTENT -->
+      <main class="content" role="main" style="animation: fadeInRight;animation-duration: 1s;">
+        <button id="sidebarToggle" aria-controls="mainSidebar" aria-expanded="false" title="Ouvrir le menu">
+          ☰
+        </button>
+        <div class="header">
+          <div>
+            <h1>Paramètres</h1>
+            <p class="muted">Gère les comptes, la traçabilité, la base de données et le partage.</p>
+          </div>
+          <div>
+            <button class="btn" id="btnNewAccount" title="Créer un compte">+ Nouveau compte</button>
+          </div>
+        </div>
+
+        <!-- PAGES -->
+        <section id="page-comptes" class="panel"
+          style="box-shadow: 7px 5px 18px 0px rgba(0,0,0,0.50);-webkit-box-shadow: 7px 5px 18px 0px rgba(0,0,0,0.50);-moz-box-shadow: 7px 5px 18px 0px rgba(0,0,0,0.50);">
+          <div class="section-title">
+            <h2>Gestion des comptes</h2>
+          </div>
+          <p class="muted">Seul l'administrateur peut créer, modifier, voir mdp et attribuer des rôles.</p>
+
+          <div class="user-friendly-msg">
+            <strong>Information :</strong> Cette section vous permet de gérer tous les comptes utilisateurs du système.
+            Vous pouvez créer de nouveaux comptes, modifier les existants ou réinitialiser les mots de passe.
+          </div>
+
+          <div class="controls">
+            <input type="text" id="filterAccount" placeholder="Rechercher un compte...">
+            <select id="filterRole">
+              <option value="">Tous les rôles</option>
+              <option value="admin">Admin</option>
+              <option value="gerant">Gérant</option>
+              <option value="employe">Employé</option>
+            </select>
+            <button class="btn ghost" id="refreshAccounts">Rafraîchir</button>
+          </div>
+
+          <div style="overflow:auto;">
+            <table aria-live="polite" class="simplified-table">
+              <thead>
+                <tr>
+                  <th>Nom</th>
+                  <th>Rôle</th>
+                  <th>Mot de passe</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="accountsTbody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="page-nonrep" class="panel" style="display:none;"
+          style="box-shadow: 7px 5px 18px 0px rgba(0,0,0,0.50);-webkit-box-shadow: 7px 5px 18px 0px rgba(0,0,0,0.50);-moz-box-shadow: 7px 5px 18px 0px rgba(0,0,0,0.50);">
+          <div class="section-title">
+            <h2>Journal d'activité</h2>
+          </div>
+          <p class="muted">Historique complet des connexions, actions et modifications. Visible par Admin et Gérant.</p>
+
+          <div class="user-friendly-msg">
+            <strong>Information :</strong> Ce journal enregistre toutes les activités importantes dans le système.
+            Vous pouvez filtrer les activités par utilisateur ou par type d'action.
+          </div>
+
+          <div class="controls">
+            <input type="text" id="logFilterUser" placeholder="Filtrer par utilisateur...">
+            <input type="text" id="logFilterAction" placeholder="Filtrer par action...">
+            <button class="btn ghost" id="exportLogs">Exporter les logs</button>
+          </div>
+
+          <div class="log-list" id="logList" aria-live="polite"></div>
+        </section>
+
+        <section id="page-about" class="panel" style="display:none;"
+          style="box-shadow: 7px 5px 18px 0px rgba(0,0,0,0.50);-webkit-box-shadow: 7px 5px 18px 0px rgba(0,0,0,0.50);-moz-box-shadow: 7px 5px 18px 0px rgba(0,0,0,0.50);">
+          <div class="section-title">
+            <h2>À propos</h2>
+          </div>
+          <p class="muted">Informations sur l'application</p>
+          <div style="display:flex;gap:14px;align-items:flex-start;">
+            <div style="width:84px;height:84px;"><img style="width: 84px;" src="../img/mfe.png"></div>
+            <div>
+              <h3>Réalisé par MFE Group</h3>
+              <p style="color:var(--muted);line-height:1.4;">
+                Ce logiciel est développé par l'équipe MFE Group. Il a été conçu pour être simple, robuste et orienté
+                Archivage et Productivité.
+                Toutes les opérations sont traçables (non-répudiation), et l'administration centralisée permet de gérer
+                les comptes et
+                la base de données. Merci d'utiliser notre outil — nous l'avons réalisé avec amour.
+              </p>
+              <p style="font-size:13px;color:var(--muted);margin-top:6px;">Version : <strong>1.0.0</strong></p>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Modal: Create/Edit account -->
+  <div class="modal-backdrop" id="modalBackdrop">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <h3 id="modalTitle">Créer un compte</h3>
+      <div class="form-row">
+        <input type="text" id="acc_name" placeholder="Nom du compte (identifiant)">
+        <select id="acc_role">
+          <option value="employe">Employé</option>
+          <option value="gerant">Gérant</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <input type="password" id="acc_password" placeholder="Mot de passe">
+        <input type="password" id="acc_password_confirm" placeholder="Confirmer mot de passe">
+      </div>
+      <div class="help-text">Le mot de passe doit contenir au moins 6 caractères.</div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px;">
+        <button class="btn ghost" id="modalCancel">Annuler</button>
+        <button class="btn" id="modalSave">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      // ----- Configuration -----
+      const API_BASE = ''; // même origine
+      const ACCOUNTS_URL = API_BASE + '/admin/accounts';
+      const AUDIT_URL = API_BASE + '/admin/audit';
+
+      // ----- Utilitaires / DOM helpers -----
+      const ROLES = ['commercial', 'comptable', 'technicien', 'chef_production', 'machiniste', 'admin'];
+      const ROLE_LABEL = {
+        commercial: 'Commercial', comptable: 'Comptable', technicien: 'Technicien',
+        chef_production: 'Chef production', machiniste: 'Machiniste', admin: 'Admin'
+      };
+
+      const $ = s => document.querySelector(s);
+      const $all = s => Array.from(document.querySelectorAll(s));
+
+      function getCsrfToken() {
+        const meta = document.querySelector('meta[name="csrf-token"]');
+        if (meta) return meta.getAttribute('content') || null;
+        const name = 'XSRF-TOKEN=';
+        const cookie = document.cookie.split('; ').find(c => c.startsWith(name));
+        if (cookie) return decodeURIComponent(cookie.substring(name.length));
+        return null;
+      }
+
+      async function fetchWithCsrf(url, opts = {}) {
+        opts = Object.assign({}, opts);
+        opts.credentials = 'include';
+        opts.headers = Object.assign({}, opts.headers || {});
+        if (!opts.headers['Accept']) opts.headers['Accept'] = 'application/json';
+        const token = getCsrfToken();
+        if (token && !opts.headers['X-CSRF-Token']) opts.headers['X-CSRF-Token'] = token;
+        return fetch(url, opts);
+      }
+
+      function safeText(v) {
+        if (v === null || v === undefined) return '';
+        return String(v).replace(/[\u0000-\u001F\u007F<>]/g, '').trim();
+      }
+
+      function setTableMessage(tbody, msg, colspan = 4) {
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.setAttribute('colspan', String(colspan));
+        td.style.color = 'var(--muted)';
+        td.textContent = msg;
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+      }
+
+      // ----- showSection + nav binding -----
+      function showSection(name) {
+        const pages = { comptes: 'page-comptes', nonrep: 'page-nonrep', about: 'page-about' };
+        Object.keys(pages).forEach(k => {
+          const el = document.getElementById(pages[k]);
+          if (!el) return;
+          el.style.display = (k === name) ? '' : 'none';
+        });
+        $all('.side-nav button').forEach(b => b.classList.toggle('active', b.dataset.section === name));
+        const btnNew = $('#btnNewAccount');
+        if (btnNew) btnNew.style.display = (name === 'comptes' && CURRENT_USER.role === 'admin') ? '' : 'none';
+        if (name === 'nonrep') renderLogs(); // refresh when opening nonrep
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const navButtons = $all('.side-nav button');
+        navButtons.forEach(btn => btn.addEventListener('click', () => showSection(btn.dataset.section || 'comptes')));
+      });
+
+      // ----- DOM nodes -----
+      const accountsTbody = $('#accountsTbody');
+      const modal = $('#modalBackdrop');
+
+      // ----- Network / current user -----
+      async function fetchCurrentUser() {
+        try {
+          const res = await fetchWithCsrf('/auth/me', { method: 'GET' });
+          if (!res.ok) {
+            console.warn('fetchCurrentUser non ok', res.status);
+            return null;
+          }
+          return await res.json();
+        } catch (e) {
+          console.error('fetchCurrentUser error', e);
+          return null;
+        }
+      }
+
+      // ----- Populate role selects -----
+      function populateRoleSelects() {
+        const selectFilter = $('#filterRole');
+        const selectModal = $('#acc_role');
+        if (selectFilter) {
+          selectFilter.innerHTML = '';
+          const baseOpt = document.createElement('option'); baseOpt.value = ''; baseOpt.textContent = 'Tous les rôles';
+          selectFilter.appendChild(baseOpt);
+          ROLES.forEach(r => {
+            const opt = document.createElement('option'); opt.value = r; opt.textContent = ROLE_LABEL[r] || r;
+            selectFilter.appendChild(opt);
+          });
+        }
+        if (selectModal) {
+          selectModal.innerHTML = '';
+          ROLES.forEach(r => {
+            const opt = document.createElement('option'); opt.value = r; opt.textContent = ROLE_LABEL[r] || r;
+            selectModal.appendChild(opt);
+          });
+        }
+      }
+
+      // ----- Accounts CRUD (frontend) -----
+      async function renderAccounts() {
+        if (!accountsTbody) return;
+        setTableMessage(accountsTbody, 'Chargement...', 4);
+        try {
+          const res = await fetchWithCsrf(ACCOUNTS_URL, { method: 'GET' });
+          if (!res.ok) {
+            if (res.status === 401) { window.location.href = '/frontend/login.html'; return; }
+            if (res.status === 403) { setTableMessage(accountsTbody, 'Accès refusé (admin requis).', 4); return; }
+            throw new Error('Erreur API comptes');
+          }
+          const list = await res.json();
+          const filterText = ($('#filterAccount') && $('#filterAccount').value.toLowerCase()) || '';
+          const filterRole = ($('#filterRole') && $('#filterRole').value) || '';
+          const filtered = list.filter(a => {
+            if (filterRole && a.role !== filterRole) return false;
+            if (filterText && !(a.username || '').toLowerCase().includes(filterText)) return false;
+            return true;
+          });
+          accountsTbody.innerHTML = '';
+          if (filtered.length === 0) { setTableMessage(accountsTbody, 'Aucun compte.', 4); return; }
+
+          filtered.forEach(acc => {
+            const tr = document.createElement('tr');
+
+            const tdName = document.createElement('td'); tdName.textContent = safeText(acc.username || ''); tr.appendChild(tdName);
+
+            const tdRole = document.createElement('td');
+            const span = document.createElement('span'); span.className = 'tag'; span.textContent = ROLE_LABEL[acc.role] || acc.role || '';
+            tdRole.appendChild(span);
+            tr.appendChild(tdRole);
+
+            const tdPass = document.createElement('td'); tdPass.textContent = '*******'; tr.appendChild(tdPass);
+
+            const tdAct = document.createElement('td'); tdAct.className = 'row-actions';
+
+            const actionButtons = document.createElement('div');
+            actionButtons.className = 'action-buttons';
+
+            const editBtn = document.createElement('button'); editBtn.className = 'btn ghost'; editBtn.textContent = 'Modifier';
+            editBtn.addEventListener('click', () => openAccountModal('edit', acc));
+            actionButtons.appendChild(editBtn);
+
+            const delBtn = document.createElement('button'); delBtn.className = 'btn ghost'; delBtn.textContent = 'Supprimer';
+            delBtn.addEventListener('click', async () => {
+              if (!confirm(`Supprimer le compte "${safeText(acc.username)}" ?`)) return;
+              try {
+                const r = await fetchWithCsrf(`${ACCOUNTS_URL}/${encodeURIComponent(acc.id)}`, { method: 'DELETE' });
+                if (r.ok) { await renderAccounts(); }
+                else {
+                  let err = { detail: 'Erreur suppression' };
+                  try { err = await r.json(); } catch (e) { err.detail = 'Erreur suppression'; }
+                  alert(safeText(err.detail || 'Erreur suppression'));
+                }
+              } catch (e) {
+                console.error('delete account error', e);
+                alert('Erreur réseau lors de la suppression.');
+              }
+            });
+            actionButtons.appendChild(delBtn);
+
+            const resetBtn = document.createElement('button'); resetBtn.className = 'btn ghost'; resetBtn.textContent = 'Réinitialiser MDP';
+            resetBtn.addEventListener('click', async () => {
+              const npw = prompt('Nouveau mot de passe (min 6 caractères) :');
+              if (!npw) return;
+              if (npw.length < 6) { alert('Mot de passe trop court (>=6)'); return; }
+              try {
+                const r = await fetchWithCsrf(`${ACCOUNTS_URL}/${encodeURIComponent(acc.id)}/reset-password`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ password: npw })
+                });
+                if (r.ok) { alert('Mot de passe réinitialisé'); }
+                else {
+                  let err = { detail: 'Erreur' };
+                  try { err = await r.json(); } catch (e) { }
+                  alert(safeText(err.detail || 'Erreur'));
+                }
+              } catch (e) {
+                console.error('reset password error', e);
+                alert('Erreur réseau lors de la réinitialisation.');
+              }
+            });
+            actionButtons.appendChild(resetBtn);
+
+            tdAct.appendChild(actionButtons);
+            tr.appendChild(tdAct);
+            accountsTbody.appendChild(tr);
+          });
+        } catch (e) {
+          console.error('renderAccounts error', e);
+          setTableMessage(accountsTbody, 'Erreur réseau ou serveur.', 4);
+        }
+      }
+
+      // ----- Modal create/edit -----
+      function openAccountModal(mode = 'create', account = null) {
+        if ((mode === 'create' || mode === 'edit') && CURRENT_USER.role !== 'admin') { alert("Seul l'admin peut gérer les comptes."); return; }
+        if (!modal) return;
+        modal.style.display = 'flex';
+        $('#modalTitle').textContent = mode === 'create' ? 'Créer un compte' : 'Modifier le compte';
+        $('#acc_name').value = account ? (account.username || '') : '';
+        $('#acc_role').value = account ? (account.role || ROLES[0]) : ROLES[0];
+        $('#acc_password').value = '';
+        $('#acc_password_confirm').value = '';
+        modal.dataset.mode = mode;
+        modal.dataset.target = account ? account.id : '';
+      }
+
+      async function modalSaveHandler() {
+        const saveBtn = $('#modalSave');
+        if (saveBtn && saveBtn.disabled) return; // already in progress
+        if (saveBtn) saveBtn.disabled = true;
+
+        try {
+          const nameEl = $('#acc_name');
+          const roleEl = $('#acc_role');
+          const pwEl = $('#acc_password');
+          const pwcEl = $('#acc_password_confirm');
+          const name = nameEl ? nameEl.value.trim() : '';
+          const role = roleEl ? roleEl.value : '';
+          const pw = pwEl ? pwEl.value : '';
+          const pwc = pwcEl ? pwcEl.value : '';
+
+          if (!name) { alert('Nom requis'); return; }
+          if (!ROLES.includes(role)) { alert('Rôle invalide'); return; }
+
+          const mode = modal.dataset.mode;
+
+          if (mode === 'create') {
+            if (!pw) { alert('Mot de passe requis'); return; }
+            if (pw !== pwc) { alert('Les mots de passe ne correspondent pas'); return; }
+            if (pw.length < 6) { alert('Mot de passe trop court (>=6)'); return; }
+
+            try {
+              const r = await fetchWithCsrf(ACCOUNTS_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: name, password: pw, role })
+              });
+
+              if (r.ok) {
+                modal.style.display = 'none';
+                // essayer d'enregistrer le log côté client (best-effort)
+                try { await postClientLog('Créer compte', name); } catch (e) { console.warn('postClientLog failed', e); }
+                await renderAccounts();
+              } else {
+                let err = { detail: 'Erreur création' };
+                try { err = await r.json(); } catch (e) { }
+                alert(safeText(err.detail || 'Erreur création'));
+              }
+            } catch (e) {
+              console.error('create account error', e);
+              alert('Erreur réseau lors de la création.');
+            }
+
+          } else {
+            const target = modal.dataset.target;
+            if (!target) { alert('Cible introuvable'); return; }
+
+            try {
+              const r = await fetchWithCsrf(`${ACCOUNTS_URL}/${encodeURIComponent(target)}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: name, role })
+              });
+
+              if (r.ok) {
+                modal.style.display = 'none';
+                try { await postClientLog('Modifier compte', name); } catch (e) { console.warn('postClientLog failed', e); }
+                await renderAccounts();
+              } else {
+                let err = { detail: 'Erreur modification' };
+                try { err = await r.json(); } catch (e) { }
+                alert(safeText(err.detail || 'Erreur modification'));
+              }
+            } catch (e) {
+              console.error('update account error', e);
+              alert('Erreur réseau lors de la modification.');
+            }
+          }
+        } catch (e) {
+          console.error('modalSaveHandler unexpected error', e);
+          alert('Erreur inattendue.');
+        } finally {
+          if (saveBtn) saveBtn.disabled = false;
+        }
+      }
+
+      // ----- Logs rendering -----
+      async function fetchServerLogs(limit = null, userFilter = '', actionFilter = '') {
+        const params = new URLSearchParams();
+        // n'ajoute pas limit si null => backend appliquera son comportement (ou pas de .limit si on change backend)
+        if (limit !== null && limit !== undefined) params.set('limit', String(limit));
+        if (userFilter) params.set('username', userFilter);
+        if (actionFilter) params.set('action', actionFilter);
+        const url = AUDIT_URL + '?' + params.toString();
+        try {
+          const res = await fetchWithCsrf(url, { method: 'GET', headers: { 'Accept': 'application/json' } });
+          if (!res.ok) {
+            const body = await res.text().catch(() => '<no body>');
+            return { __error: true, status: res.status, body };
+          }
+          const data = await res.json();
+          return data;
+        } catch (e) {
+          console.warn('fetchServerLogs network error', e);
+          return null;
+        }
+      }
+
+      // ----- Robust timestamp parsing + formatting (force affichage en heure d'Algérie) -----
+      const DISPLAY_TIMEZONE = 'Africa/Algiers'; // Algerie (UTC+1)
+
+      function parseTimestampToDate(ts) {
+        if (!ts && ts !== 0) return null;
+        if (ts instanceof Date) return ts;
+        const t = String(ts).trim();
+
+        // epoch seconds or ms
+        if (/^\d{10}$/.test(t)) return new Date(parseInt(t, 10) * 1000);
+        if (/^\d{13}$/.test(t)) return new Date(parseInt(t, 10));
+
+        // ISO-like with timezone indicator (Z or ±hh:mm) -> parsed directly
+        if (/[Zz]$/.test(t) || /[+\-]\d{2}:\d{2}$/.test(t)) {
+          const d = new Date(t);
+          return isNaN(d.getTime()) ? null : d;
+        }
+
+        // space-separated "YYYY-MM-DD HH:MM:SS" -> try convert to ISO and assume UTC
+        if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/.test(t)) {
+          const s = t.replace(' ', 'T') + 'Z'; // assume server used UTC (recommended)
+          const d = new Date(s);
+          if (!isNaN(d.getTime())) return d;
+        }
+
+        // ISO without timezone "YYYY-MM-DDTHH:MM:SS" -> assume UTC
+        if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?$/.test(t)) {
+          const s = t + 'Z';
+          const d = new Date(s);
+          if (!isNaN(d.getTime())) return d;
+        }
+
+        // fallback to Date parser
+        const d = new Date(t);
+        return isNaN(d.getTime()) ? null : d;
+      }
+
+      function formatTimestamp(ts) {
+        if (!ts && ts !== 0) return '';
+        try {
+          const d = parseTimestampToDate(ts);
+          if (!d) return String(ts);
+
+          // Format date/time en français, forcé en timezone Africa/Algiers
+          const datePart = d.toLocaleDateString('fr-FR', { timeZone: DISPLAY_TIMEZONE });
+          const timePart = d.toLocaleTimeString('fr-FR', { timeZone: DISPLAY_TIMEZONE, hour12: false });
+          return `${datePart} ${timePart}`;
+        } catch (e) {
+          return String(ts);
+        }
+      }
+
+      // Format audit message for user-friendly display
+      // Format audit message for user-friendly display
+      // formatAuditMessage.js
+
+      // small robust meta parser (drop-in)
+      function parseMeta(m) {
+        if (m === null || m === undefined || m === '') return null;
+        if (typeof m === 'object') return m;
+        if (typeof m === 'string') {
+          try { return JSON.parse(m); } catch (e) { return m; }
+        }
+        return m;
+      }
+
+      function getChangeValue(changes, key) {
+        if (!changes || typeof changes !== 'object') return undefined;
+        const c = changes[key];
+        if (!c) return undefined;
+        // prefer new, fallback to old
+        if (c.new !== undefined && c.new !== null && c.new !== '') return c.new;
+        return c.old !== undefined ? c.old : undefined;
+      }
+
+      /**
+       * Format audit row into a friendly French message.
+       * action: string, target: 'plaque:<id>' | 'produit:<id>' | 'machine:<id>' | ...
+       * meta: object or JSON-string
+       */
+      function formatAuditMessage(action, target, meta) {
+        const m = parseMeta(meta);
+        const a = (action || '').toLowerCase();
+
+        // --- SOUSTRAITANT logic (insert BEFORE machine block) ---
+        if (target && typeof target === 'string' && target.startsWith('soustraitant:')) {
+          const m = parseMeta(meta); // assumes parseMeta + getChangeValue are available
+          let name = '';
+
+          if (m && typeof m === 'object') {
+            // prefer explicit fields, then changes
+            name = m.nom || m.entreprise || getChangeValue(m.changes, 'nom') || getChangeValue(m.changes, 'entreprise') || '';
+            // sometimes meta contains nested id or display name under different keys
+            if (!name) {
+              name = m.name || m.display_name || (m._actor && (m._actor.nom_complet || m._actor.username)) || '';
+            }
+          } else if (typeof m === 'string') {
+            // if meta is a raw string, use it
+            name = m;
+          }
+
+          const tid = (target || '').split(':', 2)[1] || '';
+          const shortTid = tid ? `#${tid.slice(0, 8)}` : '';
+
+          const pretty = name ? `«${name}»` : (shortTid || '');
+
+          const a = (action || '').toLowerCase();
+
+          if (a.includes('créer') || a.includes('create') || a.includes('ajout')) {
+            return pretty ? `Création du soustraitant ${pretty}` : "Création d'un soustraitant";
+          } else if (a.includes('modifier') || a.includes('update') || a.includes('modif')) {
+            // if we have a changes object, show the changed fields briefly
+            if (m && m.changes && typeof m.changes === 'object') {
+              const changed = Object.keys(m.changes).map(f => {
+                if (f === 'nom') return 'nom';
+                if (f === 'entreprise') return 'entreprise';
+                return f;
+              }).slice(0, 4);
+              if (changed.length > 0) {
+                return pretty
+                  ? `Modification du soustraitant ${pretty} (${changed.join(', ')})`
+                  : `Modification d'un soustraitant (${changed.join(', ')})`;
+              }
+            }
+            return pretty ? `Modification du soustraitant ${pretty}` : "Modification d'un soustraitant";
+          } else if (a.includes('supprimer') || a.includes('delete') || a.includes('suppr')) {
+            return pretty ? `Suppression du soustraitant ${pretty}` : "Suppression d'un soustraitant";
+          }
+
+          // generic fallback for soustraitant
+          return pretty ? `${action} — soustraitant ${pretty}` : `${action} — soustraitant ${shortTid}`;
+        }
+
+
+        // --- PRODUIT logic ---
+        if (target && typeof target === 'string' && target.startsWith('produit:')) {
+          let produitName = '';
+          if (m && typeof m === 'object') {
+            produitName = m.nom_produit || getChangeValue(m.changes, 'nom_produit') || '';
+          } else if (typeof m === 'string') {
+            produitName = m;
+          }
+
+          if (a.includes('créer') || a.includes('create') || a.includes('ajout')) {
+            return produitName ? `Création du produit «${produitName}»` : "Création d'un produit";
+          } else if (a.includes('modifier') || a.includes('update') || a.includes('modif')) {
+            return produitName ? `Modification du produit «${produitName}»` : "Modification d'un produit";
+          } else if (a.includes('supprimer') || a.includes('delete') || a.includes('suppr')) {
+            return produitName ? `Suppression du produit «${produitName}»` : "Suppression d'un produit";
+          } else if (a.includes('supprimer image') || a.includes('delete image')) {
+            return produitName ? `Suppression d'une image du produit «${produitName}»` : "Suppression d'une image de produit";
+          } else {
+            return produitName ? `${action} — produit «${produitName}»` : `${action} — produit`;
+          }
+        }
+        function prettifyStatus(s) {
+          if (!s && s !== 0) return s;
+          if (typeof s !== 'string') s = String(s);
+          const mapping = {
+            'en_stock': 'en stock',
+            'en_quarantaine': 'en quarantaine',
+            'en_sous_traitance': 'en sous-traitance',
+            'en_sous-traitance': 'en sous-traitance',
+            'en_impression': 'en impression',
+            'indisponible': 'indisponible',
+            'comandees': 'commandées',
+            'en_sous_trait': 'en sous-traitance'
+            // add more friendly labels here if needed
+          };
+          const key = s.trim();
+          if (mapping[key]) return mapping[key];
+          return key.replace(/_/g, ' ').trim();
+        }
+
+        // --- PLAQUE logic (replacement block) ---
+        if (target && typeof target === 'string' && target.startsWith('plaque:')) {
+          const m = parseMeta(meta); // assumes parseMeta is available in scope
+          // try to extract plaque info from meta (same as before)
+          let num = null;
+          let couleur = null;
+          let statut = null;
+          let machineName = null;
+          let plaquePreview = null;
+
+          if (m && typeof m === 'object') {
+            num = m.numero_plaque ?? m.numero ?? null;
+            couleur = m.couleur ?? null;
+            statut = m.statut ?? null;
+            machineName = m.nom_machine || m.machine_name || null;
+
+            if (m.changes && typeof m.changes === 'object') {
+              const c = m.changes;
+              num = (c.numero_plaque && (c.numero_plaque.new ?? c.numero_plaque.old)) ?? (c.numero && (c.numero.new ?? c.numero.old)) ?? num;
+              couleur = (c.couleur && (c.couleur.new ?? c.couleur.old)) ?? couleur;
+              statut = (c.statut && (c.statut.new ?? c.statut.old)) ?? statut;
+              machineName = (c.nom_machine && (c.nom_machine.new ?? c.nom_machine.old)) ?? (c.id_machine && (c.id_machine.new ?? c.id_machine.old)) ?? machineName;
+            }
+
+            if (num !== null && num !== undefined) plaquePreview = `#${String(num)}`;
+            if (!plaquePreview && couleur) plaquePreview = `${couleur}`;
+            if (!plaquePreview && machineName) plaquePreview = `${machineName}`;
+          } else if (typeof m === 'string') {
+            plaquePreview = m;
+          }
+
+          const aRaw = (action || '');
+          const a = aRaw.toLowerCase();
+
+          // 1) CLEAN HANDLING FOR STATUS CHANGES like:
+          //    "changement_statut:en_quarantaine->:indisponible"
+          const statusChangeMatch = aRaw.match(/changement[_\s]?statut\s*:\s*([^->]+)->:?\s*(.+)/i);
+          if (statusChangeMatch) {
+            const oldRaw = (statusChangeMatch[1] || '').trim();
+            const newRaw = (statusChangeMatch[2] || '').trim();
+            const oldPretty = prettifyStatus(oldRaw);
+            const newPretty = prettifyStatus(newRaw);
+
+            // produce concise sentence — no extra arrows or colons
+            if (plaquePreview) {
+              return `Plaque ${plaquePreview} — passage de «${oldPretty}» à «${newPretty}»`;
+            }
+            return `Passage de «${oldPretty}» à «${newPretty}»`;
+          }
+
+          // 2) existing friendly mappings (additive; unchanged behavior)
+          if (a.includes('ajout') || a.includes('create') || a.includes('créer') || a.includes('add plaque')) {
+            return plaquePreview ? `Ajout de la plaque ${plaquePreview}` : 'Ajout d’une plaque';
+          }
+          if (a.includes('modifier') || a.includes('update') || a.includes('modif') || a.includes('edit')) {
+            if (m && m.changes && typeof m.changes === 'object') {
+              const changes = m.changes;
+              const changedFields = Object.keys(changes).map(f => {
+                if (f === 'numero_plaque' || f === 'numero') return 'numéro';
+                if (f === 'couleur') return 'couleur';
+                if (f === 'statut') return 'statut';
+                if (f === 'nom_machine' || f === 'id_machine') return 'machine';
+                return f;
+              }).slice(0, 4);
+              if (changedFields.length > 0) {
+                return plaquePreview
+                  ? `Modification de la plaque ${plaquePreview} (${changedFields.join(', ')})`
+                  : `Modification d'une plaque (${changedFields.join(', ')})`;
+              }
+            }
+            return plaquePreview ? `Modification de la plaque ${plaquePreview}` : "Modification d'une plaque";
+          }
+          if (a.includes('supprimer') || a.includes('delete') || a.includes('suppr')) {
+            return plaquePreview ? `Suppression de la plaque ${plaquePreview}` : "Suppression d'une plaque";
+          }
+
+          // plaque status specific actions (existing)
+          if (a.includes('renouvellement') || a.includes('renew') || a.includes('renewal')) {
+            return plaquePreview ? `Renouvellement de la plaque ${plaquePreview}` : "Renouvellement d'une plaque";
+          }
+          if (a.includes('sous_traitance') || a.includes('sous-traitance') || a.includes('sous_trait') || a.includes('en_sous_traitance')) {
+            return plaquePreview ? `Plaque ${plaquePreview} mise en sous-traitance` : "Plaque mise en sous-traitance";
+          }
+          if (a.includes('en_stock') || a.includes('stock') || a.includes('reception') || a.includes('remise en stock')) {
+            // try to use statut if present and pretty
+            const stPretty = prettifyStatus(statut) || '';
+            if (plaquePreview) {
+              return stPretty ? `Plaque ${plaquePreview} — ${stPretty}` : `Plaque ${plaquePreview} remise en stock`;
+            }
+            return stPretty ? `Plaque — ${stPretty}` : "Plaque remise en stock";
+          }
+
+          // fallback for plaque: include target id short form + action
+          const tid = (target || '').split(':', 2)[1] || '';
+          return plaquePreview
+            ? `${action} — plaque ${plaquePreview}`
+            : (tid ? `${action} — plaque ${tid}` : action || 'Action sur plaque');
+        }
+
+        // --- MACHINE logic ---
+        if (target && typeof target === 'string' && target.startsWith('machine:')) {
+          let machineName = '';
+          if (m && typeof m === 'object') {
+            machineName = m.nom_machine || getChangeValue(m.changes, 'nom_machine') || '';
+            if (!machineName && m.before && m.before.nom_machine) machineName = m.before.nom_machine;
+          } else if (typeof m === 'string') {
+            try {
+              const parsedMeta = JSON.parse(m);
+              machineName = parsedMeta.nom_machine || getChangeValue(parsedMeta.changes, 'nom_machine') || '';
+              if (!machineName && parsedMeta.before && parsedMeta.before.nom_machine) machineName = parsedMeta.before.nom_machine;
+            } catch (e) {
+              machineName = m;
+            }
+          }
+
+          if (a.includes('créer') || a.includes('create') || a.includes('ajout')) {
+            return machineName ? `Création de la machine «${machineName}»` : "Création d'une machine";
+          } else if (a.includes('modifier') || a.includes('update') || a.includes('modif')) {
+            return machineName ? `Modification de la machine «${machineName}»` : "Modification d'une machine";
+          } else if (a.includes('supprimer') || a.includes('delete') || a.includes('suppr')) {
+            return machineName ? `Suppression de la machine «${machineName}»` : "Suppression d'une machine";
+          } else {
+            return machineName ? `${action} — machine «${machineName}»` : `${action} — machine`;
+          }
+        }
+
+        // --- CONCEPTION logic ---
+        if (target && typeof target === 'string' && target.startsWith('conception:')) {
+          let name = '';
+          if (m && typeof m === 'object') {
+            name = m.nom_conception || m.name || getChangeValue(m.changes, 'nom_conception') || '';
+          } else if (typeof m === 'string') {
+            name = m;
+          }
+
+          if (a.includes('modifier') || a.includes('update') || a.includes('modif')) {
+            return name ? `Modification de la conception «${name}»` : `Modification d'une conception`;
+          }
+          if (a.includes('créer') || a.includes('create') || a.includes('ajout')) {
+            return name ? `Création de la conception «${name}»` : `Création d'une conception`;
+          }
+          if (a.includes('supprimer') || a.includes('delete')) {
+            return name ? `Suppression de la conception «${name}»` : `Suppression d'une conception`;
+          }
+          return name ? `${action} — conception «${name}»` : action || 'Action sur conception';
+        }
+
+        // --- CLIENT logic ---
+        if (target && typeof target === 'string' && target.startsWith('client:')) {
+          let clientName = '';
+          if (m && typeof m === 'object') {
+            clientName = m.enseigne || getChangeValue(m.changes, 'enseigne') || '';
+          } else if (typeof m === 'string') {
+            clientName = m;
+          }
+
+          if (a.includes('créer') || a.includes('create') || a.includes('ajout')) {
+            return clientName ? `Création du client «${clientName}»` : "Création d'un client";
+          } else if (a.includes('modifier') || a.includes('update') || a.includes('modif')) {
+            return clientName ? `Modification du client «${clientName}»` : "Modification d'un client";
+          } else if (a.includes('supprimer') || a.includes('delete') || a.includes('suppr')) {
+            return clientName ? `Suppression du client «${clientName}»` : "Suppression d'un client";
+          }
+        }
+
+        // --- default fallback: try to show something informative ---
+        if (m && typeof m === 'object') {
+          const commonName = m.nom || m.name || m.username || m.nom_conception || m.nom_produit || m.numero_plaque;
+          if (commonName) return `${action} — ${commonName}`;
+          try {
+            const s = JSON.stringify(m);
+            const preview = s.length > 120 ? (s.slice(0, 120) + '...') : s;
+            return `${action} — ${preview}`;
+          } catch (e) {
+            return action || 'Action';
+          }
+        }
+
+        // Default: return action and target as is
+        return (action || '') + (target ? `: ${target}` : '');
+      }
+
+      async function renderLogs() {
+        const container = $('#logList');
+        if (!container) return;
+        const userFilter = ($('#logFilterUser') && $('#logFilterUser').value.trim()) || '';
+        const actionFilter = ($('#logFilterAction') && $('#logFilterAction').value.trim()) || '';
+
+        container.innerHTML = '';
+        const loading = document.createElement('div'); loading.style.color = 'var(--muted)'; loading.style.padding = '10px'; loading.textContent = 'Chargement...';
+        container.appendChild(loading);
+
+        const serverRows = await fetchServerLogs(500, userFilter, actionFilter);
+        container.innerHTML = '';
+
+        if (serverRows && serverRows.__error) {
+          const errEl = document.createElement('div');
+          errEl.style.color = 'var(--muted)';
+          errEl.style.padding = '10px';
+          errEl.innerHTML = `<div>Erreur ${serverRows.status} depuis le serveur :</div><pre style="white-space:pre-wrap;">${safeText(serverRows.body)}</pre>`;
+          container.appendChild(errEl);
+          console.warn('serverRows error:', serverRows);
+          return;
+        }
+
+        if (serverRows === null) {
+          const el = document.createElement('div');
+          el.style.color = 'var(--muted)'; el.style.padding = '10px';
+          el.textContent = "Impossible de récupérer les logs serveur (401/403 ou erreur réseau). Veuillez vérifier le cookie d'authentification ou les droits.";
+          container.appendChild(el);
+          return;
+        }
+
+        if (!Array.isArray(serverRows) || serverRows.length === 0) {
+          const el = document.createElement('div');
+          el.style.color = 'var(--muted)'; el.style.padding = '10px';
+          el.textContent = 'Aucune activité enregistrée.';
+          container.appendChild(el);
+          return;
+        }
+
+        serverRows.forEach(raw => {
+          const l = {
+            id: raw.id || null,
+            timestamp: raw.timestamp || null,
+            username: raw.username || raw.user || null,
+            role: raw.role || null,
+            action: raw.action || '',
+            target: raw.target || '',
+            meta: (raw.meta === null || raw.meta === undefined || raw.meta === '') ? null : (typeof raw.meta === 'string' ? (() => { try { return JSON.parse(raw.meta); } catch (e) { return raw.meta; } })() : raw.meta),
+            ip_address: raw.ip_address || raw.ip || null
+          };
+
+          const logEntry = document.createElement('div');
+          logEntry.className = 'log-entry';
+
+          const messageDiv = document.createElement('div');
+          messageDiv.className = 'log-action';
+          messageDiv.textContent = formatAuditMessage(l.action, l.target, l.meta);
+
+          const detailsDiv = document.createElement('div');
+          detailsDiv.className = 'log-details';
+
+          // Display "Système" instead of empty username
+          // Display username with fallback to actor info from meta
+          // With this more robust version:
+          let displayUsername = 'Système';
+          if (l.username && l.username !== 'Système') {
+            displayUsername = l.username;
+          } else if (l.meta && l.meta._actor) {
+            // Try to get username from meta
+            if (l.meta._actor.username) {
+              displayUsername = l.meta._actor.username;
+            } else if (l.meta._actor.prenom && l.meta._actor.nom) {
+              displayUsername = `${l.meta._actor.prenom} ${l.meta._actor.nom}`;
+            } else if (l.meta._actor.id) {
+              displayUsername = l.meta._actor.id;
+            }
+          }
+
+          const userSpan = document.createElement('span');
+          userSpan.className = 'log-user';
+          userSpan.textContent = displayUsername;
+
+          const timeSpan = document.createElement('span');
+          timeSpan.className = 'log-time';
+          timeSpan.textContent = formatTimestamp(l.timestamp);
+
+          detailsDiv.appendChild(userSpan);
+          detailsDiv.appendChild(document.createTextNode(' • '));
+          detailsDiv.appendChild(timeSpan);
+
+          logEntry.appendChild(messageDiv);
+          logEntry.appendChild(detailsDiv);
+
+          container.appendChild(logEntry);
+        });
+      }
+
+      // ----- When posting a client-side log, include client_ts to help server -----
+      async function postClientLog(action, target = null, meta = null) {
+        try {
+          const payload = { action, target, meta, client_ts: new Date().toISOString(), client_tz: 'Africa/Algiers' };
+          const res = await fetchWithCsrf(AUDIT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (res.ok) {
+            if (document.getElementById('page-nonrep') && document.getElementById('page-nonrep').style.display !== 'none') {
+              renderLogs();
+            }
+            return true;
+          } else {
+            const body = await res.text().catch(() => '<no body>');
+            console.warn('postClientLog non-ok', res.status, body);
+            alert('Impossible d\'enregistrer le log sur le serveur (status ' + res.status + ').');
+            return false;
+          }
+        } catch (e) {
+          console.warn('postClientLog network error', e);
+          alert('Erreur réseau lors de l\'enregistrement du log.');
+          return false;
+        }
+      }
+
+      // ----- Event bindings -----
+      if ($('#filterAccount')) $('#filterAccount').addEventListener('input', renderAccounts);
+      if ($('#filterRole')) $('#filterRole').addEventListener('change', renderAccounts);
+      if ($('#refreshAccounts')) $('#refreshAccounts').addEventListener('click', renderAccounts);
+      if ($('#modalCancel')) $('#modalCancel').addEventListener('click', () => modal.style.display = 'none');
+      if ($('#modalSave')) $('#modalSave').addEventListener('click', modalSaveHandler);
+      if ($('#logFilterUser')) $('#logFilterUser').addEventListener('input', renderLogs);
+      if ($('#logFilterAction')) $('#logFilterAction').addEventListener('input', renderLogs);
+      if (modal) modal.addEventListener('click', (ev) => { if (ev.target === modal) modal.style.display = 'none'; });
+
+
+      // Exporter les logs en CSV (bouton Exporter les logs)
+      async function exportLogs() {
+        const userFilter = ($('#logFilterUser') && $('#logFilterUser').value.trim()) || '';
+        const actionFilter = ($('#logFilterAction') && $('#logFilterAction').value.trim()) || '';
+
+        // on demande beaucoup de lignes (backend limite déjà si besoin)
+        const rows = await fetchServerLogs(1000000, userFilter, actionFilter);
+
+        if (rows === null) {
+          alert("Impossible de récupérer les logs serveur (erreur réseau ou droits).");
+          return;
+        }
+        if (rows && rows.__error) {
+          alert(`Erreur serveur ${rows.status} lors de la récupération des logs.`);
+          console.warn('fetchServerLogs error:', rows);
+          return;
+        }
+        if (!Array.isArray(rows) || rows.length === 0) {
+          alert('Aucune activité à exporter.');
+          return;
+        }
+
+        // Helper CSV escape
+        function csvEscape(v) {
+          if (v === null || v === undefined) return '';
+          const s = typeof v === 'object' ? JSON.stringify(v) : String(v);
+          return '"' + s.replace(/"/g, '""') + '"';
+        }
+
+        // Convertir chaque entrée en ligne CSV
+        const header = ['id', 'timestamp_iso', 'username', 'role', 'action', 'target', 'meta_json', 'ip_address'];
+        const lines = [header.map(csvEscape).join(',')];
+
+        rows.forEach(raw => {
+          // timestamp -> essayer de parser via parseTimestampToDate si disponible
+          let ts = raw.timestamp;
+          let iso = '';
+          try {
+            // si parseTimestampToDate existe (dans ce fichier), on l'utilise
+            if (typeof parseTimestampToDate === 'function') {
+              const d = parseTimestampToDate(ts);
+              if (d && !isNaN(d.getTime())) iso = d.toISOString();
+              else iso = (ts === null || ts === undefined) ? '' : String(ts);
+            } else {
+              // fallback
+              iso = (ts === null || ts === undefined) ? '' : String(ts);
+            }
+          } catch (e) {
+            iso = (ts === null || ts === undefined) ? '' : String(ts);
+          }
+
+          const username = raw.username || raw.user || '';
+          const role = raw.role || '';
+          const action = raw.action || '';
+          const target = raw.target || '';
+          const meta = (raw.meta === null || raw.meta === undefined || raw.meta === '') ? '' : (typeof raw.meta === 'string' ? raw.meta : JSON.stringify(raw.meta));
+          const ip = raw.ip_address || raw.ip || '';
+
+          const row = [
+            raw.id || '',
+            iso,
+            username,
+            role,
+            action,
+            target,
+            meta,
+            ip
+          ].map(csvEscape).join(',');
+
+          lines.push(row);
+        });
+
+        const csvContent = lines.join('\r\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+
+        // filename with local time readable
+        const now = new Date();
+        const pad = n => String(n).padStart(2, '0');
+        const fname = `logs_${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}.csv`;
+
+        // trigger download
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fname;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 10000);
+
+        // petit feedback UX : si on est sur la page nonrep, on rafraîchit l'affichage
+        if (document.getElementById('page-nonrep') && document.getElementById('page-nonrep').style.display !== 'none') {
+          renderLogs();
+        }
+      }
+
+      // Bind the export button
+      if ($('#exportLogs')) {
+        $('#exportLogs').addEventListener('click', exportLogs);
+      }
+
+      // ----- Logout handler (UI) -----
+      async function doLogout() {
+        if (!confirm('Se déconnecter du compte courant ?')) return;
+        try {
+          await fetchWithCsrf('/auth/logout', { method: 'POST' });
+          window.location.href = '/frontend/login.html';
+        } catch (e) {
+          console.error('logout error', e);
+          alert('Erreur lors de la déconnexion.');
+        }
+      }
+      const logoutBtn = $('#logoutBtn');
+      if (logoutBtn) logoutBtn.addEventListener('click', doLogout);
+
+      // ----- Init -----
+      const CURRENT_USER = { id: null, name: null, role: null };
+
+      (async function init() {
+        populateRoleSelects();
+        const me = await fetchCurrentUser();
+        if (!me) { window.location.href = '/frontend/login.html'; return; }
+        CURRENT_USER.id = me.id || null;
+        CURRENT_USER.name = me.username || (me.nom ? `${me.nom} ${me.prenom}` : 'Utilisateur');
+        CURRENT_USER.role = me.role || null;
+
+        // sidebar info (safe)
+        const accNameEl = $('#acc-name'); if (accNameEl) accNameEl.textContent = safeText(CURRENT_USER.name);
+        const accRoleEl = $('#acc-role'); if (accRoleEl) accRoleEl.textContent = 'Rôle : ' + (ROLE_LABEL[CURRENT_USER.role] || CURRENT_USER.role || '');
+        const avatar = $('#avatar'); if (avatar) avatar.textContent = (safeText(CURRENT_USER.name || 'U').slice(0, 1)).toUpperCase();
+        if ($('#connected-user')) $('#connected-user').textContent = safeText(CURRENT_USER.role || '');
+
+        // show/hide nonrep nav button based on role (UX only; always enforce server-side)
+        $all('.side-nav button').forEach(btn => {
+          if (btn.dataset.section === 'nonrep') {
+            if (['admin', 'gerant', 'chef_production'].includes(String(CURRENT_USER.role))) btn.style.display = '';
+            else btn.style.display = 'none';
+          }
+        });
+
+        showSection('comptes');
+        const btnNew = $('#btnNewAccount');
+        if (btnNew) { btnNew.style.display = (CURRENT_USER.role === 'admin') ? '' : 'none'; btnNew.addEventListener('click', () => openAccountModal('create', null)); }
+
+        await renderAccounts();
+        await renderLogs();
+      })();
+
+    })();
+  </script>
+
+
+  <div class="sidebar-overlay" id="sidebarOverlay" tabindex="-1" aria-hidden="true"></div>
+  <script>
+    (() => {
+      const sidebar = document.querySelector('.sidebar');
+      const toggleBtn = document.getElementById('sidebarToggle');
+      const closeBtn = document.querySelector('.sidebar .sidebar-close');
+      const overlay = document.getElementById('sidebarOverlay');
+
+      if (!sidebar || !toggleBtn || !overlay) return;
+
+      const BREAKPOINT = 1000; // correspond à ta demande
+
+      function isMobileWidth() {
+        return window.innerWidth < BREAKPOINT;
+      }
+
+      function openSidebar() {
+        sidebar.classList.remove('sidebar--hidden');
+        sidebar.classList.add('sidebar--visible');
+        overlay.classList.add('is-visible');
+        toggleBtn.setAttribute('aria-expanded', 'true');
+        overlay.setAttribute('aria-hidden', 'false');
+        // focus management
+        sidebar.setAttribute('tabindex', '-1');
+        sidebar.focus();
+      }
+
+      function closeSidebar() {
+        sidebar.classList.remove('sidebar--visible');
+        sidebar.classList.add('sidebar--hidden');
+        overlay.classList.remove('is-visible');
+        toggleBtn.setAttribute('aria-expanded', 'false');
+        overlay.setAttribute('aria-hidden', 'true');
+      }
+
+      // initial state on load
+      function applyInitialState() {
+        if (isMobileWidth()) {
+          // hide by default on mobile
+          sidebar.classList.add('sidebar--hidden');
+          toggleBtn.style.display = 'flex';
+        } else {
+          // show sidebar on desktop
+          sidebar.classList.remove('sidebar--hidden');
+          sidebar.classList.remove('sidebar--visible');
+          sidebar.style.transform = ''; // reset any inline transform
+          toggleBtn.style.display = 'none';
+          overlay.classList.remove('is-visible');
+        }
+      }
+
+      // events
+      toggleBtn.addEventListener('click', (e) => {
+        const expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+        if (expanded) closeSidebar();
+        else openSidebar();
+      });
+
+      if (closeBtn) {
+        closeBtn.addEventListener('click', closeSidebar);
+      }
+
+      overlay.addEventListener('click', closeSidebar);
+
+      window.addEventListener('resize', () => {
+        applyInitialState();
+      });
+
+      // close on ESC
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && isMobileWidth()) {
+          closeSidebar();
+        }
+      });
+
+      // initial call
+      applyInitialState();
+    })();
+  </script>
+
+</body>
+
+</html>

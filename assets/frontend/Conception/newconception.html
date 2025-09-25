@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../style-index.css">
+  <title>EmballageBI</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
+    rel="stylesheet">
+  <script src="../runtime_config.js"></script>
+  <!-- api wrapper depends on window.API_BASE -->
+  <script src="../api.js"></script>
+  <!-- verify-connected uses api/buildApiUrl & binds logout -->
+  <script src="../verify-connected.js"></script>
+  <script src="../notification.js"></script>
+  <script src="../ui-shell.js"></script>
+
+  <!-- Bibliothèque pour générer les QR codes -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+  <link rel="stylesheet" href="../notif.css">
+  <link rel="stylesheet" href="../responsive.css">
+</head>
+<style>
+  html,
+  body {
+    overflow: hidden !important;
+    max-height: 100vh !important;
+  }
+
+  .index-start {
+    background: linear-gradient(180deg, rgb(152, 169, 195) 0%, rgb(68, 82, 124) 100%);
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .index-container {
+    animation: fadeInRight;
+    animation-duration: 1s;
+  }
+
+  .title-addconception-container {
+    width: 100% !important;
+  }
+
+  #page-title {
+    white-space: nowrap;
+    /* empêche le retour à la ligne */
+    overflow: hidden;
+    /* cache le surplus */
+    text-overflow: ellipsis;
+    width: 80%;
+  }
+
+  /* Styles pour la section QR Code */
+  .qrCode {
+    padding: 15px;
+    background-color: #ebebeb;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: 10px;
+  }
+
+  .qr-generator-btn {
+    background: linear-gradient(to right, #4a6fa5, #2c3e50);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .qr-generator-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+    background: linear-gradient(to right, #5a7fb5, #3c4e60);
+  }
+
+  .qr-result-container {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 15px;
+    animation: fadeIn 0.5s ease;
+  }
+
+  .qr-code-display {
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 15px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 180px;
+    min-height: 180px;
+    overflow: visible;
+  }
+
+  .qr-code-display svg {
+    max-width: 100%;
+    height: auto;
+    width: 200px;
+    /* valeur de base — ajustez si vous voulez plus petit/grand */
+    height: 200px;
+  }
+
+  .qr-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+  }
+
+  .qr-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+
+  .qr-download {
+    background-color: #28a745;
+    color: white;
+    border: none;
+  }
+
+  .qr-download:hover {
+    background-color: #218838;
+  }
+
+  .qr-delete {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+  }
+
+  .qr-delete:hover {
+    background-color: #c82333;
+  }
+
+  .qr-info {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #6c757d;
+    text-align: center;
+    max-width: 300px;
+  }
+
+  .qr-error {
+    margin-top: 8px;
+    font-size: 13px;
+    color: #b00020;
+    background: rgba(176, 0, 32, 0.06);
+    padding: 6px 10px;
+    border-radius: 6px;
+    display: none;
+    /* affiché uniquement en cas d'erreur */
+  }
+
+
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .checkSoustraitant {
+    display: flex;
+    align-items: stretch;
+    max-width: 680px;
+    margin: 8px 0;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    margin-left: 10px;
+  }
+
+  /* cache propre mais focusable */
+  .checkbox-input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  /* zone cliquable générale */
+  .checkbox-label {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.6), rgba(245, 245, 245, 0.6));
+    border: 1px solid rgba(30, 41, 59, 0.06);
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.03);
+    cursor: pointer;
+    transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+  }
+
+  /* hover / active */
+  .checkbox-label:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  }
+
+  /* carré personnalisé */
+  .checkbox-custom {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    border-radius: 8px;
+    border: 2px solid rgba(100, 116, 139, 0.18);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, #fff, #fbfbfb);
+    transition: all .16s ease;
+    box-sizing: border-box;
+    font-weight: 700;
+    color: transparent;
+    font-size: 18px;
+  }
+
+  /* coche (✓) via pseudo-élément */
+  .checkbox-custom::after {
+    content: "✓";
+    font-size: 18px;
+    transform: scale(0.6);
+    opacity: 0;
+    transition: transform .14s ease, opacity .14s ease;
+    line-height: 1;
+  }
+
+  /* when checked: style actif */
+  .checkbox-input:checked+.checkbox-label .checkbox-custom {
+    background: linear-gradient(180deg, #0ea5a0, #059669);
+    /* teal-ish */
+    border-color: rgba(5, 150, 105, 0.9);
+    color: white;
+    box-shadow: 0 6px 20px rgba(5, 150, 105, 0.12), inset 0 -4px 10px rgba(0, 0, 0, 0.04);
+  }
+
+  .checkbox-input:checked+.checkbox-label .checkbox-custom::after {
+    transform: scale(1);
+    opacity: 1;
+    color: #fff;
+  }
+
+  /* texte */
+  .text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .infoCheck {
+    font-weight: 600;
+    font-size: 15px;
+    color: #0f172a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .subInfoCheck {
+    font-size: 13px;
+    color: #475569;
+    opacity: 0.95;
+    line-height: 1.2;
+  }
+
+  /* met en évidence l'avertissement quand cochée */
+  .checkbox-input:checked+.checkbox-label .subInfoCheck {
+    color: #064e3b;
+    font-weight: 600;
+  }
+
+  /* focus visible pour accessibilité clavier */
+  .checkbox-input:focus-visible+.checkbox-label .checkbox-custom {
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.14);
+    border-color: rgba(59, 130, 246, 0.9);
+  }
+
+  /* responsive */
+  @media (max-width: 420px) {
+    .checkbox-label {
+      gap: 10px;
+      padding: 10px;
+    }
+
+    .checkbox-custom {
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+    }
+
+    .infoCheck {
+      font-size: 14px;
+    }
+
+    .subInfoCheck {
+      font-size: 12px;
+    }
+  }
+
+  /* Ajouts CSS pour le select et l'animation */
+  .select-wrap {
+    width: 100%;
+    max-width: 680px;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 220ms cubic-bezier(.2, .9, .2, 1), padding 180ms ease, opacity 180ms ease;
+    padding: 0 14px;
+    /* gardé pour alignement */
+    opacity: 0;
+    box-sizing: border-box;
+  }
+
+  /* quand cochée (input + label + select-wrap) -- ouvre le panneau */
+  .checkbox-input:checked+.checkbox-label+.select-wrap {
+    max-height: 160px;
+    /* assez pour le contenu ; ajuste si nécessaire */
+    padding: 10px 14px 14px;
+    opacity: 1;
+  }
+
+  /* style du label du select (optionnel) */
+  .select-label {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 6px;
+    color: #0f172a;
+    font-weight: 600;
+  }
+
+  /* style du select pour correspondre à ton design */
+  #sous-traitant-select {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(30, 41, 59, 0.08);
+    background: white;
+    font-size: 14px;
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.03);
+    appearance: none;
+    /* pour un rendu plus propre */
+  }
+
+  /* rendu désactivé */
+  #sous-traitant-select[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* petite règle utilitaire accessible (si tu veux cacher visuellement mais garder pour lecteur d'écran) */
+  .visually-hidden {
+    position: absolute !important;
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+    clip: rect(1px, 1px, 1px, 1px);
+    white-space: nowrap;
+  }
+
+  .choose-poses {
+    width: 100%;
+    height: 35px;
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    position: relative;
+  }
+
+  .choose-poses .input-choose {
+    width: 80%;
+    height: 35px;
+    margin-left: 5px;
+    border-radius: 5px;
+    border: 1px solid rgb(196, 196, 196);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-right: 5px;
+    position: relative;
+  }
+
+  .choose-poses .input-choose input {
+    width: 95%;
+    height: 32px;
+    padding-left: 5px;
+    border-radius: 5px;
+    border: none;
+  }
+
+  .choose-poses .delete-input {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: -6px;
+    right: -10px;
+    cursor: pointer;
+  }
+
+  .choose-poses .delete-input img {
+    width: 15px;
+    height: 15px;
+    filter: invert(0%);
+    position: absolute;
+  }
+
+  .choose-poses .input-choose:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    transition: 0.3s ease;
+  }
+
+  .choose-poses .input-choose input:focus {
+    outline: none;
+  }
+
+  .choose-poses button {
+    width: 25px;
+    height: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 5px;
+    background-color: #760202;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .choose-poses button:hover {
+    transform: translate(0px, -1px);
+    background-color: #9c0a0a;
+    transition: 0.3s ease;
+    box-shadow: 0px 0px 0px 0px rgb(34, 34, 34, 0.2);
+  }
+
+  .choose-poses button:active {
+    transform: translate(0px, 2px);
+    transition: 0.3s ease;
+  }
+
+  .choose-poses button img {
+    width: 15px;
+    height: 15px;
+    filter: invert(100%);
+  }
+</style>
+
+<body>
+  <div class="filterblack"></div>
+  <div class="sidenotif" data-user-id="">
+    <div class="notif-header">
+      <img src="../img/icon/notifications.png">
+      <h2>Notifications</h2>
+    </div>
+    <div class="notif-elements" style="width: 360px !important;">
+      <div class="notif-loading">
+        <p>Chargement des notifications...</p>
+      </div>
+    </div>
+  </div>
+  <div class="sidebar">
+    <img src="../img/icon/menu.png" alt="Close" class="close-sidebar">
+    <div class="logo">
+      <img src="../img/logoblanc.png" alt="EmballageBI">
+      <div class="title-logo">
+        <h1>Emballage BI</h1>
+        <p>2026</p>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <ul>
+        <li onclick="window.location.href = '../index.html'" onclick="window.location.href = '../index.html'"><a
+            href="#"><img src="../img/icon/home.png" alt="Home"> Tableau de bord</a></li>
+        <hr>
+        <li onclick="window.location.href = '../Plaque/suiviplaque.html'"><a href="#"><img
+              src="../img/icon/papeterie-papiers-empiles.png" alt="Plaques"> Suivi des Plaques</a></li>
+        <li onclick="window.location.href = '../Plaque/plaques.html'"><a href="#"><img src="../img/icon/plaques.png"
+              alt="Plaques"> Plaques</a></li>
+        <hr>
+        <li onclick="window.location.href = '../Client/clients.html'"><a href="#"><img src="../img/icon/client.png"
+              alt="Client"> Clients</a></li>
+        <li onclick="window.location.href = '../Produit/produits.html'"><a href="#"><img
+              src="../img/icon/produit - Copie.png" alt="Produit"> Produits</a></li>
+        <li onclick="window.location.href = '../Conception/conceptions.html'"><a href="#"><img
+              src="../img/icon/personnalisation1.png" alt="Conception"> Conceptions</a></li>
+        <hr>
+        <li onclick="window.location.href = '../Scan/scan.html'"><a href="#"><img src="../img/icon/qrcode.png" alt="QR">
+            Scan
+            QR</a></li>
+        <li onclick="window.location.href = '../Annonces/annonces.html'"><a href="#"><img src="../img/icon/annonce.png"
+              alt="Annonces"> Annonces</a></li>
+        <hr>
+        <li onclick="window.location.href = '../User/profil.html'"><a href="#"><img src="../img/icon/user.png"
+              alt="User">
+            Profil</a></li>
+        <li onclick="window.location.href = '../Parametres/parametres.html'"><a href="#"><img
+              src="../img/icon/parametres.png" alt="Parametres"> Parametres</a></li>
+
+      </ul>
+      <a href="#" id="logoutBtn"><img src="../img/icon/se-deconnecter.png" alt="Parametres"> Se deconnecter</a>
+    </nav>
+  </div>
+
+  <div class="index-start">
+    <div class="header" style="justify-content: space-evenly;">
+      <div class="user-space" style="display: flex;justify-content: flex-start;width: 15%;">
+        <div class="burger" style="margin-left: 30px;">
+          <img src="../img/icon/menu.png" alt="Menu">
+        </div>
+        <div class="returnBtn"
+          style="margin-left: 40px;width: 40px;height: 40px;display: flex;justify-content: center;align-items: center;"
+          onclick="window.location.href='../index.html'">
+          <img src="../img/icon/retourner.png">
+        </div>
+      </div>
+      <div class="logo" onclick="window.location.href='../index.html'">
+        <img src="../img/logoblanc.png" alt="EmballageBI" data-red="../img/logorouge.png" tabindex="0" />
+      </div>
+      <div class="user-space" style="display: flex;justify-content: flex-end;width: 15%;">
+        <div class="notif-user">
+          <img src="../img/icon/notifications.png" alt="Notifications">
+          <span class="notif-count">0</span>
+        </div>
+        <div class="user-info" onclick="window.location.href='../user/profil.html'">
+          <img src="../img/icon/profil.png" alt="User">
+        </div>
+      </div>
+    </div>
+    <div class="index-container">
+      <div class="linkpages">
+        <a href="../index.html">Tableau de bord </a> > <a href="conceptions.html">Conceptions</a> > <span
+          id="page-mode">Nouvelle conception</span>
+      </div>
+      <div class="container-new-plaque">
+        <div class="add-conception"
+          style="position:static;width: 100%;background-color: transparent;height: 100%;z-index: 0;">
+          <div class="title-addconception">
+            <div class="title-addconception-container">
+              <img src="../img/icon/addconception1.png" alt="Add conception">
+              <h1 id="page-title">Ajouter une nouvelle conception</h1>
+            </div>
+          </div>
+          <form class="form-addconception" id="conceptionForm">
+            <input type="hidden" id="conceptionId" value="">
+            <div class="form-addconception-container">
+              <div class="left-addconception">
+                <div class="container-addconception">
+                  <div class="clientproduit-plaque">
+                    <span>Client :</span>
+                    <div class="choose-client-plaque">
+                      <div class="input-choose" style="width: 100%;">
+                        <input type="text" id="clientInput" placeholder="Selectionnez un client">
+                      </div>
+                      <div class="suggestions suggestions-client" role="listbox" aria-label="suggestions-client"
+                        style="min-width: 300px;"></div>
+                    </div>
+                  </div>
+                  <div class="clientproduit-plaque">
+                    <span>Produit :</span>
+                    <div class="choose-client-plaque">
+                      <div class="input-choose" style="width: 100%;">
+                        <input type="text" id="productInput" placeholder="Selectionnez un Produit">
+                      </div>
+                      <div class="suggestions suggestions-product" role="listbox" aria-label="suggestions-product"
+                        style="min-width: 300px;"></div>
+                    </div>
+                  </div>
+                  <div class="clientproduit-plaque">
+                    <span>Poses :</span>
+                    <div class="choose-poses">
+                      <div class="input-choose" style="width: 100%;">
+                        <input type="number" id="productPose" placeholder="Poses" value="1">
+                      </div>
+                      <button id="addbtnCouple" type="button" style="background-color: black;">
+                        <img src="../img/icon/plus.png" alt="newClient">
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div class="container-addconception">
+                  <div class="input-addconception">
+                    <span>Nom de la conception :</span>
+                    <input type="text" id="conceptionName" placeholder="Ex : Conception #155 - Chicken Street">
+                  </div>
+                </div>
+                <div class="checkSoustraitant">
+                  <input type="checkbox" id="sous-traitant" class="checkbox-input" />
+                  <label for="sous-traitant" class="checkbox-label" aria-describedby="sous-traitant-desc"
+                    aria-controls="select-wrap">
+                    <span class="checkbox-custom" aria-hidden="true"></span>
+
+                    <div class="text">
+                      <span class="infoCheck">Conception pour Plaque sous-traité</span>
+                      <span id="sous-traitant-desc" class="subInfoCheck">
+                        En cochant cette option, les plaques sous-traitées seront automatiquement créées.
+                      </span>
+                    </div>
+                  </label>
+
+                  <!-- select caché par défaut, visible quand la checkbox est cochée -->
+                  <div class="select-wrap" id="select-wrap" aria-hidden="true">
+                    <!-- label visible pour accessibilité, tu peux l'afficher ou la garder .visually-hidden -->
+                    <label for="sous-traitant-select" class="select-label">Choisir le sous-traitant</label>
+                    <select id="sous-traitant-select" name="sous_traitant" disabled>
+                      <option value="">— Sélectionnez un sous-traitant —</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="qrCode">
+                  <button type="button" class="qr-generator-btn" id="generateQrBtn">
+                    <img src="../img/icon/qrcode.png" alt="QR Code"
+                      style="width: 20px; height: 20px;filter: invert(1);">
+                    Générer le QR Code
+                  </button>
+                  <div id="qrError" class="qr-error" role="alert" aria-live="polite"></div>
+                  <div class="qr-result-container" id="qrResultContainer">
+                    <div class="qr-code-display" id="qrcode"></div>
+
+                    <div class="qr-actions">
+                      <button type="button" class="qr-action-btn qr-download" id="downloadQrBtn">
+                        <img src="../img/icon/telechargements.png" alt="Télécharger"
+                          style="width: 16px; height: 16px;filter: invert(1);">
+                        Télécharger
+                      </button>
+                      <button type="button" class="qr-action-btn qr-delete" id="deleteQrBtn">
+                        <img src="../img/icon/supprimer1.png" alt="Supprimer" style="width: 16px; height: 16px;">
+                        Supprimer
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="right-addconception">
+                <span>Fichiers de la conception :</span>
+                <div class="file-upload-container">
+                  <div class="file-upload">
+                    <input multiple class="file-input" id="fileInput" type="file" />
+                    <label class="file-label" for="fileInput">
+                      <i class="upload-icon"><img src="../img/icon/telechargeur.png" alt="uploadFiles"></i>
+                      <p>Deposer tout vos fichiers de la conception ici</p>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="files-conception"></div>
+              </div>
+            </div>
+            <div class="btns-form">
+              <button type="button" id="saveConceptionBtn">
+                <img src="../img/icon/sauvegarder.png" alt="saveClient">
+                <span id="save-button-text">Sauvegarder la conception</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script src="newconception.js"></script>
+
+</body>
+
+</html>

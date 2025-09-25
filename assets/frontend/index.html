@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style-index.css">
+  <title>EmballageBI</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
+    rel="stylesheet">
+  <script src="runtime_config.js"></script>
+  <script>
+    // fallback si runtime_config.js absent
+    window.API_BASE = window.API_BASE || "https://emballage-b-impression.dz/emballage_bi";
+    // debug
+    console.debug("LOGIN: API_BASE =", window.API_BASE);
+  </script>
+
+  <!-- api.js (le helper apiFetch que je t'ai fourni précédemment) -->
+  <script src="api.js"></script>
+  <script src="verify-connected.js"></script>
+  <script src="notification.js"></script>
+  <link rel="stylesheet" href="notif.css">
+  <link rel="stylesheet" href="responsive.css">
+</head>
+<style>
+  .header {
+    animation: fadeInDown;
+    animation-duration: 0.5s;
+  }
+
+  .index-elements {
+    animation: fadeInUp;
+    animation-duration: 0.5s;
+  }
+
+  .index-start {
+    background: #7A7A7A;
+    background: linear-gradient(180deg, rgb(68, 68, 68) 0%, rgb(36, 36, 36) 100%) !important;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .index-start .logo {
+    width: 30% !important;
+  }
+
+  .index-start .logo img {
+    width: 60px !important;
+    height: 60px !important;
+    display: block;
+    transition: transform 0.25s ease;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    /* propre sur mobile */
+  }
+
+  .index-start .logo img:hover,
+  .index-start .logo img:focus {
+    transform: scale(1.05);
+    /* Agrandit de 5% */
+  }
+
+  .index-start .logo img:active {
+    transform: scale(1.00);
+  }
+
+  .index-start .logo .title-logo h1 {
+    font-size: 30px !important;
+    width: 300px !important;
+    top: 10px !important;
+  }
+
+  .index-start .logo .title-logo p {
+    font-size: 18px !important;
+    color: rgb(255, 36, 36);
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    bottom: -3px !important;
+    right: -40px !important;
+    font-weight: 600;
+  }
+
+  .returnBtn img {
+    width: 30px;
+    height: 30px;
+    filter: invert(1);
+  }
+
+  .returnBtn img:hover {
+    opacity: 0.5;
+    cursor: pointer;
+    transition: 0.3s ease;
+  }
+
+  /* Sidebar & sidenotif mobile-friendly */
+  .sidebar,
+  .sidenotif {
+    position: fixed;
+    top: 0;
+    height: 100vh;
+    z-index: 10001;
+    will-change: transform;
+    touch-action: pan-y;
+    /* on permet le scroll vertical, on gère horizontal manuellement */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* largeur par défaut (desktop) */
+  .sidebar {
+    left: 0;
+    width: 280px;
+    transform: translateX(-100%);
+    transition: transform 280ms ease;
+  }
+
+  .sidenotif {
+    right: 0;
+    width: 360px;
+    transform: translateX(100%);
+    transition: transform 280ms ease;
+  }
+
+  /* overlay (déjà .filterblack dans ton HTML, on s'assure du style) */
+  .filterblack {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 10000;
+    display: none;
+    opacity: 0;
+    transition: opacity 220ms ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* état ouvert (JS ajoute/retire ces classes) */
+  .sidebar.open {
+    transform: translateX(0) !important;
+  }
+
+  .sidenotif.open {
+    transform: translateX(0) !important;
+  }
+
+  .filterblack.visible {
+    display: block;
+    opacity: 0.8;
+  }
+
+  /* Ajustements responsive : faire icônes visibles sur téléphone si besoin */
+  @media (max-width: 900px) {
+    .sidebar {
+      width: 78vw;
+      max-width: 360px;
+    }
+
+    .sidenotif {
+      width: 86vw;
+      max-width: 420px;
+    }
+
+    .header .burger img {
+      width: 26px;
+      height: 26px;
+    }
+
+    /* icône plus petite */
+  }
+
+  /* Interaction tactile pendant le drag : disable transition while dragging */
+  .sidebar.dragging,
+  .sidenotif.dragging {
+    transition: none !important;
+  }
+</style>
+
+<body>
+  <img src="img/logoblanc.png"
+    style="width: 500px;height: 500px;position: absolute;bottom: 20px;right: 100px;z-index: 0;opacity: 0.03;">
+  <div class="filterblack"></div>
+  <div class="sidenotif" data-user-id="">
+    <div class="notif-header">
+      <img src="img/icon/notifications.png">
+      <h2>Notifications</h2>
+    </div>
+    <div class="notif-elements" style="width: 360px !important;">
+      <div class="notif-loading">
+        <p>Chargement des notifications...</p>
+      </div>
+    </div>
+  </div>
+  <div class="sidebar">
+    <img src="img/icon/menu.png" alt="Close" class="close-sidebar">
+    <div class="logo">
+      <img src="img/logoblanc.png" alt="EmballageBI">
+      <div class="title-logo">
+        <h1>Emballage BI</h1>
+        <p>2026</p>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <ul>
+        <li><a href="#"><img src="img/icon/home.png" alt="Home"> Tableau de bord</a></li>
+        <hr>
+        <li onclick="window.location.href = 'Plaque/suiviplaque.html'"><a href="#"><img
+              src="img/icon/papeterie-papiers-empiles.png" alt="Plaques"> Suivi des Plaques</a></li>
+        <li onclick="window.location.href = 'Plaque/plaques.html'"><a href="#"><img src="img/icon/plaques.png"
+              alt="Plaques"> Plaques</a></li>
+        <hr>
+        <li onclick="window.location.href = 'Client/clients.html'"><a href="#"><img src="img/icon/client.png"
+              alt="Client"> Clients</a></li>
+        <li onclick="window.location.href = 'Produit/produits.html'"><a href="#"><img src="img/icon/produit - Copie.png"
+              alt="Produit"> Produits</a></li>
+        <li onclick="window.location.href = 'Conception/conceptions.html'"><a href="#"><img
+              src="img/icon/personnalisation1.png" alt="Conception"> Conceptions</a></li>
+        <hr>
+        <li onclick="window.location.href = 'Scan/scan.html'"><a href="#"><img src="img/icon/qrcode.png" alt="QR"> Scan
+            QR</a></li>
+        <li onclick="window.location.href = 'Annonces/annonces.html'"><a href="#"><img src="img/icon/annonce.png"
+              alt="Annonces"> Annonces</a></li>
+        <hr>
+        <li onclick="window.location.href = 'User/profil.html'"><a href="#"><img src="img/icon/user.png" alt="User">
+            Profil</a></li>
+        <li onclick="window.location.href = 'Parametres/parametres.html'"><a href="#"><img src="img/icon/parametres.png"
+              alt="Parametres"> Parametres</a></li>
+
+      </ul>
+      <a href="#" id="logoutBtn"><img src="img/icon/se-deconnecter.png" alt="Parametres"> Se deconnecter</a>
+    </nav>
+  </div>
+  <div class="index-start">
+    <div class="header" style="justify-content: space-evenly;">
+      <div class="user-space" style="display: flex;justify-content: flex-start;width: 15%;">
+        <div class="burger" style="margin-left: 30px;">
+          <img src="img/icon/menu.png" alt="Menu">
+        </div>
+        <div class="returnBtn"
+          style="margin-left: 40px;width: 40px;height: 40px;display: none;justify-content: center;align-items: center;">
+          <img src="img/icon/retourner.png">
+        </div>
+      </div>
+      <div class="logo" onclick="window.location.href='index.html'">
+        <img src="img/logoblanc.png" alt="EmballageBI" data-red="img/logorouge.png" tabindex="0" />
+      </div>
+      <div class="user-space" style="display: flex;justify-content: flex-end;width: 15%;">
+        <div class="notif-user">
+          <img src="img/icon/notifications.png" alt="Notifications">
+          <span class="notif-count">0</span>
+        </div>
+        <div class="user-info" onclick="window.location.href='user/profil.html'">
+          <img src="img/icon/profil.png" alt="User">
+        </div>
+      </div>
+    </div>
+    <div class="index-elements" style="z-index: 1;">
+      <div class="index-btns">
+        <div class="up-btns">
+          <div class="left-btn">
+            <div class="btn-up-line"
+              style="width: 100%;height: 50%; display: flex;justify-content: center;align-items: center;">
+              <button>
+                <img src="img/icon/feuille-de-papier.png" alt="plaques" style="width: 40px;height: 40px;">
+                <p style="font-size: 15px;">Plaques</p>
+              </button>
+              <button style="background: linear-gradient(180deg, rgb(216, 216, 216) 0%, rgb(145, 145, 145) 100%);">
+                <img src="img/icon/machine.png" alt="machines" style="width: 50px;height: 50px;">
+                <p style="font-size: 15px;color: black;">Machines</p>
+              </button>
+            </div>
+            <button class="b-suivi">
+              <img src="img/icon/papeterie-papiers-empiles.png" alt="suivi">
+              <p>Suivi des Plaques</p>
+            </button>
+          </div>
+          <div class="right-btns">
+            <button class="b1">
+              <img src="img/icon/client.png" alt="client">
+              <p>Clients</p>
+            </button>
+            <button class="b2">
+              <img src="img/icon/produit - Copie.png" alt="produit">
+              <p>Produits</p>
+            </button>
+            <button class="b3">
+              <img src="img/icon/personnalisation1.png" alt="conception">
+              <p>Conceptions</p>
+            </button>
+          </div>
+        </div>
+        <div class="bottom-btns">
+          <button>
+            <img src="img/icon/parametres.png" alt="settings">
+            <p>Parametres</p>
+          </button>
+          <button class="annonce-btn">
+            <img src="img/icon/annonce.png" alt="Annonces">
+            <p>Annonces</p>
+          </button>
+          <button class="scan-btn" data-href="Scan/scan.html">
+            <img src="img/icon/qrcode.png" alt="ScanQR">
+            <p>Scan Plaque QR</p>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Swipe & drag support pour sidebar (gauche) et sidenotif (droite)
+    (function () {
+      const sidebar = document.querySelector('.sidebar');
+      const sidenotifEl = document.querySelector('.sidenotif');
+      const filterOverlay = document.querySelector('.filterblack');
+
+      if (!sidebar || !sidenotifEl || !filterOverlay) return;
+
+      let startX = 0, currentX = 0, touching = false;
+      let draggingPanel = null; // 'left' or 'right' or null
+      const EDGE_THRESHOLD = 28; // px depuis le bord pour initier swipe
+      const OPEN_THRESHOLD_RATIO = 0.25; // proportion needed to open
+
+      // helpers
+      function showOverlay() { filterOverlay.classList.add('visible'); }
+      function hideOverlayIfClosed() {
+        if (!sidebar.classList.contains('open') && !sidenotifEl.classList.contains('open')) {
+          filterOverlay.classList.remove('visible');
+        }
+      }
+
+      function setTranslateX(el, x) {
+        el.style.transform = `translateX(${x}px)`;
+      }
+
+      function resetPanelStyle(el, side) {
+        el.style.transform = '';
+        el.classList.remove('dragging');
+      }
+
+      // Start touch (could be edge swipe or drag on panel)
+      function onTouchStart(e) {
+        if (e.touches && e.touches.length === 1) {
+          startX = e.touches[0].clientX;
+          currentX = startX;
+          touching = true;
+          draggingPanel = null;
+
+          // edge swipe from left -> open sidebar
+          if (startX <= EDGE_THRESHOLD && !sidebar.classList.contains('open')) {
+            draggingPanel = 'left';
+            sidebar.classList.add('dragging');
+            showOverlay();
+          }
+          // edge swipe from right -> open sidenotif
+          else if (startX >= (window.innerWidth - EDGE_THRESHOLD) && !sidenotifEl.classList.contains('open')) {
+            draggingPanel = 'right';
+            sidenotifEl.classList.add('dragging');
+            showOverlay();
+          } else {
+            // if user touches on an open panel, allow closing by dragging it
+            const rectLeft = sidebar.getBoundingClientRect();
+            const rectRight = sidenotifEl.getBoundingClientRect();
+            if (sidebar.classList.contains('open') && startX <= rectLeft.right) { draggingPanel = 'left'; sidebar.classList.add('dragging'); }
+            else if (sidenotifEl.classList.contains('open') && startX >= rectRight.left) { draggingPanel = 'right'; sidenotifEl.classList.add('dragging'); }
+          }
+        }
+      }
+
+      function onTouchMove(e) {
+        if (!touching || !draggingPanel || !e.touches || e.touches.length !== 1) return;
+        currentX = e.touches[0].clientX;
+        const dx = currentX - startX;
+
+        if (draggingPanel === 'left') {
+          // When closed, panel moves from -width to -width + dx (but clamped)
+          const w = sidebar.offsetWidth;
+          let translate = -w + Math.max(0, dx); // dx positive pulls it in
+          // If panel already open and dx negative, allow closing with negative dx
+          if (sidebar.classList.contains('open')) {
+            translate = Math.min(0, dx); // dx negative moves it left to hide
+          }
+          // clamp
+          translate = Math.min(0, Math.max(-w, translate));
+          setTranslateX(sidebar, translate);
+        } else if (draggingPanel === 'right') {
+          const w = sidenotifEl.offsetWidth;
+          let translate = w + Math.min(0, dx); // when closed dx negative pulls it in
+          if (sidenotifEl.classList.contains('open')) {
+            translate = Math.max(0, dx); // dx positive moves it right to hide
+          }
+          // translateX should be between 0 (open) and w (hidden)
+          translate = Math.max(0, Math.min(w, translate));
+          // convert to CSS value: we want translateX(translate) but for right panel initial closed state is +w px -> we use translateX(translate)
+          setTranslateX(sidenotifEl, translate + 'px'); // keep px as string
+        }
+      }
+
+      function onTouchEnd() {
+        if (!touching || !draggingPanel) { touching = false; draggingPanel = null; return; }
+        const dx = currentX - startX;
+        if (draggingPanel === 'left') {
+          const w = sidebar.offsetWidth;
+          const opened = (sidebar.classList.contains('open')) ? (dx > -w * (1 - OPEN_THRESHOLD_RATIO)) : (dx > w * OPEN_THRESHOLD_RATIO);
+          if (opened) {
+            sidebar.classList.add('open');
+            sidebar.style.transform = ''; // let CSS class handle transform
+          } else {
+            sidebar.classList.remove('open');
+            sidebar.style.transform = ''; // reset
+            hideOverlayIfClosed();
+          }
+          sidebar.classList.remove('dragging');
+        } else if (draggingPanel === 'right') {
+          const w = sidenotifEl.offsetWidth;
+          const opened = (sidenotifEl.classList.contains('open')) ? (dx < w * (1 - OPEN_THRESHOLD_RATIO)) : (dx < -w * OPEN_THRESHOLD_RATIO);
+          if (opened) {
+            sidenotifEl.classList.add('open');
+            sidenotifEl.style.transform = '';
+          } else {
+            sidenotifEl.classList.remove('open');
+            sidenotifEl.style.transform = '';
+            hideOverlayIfClosed();
+          }
+          sidenotifEl.classList.remove('dragging');
+        }
+        touching = false;
+        draggingPanel = null;
+      }
+
+      // Attach global touch events (for edge swipes)
+      document.addEventListener('touchstart', onTouchStart, { passive: true });
+      document.addEventListener('touchmove', onTouchMove, { passive: true });
+      document.addEventListener('touchend', onTouchEnd, { passive: true });
+      document.addEventListener('touchcancel', onTouchEnd, { passive: true });
+
+      // existing click handlers (kept)
+      const burgerBtn = document.querySelector('.header .burger');
+      const closeBtn = document.querySelector('.sidebar .close-sidebar');
+      const notifBtn = document.querySelector('.notif-user');
+
+      function openSidebar() { sidebar.classList.add('open'); showOverlay(); }
+      function closeSidebar() { sidebar.classList.remove('open'); hideOverlayIfClosed(); }
+      function openNotif() { sidenotifEl.classList.add('open'); showOverlay(); }
+      function closeNotif() { sidenotifEl.classList.remove('open'); hideOverlayIfClosed(); }
+
+      if (burgerBtn) burgerBtn.addEventListener('click', (e) => { e.stopPropagation(); openSidebar(); });
+      if (closeBtn) closeBtn.addEventListener('click', (e) => { e.stopPropagation(); closeSidebar(); });
+      if (notifBtn) notifBtn.addEventListener('click', (e) => { e.stopPropagation(); if (sidenotifEl.classList.contains('open')) closeNotif(); else openNotif(); });
+
+      // close if overlay tapped
+      filterOverlay.addEventListener('click', () => { closeSidebar(); closeNotif(); });
+
+      // close with Escape for accessibility
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') { closeSidebar(); closeNotif(); }
+      });
+
+      // When panels are opened programmatically, ensure overlay visible
+      const observer = new MutationObserver(() => {
+        if (sidebar.classList.contains('open') || sidenotifEl.classList.contains('open')) showOverlay();
+        else hideOverlayIfClosed();
+      });
+      observer.observe(sidebar, { attributes: true, attributeFilter: ['class'] });
+      observer.observe(sidenotifEl, { attributes: true, attributeFilter: ['class'] });
+    })();
+
+  </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.index-start .logo img').forEach(img => {
+        const whiteSrc = img.getAttribute('src');
+        const redSrc = img.dataset.red;
+        if (!redSrc) return; // si pas de data-red, on ignore
+
+        // Précharger l'image rouge
+        const preload = new Image();
+        preload.src = redSrc;
+
+        // Fonctions de swap
+        const showRed = () => { img.src = redSrc; };
+        const showWhite = () => { img.src = whiteSrc; };
+
+        // Mouse / pointer
+        img.addEventListener('mouseenter', showRed);
+        img.addEventListener('mouseleave', showWhite);
+
+        // Focus/blur pour accessibilité (clavier)
+        img.addEventListener('focus', showRed);
+        img.addEventListener('blur', showWhite);
+
+        // Touch (mobile) — on utilise pointer events si dispo
+        img.addEventListener('pointerdown', showRed);
+        img.addEventListener('pointerup', showWhite);
+        img.addEventListener('pointercancel', showWhite);
+
+        // Fallback pour anciens navigateurs (touch)
+        img.addEventListener('touchstart', showRed, { passive: true });
+        img.addEventListener('touchend', showWhite, { passive: true });
+      });
+    });
+  </script>
+  <script>
+    (() => {
+      // Récupère un token CSRF si le backend le fournis (meta tag ou cookie "XSRF-TOKEN")
+      function getCsrfToken() {
+        const meta = document.querySelector('meta[name="csrf-token"]');
+        if (meta) return meta.getAttribute('content') || null;
+        const name = 'XSRF-TOKEN=';
+        const cookie = document.cookie.split('; ').find(c => c.startsWith(name));
+        if (cookie) return decodeURIComponent(cookie.substring(name.length));
+        return null;
+      }
+
+      // sanitize simple pour affichage (retire contrôles non imprimables et <, > pour réduire risque d'injection)
+      function safeText(v) {
+        if (v === null || v === undefined) return '';
+        return String(v).replace(/[\u0000-\u001F\u007F<>]/g, '').trim();
+      }
+
+      // wrapper fetch qui ajoute CSRF header s'il existe
+      function getCsrfToken() {
+        const meta = document.querySelector('meta[name="csrf-token"]');
+        if (meta) return meta.getAttribute('content') || null;
+        const name = 'XSRF-TOKEN=';
+        const cookie = document.cookie.split('; ').find(c => c.trim().startsWith(name));
+        if (cookie) return decodeURIComponent(cookie.split('=')[1] || '');
+        return null;
+      }
+
+      async function fetchWithCsrf(pathOrUrl, opts = {}) {
+        opts = Object.assign({}, opts);
+        opts.credentials = opts.credentials || 'include';
+        opts.headers = Object.assign({}, opts.headers || {});
+        if (!opts.headers['Accept'] && !opts.headers['accept']) opts.headers['Accept'] = 'application/json';
+        const token = getCsrfToken();
+        if (token && !opts.headers['X-CSRF-Token']) opts.headers['X-CSRF-Token'] = token;
+
+        if (typeof window.apiFetch === 'function') {
+          return window.apiFetch(pathOrUrl, opts);
+        }
+        try {
+          const p = String(pathOrUrl || '');
+          const url = (/^https?:\/\//i.test(p))
+            ? p
+            : ((window.API_BASE || '').replace(/\/+$/, '') + '/' + p.replace(/^\/+/, ''));
+          return (typeof window.apiFetch === 'function') ? window.apiFetch(url, opts) : fetch(url, opts);
+        } catch (e) {
+          return fetch(pathOrUrl, opts);
+        }
+      }
+
+      // normalise une chaîne (minuscules, retire diacritiques, compacte espaces)
+      function normalizeForMatch(str) {
+        if (!str) return '';
+        // retire balises et caractères de contrôle d'abord
+        let s = safeText(str);
+        // Unicode normalize puis retire diacritiques
+        s = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        s = s.toLowerCase().replace(/[\s\-_]+/g, ' ').trim();
+        return s;
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        /* ------------------ Overlay & boutons d'action ------------------ */
+        const ROOT_SELECTOR = '.index-start .index-elements';
+        const AREA = document.querySelector(ROOT_SELECTOR);
+        if (AREA) {
+          const buttons = Array.from(AREA.querySelectorAll('button'));
+          if (buttons.length) {
+            const ANIM_DURATION = 650;
+            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            let overlay = null;
+            function ensureOverlay() {
+              if (overlay) return overlay;
+              overlay = document.createElement('div');
+              overlay.className = 'plaques-bg-overlay';
+              overlay.style.position = 'fixed';
+              overlay.style.inset = '0';
+              overlay.style.zIndex = '9998';
+              overlay.style.pointerEvents = 'auto';
+              overlay.style.transition = 'opacity 0.25s ease';
+              overlay.style.backgroundColor = 'rgba(0,0,0,0.85)';
+              document.body.appendChild(overlay);
+              return overlay;
+            }
+
+            function pickBackgroundFromElement(el) {
+              try {
+                const cs = getComputedStyle(el);
+                const bgImage = cs.backgroundImage;
+                if (bgImage && bgImage !== 'none' && bgImage.indexOf('gradient') !== -1) return { css: bgImage };
+                const bgColor = cs.backgroundColor;
+                if (bgColor && bgColor !== 'rgba(0, 0, 0, 0)' && bgColor !== 'transparent') return { css: bgColor };
+                const inline = el.style.background || el.style.backgroundImage || el.style.backgroundColor;
+                if (inline) return { css: inline };
+              } catch (e) {
+                // ignore and fallback
+              }
+              return null;
+            }
+
+            // mapping texte -> href (ajout de machine/machines)
+            const hrefMap = {
+              'plaques': 'Plaque/plaques.html',
+              'suivi des plaques': 'Plaque/suiviplaque.html',
+              'clients': 'Client/clients.html',
+              'produits': 'Produit/produits.html',
+              'conceptions': 'Conception/conceptions.html',
+              'parametres': 'Parametres/parametres.html',
+              'annonces': 'Annonces/annonces.html',
+              'scan qr': 'Scan/scan.html',
+              'tableau de bord': 'index.html',
+              'dashboard': 'index.html',
+              'accueil': 'index.html',
+              // Ajout spécifique pour machines
+              'machine': 'machine/machine.html',
+              'machines': 'machine/machine.html'
+            };
+
+            function guessHrefFromText(text) {
+              if (!text) return null;
+              const t = normalizeForMatch(text);
+              if (!t) return null;
+
+              // match exact map
+              if (hrefMap[t]) return hrefMap[t];
+
+              // substring match (clever fallback)
+              for (const key in hrefMap) {
+                if (t.includes(key)) return hrefMap[key];
+              }
+
+              // token-based fallback
+              const words = t.split(/\s+/);
+              if (words.includes('scan') && words.includes('qr')) return hrefMap['scan qr'];
+              if (words.includes('scan') && words.includes('plaque')) return hrefMap['scan qr'];
+
+              return null;
+            }
+
+
+            function getTargetHref(btn) {
+              // priorités : data-href / data-url -> <a href> -> data attribute dataset.href/url -> button text/alt guess
+              const dh = btn.getAttribute('data-href') || btn.getAttribute('data-url') || btn.dataset.href || btn.dataset.url;
+              if (dh) return dh;
+              const a = btn.querySelector('a[href]');
+              if (a) return a.getAttribute('href');
+
+              // essaye le texte visible du bouton
+              const text = (btn.textContent || '').trim();
+              let guess = guessHrefFromText(text);
+              if (guess) return guess;
+
+              // si texte non concluant, regarde l'attribut alt de la première image
+              const img = btn.querySelector('img[alt]');
+              if (img && img.getAttribute('alt')) {
+                guess = guessHrefFromText(img.getAttribute('alt'));
+                if (guess) return guess;
+              }
+
+              // dernier recours : nom de la classe bouton (ex: "b-suivi" -> "suivi des plaques")
+              const cls = (btn.className || '').split(/\s+/).join(' ');
+              if (cls) {
+                const maybe = guessHrefFromText(cls);
+                if (maybe) return maybe;
+              }
+
+              return null;
+            }
+
+            function showOverlayThenRedirect(btn, href) {
+              if (!href) return;
+              if (reduceMotion) {
+                window.location.assign(href);
+                return;
+              }
+
+              const bg = pickBackgroundFromElement(btn) || { css: 'rgba(0,0,0,0.85)' };
+              const ov = ensureOverlay();
+
+              try {
+                if (bg.css && bg.css.indexOf && bg.css.indexOf('gradient') !== -1) {
+                  ov.style.backgroundImage = bg.css;
+                  ov.style.backgroundColor = '';
+                } else if (bg.css) {
+                  ov.style.backgroundImage = 'none';
+                  ov.style.backgroundColor = bg.css;
+                } else {
+                  ov.style.backgroundImage = 'none';
+                  ov.style.backgroundColor = 'rgba(0,0,0,0.85)';
+                }
+              } catch (e) {
+                ov.style.backgroundImage = 'none';
+                ov.style.backgroundColor = 'rgba(0,0,0,0.85)';
+              }
+
+              // bloque interactions
+              buttons.forEach(b => b.disabled = true);
+              // forcer reflow + afficher
+              void ov.offsetWidth;
+              ov.classList.add('show');
+
+              setTimeout(() => {
+                // redirection (relative URL)
+                window.location.assign(href);
+              }, ANIM_DURATION);
+            }
+
+            // attache handlers
+            buttons.forEach(btn => {
+              btn.addEventListener('click', (e) => {
+                if (btn.hasAttribute('data-no-transition')) return;
+                const href = getTargetHref(btn);
+                if (!href) return; // laisse comportement par défaut si aucun href trouvé
+                e.preventDefault();
+                showOverlayThenRedirect(btn, href);
+              });
+            });
+
+            // ESC pour retirer overlay si présent
+            document.addEventListener('keydown', (e) => {
+              if (e.key === 'Escape' && overlay && overlay.classList.contains('show')) {
+                overlay.classList.remove('show');
+                buttons.forEach(b => b.disabled = false);
+                setTimeout(() => {
+                  if (overlay) { overlay.remove(); overlay = null; }
+                }, Math.max(ANIM_DURATION, 200));
+              }
+            });
+          }
+        }
+
+        /* ------------------ Sidebar / notifications (UNIFIÉ overlay via classe .visible) ------------------ */
+        const burgerBtn = document.querySelector('.header .burger');
+        const closeBtn = document.querySelector('.sidebar .close-sidebar');
+        const sidebar = document.querySelector('.sidebar');
+        const notifBtn = document.querySelector('.notif-user');
+        const sidenotifEl = document.querySelector('.sidenotif');
+        const filterOverlay = document.querySelector('.filterblack');
+
+        if (!filterOverlay) throw new Error('filterOverlay non trouvé');
+
+        filterOverlay.style.transition = 'opacity 0.3s ease'; // laisse le CSS gérer display/opacité via la classe
+
+        // assure état initial cohérent (on laisse le CSS gérer display via .visible)
+        filterOverlay.classList.remove('visible');
+        if (sidebar) { sidebar.style.transform = 'translateX(-100%)'; sidebar.style.transition = 'transform 0.3s ease'; }
+        if (sidenotifEl) { sidenotifEl.style.transform = 'translateX(100%)'; sidenotifEl.style.transition = 'transform 0.3s ease'; sidenotifEl.addEventListener('click', e => e.stopPropagation()); }
+
+        let sidebarOpen = false, notifOpen = false;
+
+        function showOverlay() {
+          filterOverlay.classList.add('visible'); // CSS .filterblack.visible { display:block; opacity:0.8; }
+          // ensure it's visible for screen readers/interaction if needed
+          filterOverlay.setAttribute('aria-hidden', 'false');
+        }
+        function hideOverlayIfNeeded() {
+          if (!sidebarOpen && !notifOpen) {
+            filterOverlay.classList.remove('visible');
+            filterOverlay.setAttribute('aria-hidden', 'true');
+          }
+        }
+
+        // open/close qui gardent la logique existante + overlay via classe
+        function openSidebar() {
+          if (!sidebar) return;
+          sidebar.style.transform = 'translateX(0)';
+          sidebarOpen = true;
+          showOverlay();
+        }
+        function closeSidebar() {
+          if (!sidebar) return;
+          sidebar.style.transform = 'translateX(-100%)';
+          sidebarOpen = false;
+          hideOverlayIfNeeded();
+        }
+        function openNotif() {
+          if (!sidenotifEl) return;
+          sidenotifEl.style.transform = 'translateX(0)';
+          notifOpen = true;
+          showOverlay();
+        }
+        function closeNotif() {
+          if (!sidenotifEl) return;
+          sidenotifEl.style.transform = 'translateX(100%)';
+          notifOpen = false;
+          hideOverlayIfNeeded();
+        }
+
+        // handlers
+        if (burgerBtn) burgerBtn.addEventListener('click', (e) => { e.stopPropagation(); openSidebar(); });
+        if (closeBtn) closeBtn.addEventListener('click', (e) => { e.stopPropagation(); closeSidebar(); });
+        if (filterOverlay) filterOverlay.addEventListener('click', () => { if (sidebarOpen) closeSidebar(); if (notifOpen) closeNotif(); });
+        if (notifBtn) notifBtn.addEventListener('click', (e) => { e.stopPropagation(); notifOpen ? closeNotif() : openNotif(); });
+
+        // accessibility: fermer avec Escape
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+            if (sidebarOpen) closeSidebar();
+            if (notifOpen) closeNotif();
+          }
+        });
+
+        /* ------------------ Vérification d'authentification & déconnexion ------------------ */
+
+      });
+      // DOMContentLoaded
+    })();
+  </script>
+
+
+
+</body>
+
+</html>

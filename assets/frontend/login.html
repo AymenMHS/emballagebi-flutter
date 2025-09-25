@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style-index.css">
+  <title>EmballageBI</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
+    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap" rel="stylesheet">
+  <script src="runtime_config.js"></script>
+  <script>
+    // fallback si runtime_config.js absent
+    window.API_BASE = window.API_BASE || "https://emballage-b-impression.dz/emballage_bi";
+    // debug
+    console.debug("LOGIN: API_BASE =", window.API_BASE);
+  </script>
+
+  <!-- api.js (le helper apiFetch que je t'ai fourni précédemment) -->
+  <script src="api.js"></script>
+</head>
+<style>
+  body {
+    background-image: url(img/backgroundindex.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
+
+  .welcome-overlay {
+    position: fixed;
+    inset: 0;
+    display: none;
+    /* shown by JS */
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    background: rgba(8, 12, 20, 0.45);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    background-color: black;
+    opacity: 0.8;
+  }
+
+  .welcome-box {
+    padding: 28px 36px;
+    text-align: center;
+    min-width: 320px;
+    max-width: 90%;
+    color: white;
+    font-family: "Nunito", sans-serif;
+  }
+
+  .welcome-box h2 {
+    margin: 0 0 6px 0;
+    font-size: 60px;
+    letter-spacing: 0.2px;
+  }
+
+  .welcome-box p {
+    margin: 0;
+    color: #909090;
+    font-size: 25px;
+  }
+
+  /* ensure login container animation looks nice on top of background */
+  .login-container {
+    z-index: 1;
+    position: relative;
+  }
+
+  .login-error {
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: rgba(255, 69, 58, 0.95);
+    /* rouge-ish */
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+    box-shadow: 0 8px 20px rgba(2, 6, 23, 0.25);
+    max-width: 100%;
+    text-align: center;
+    line-height: 1.2;
+    pointer-events: none;
+    /* évite d'interrompre le focus */
+    font-family: "Nunito", sans-serif;
+  }
+
+  /* animation d'entrée/sortie (utilise animate.css classes si présentes) */
+  .login-error.animate-in {
+    animation: animate__fadeInDown 400ms ease both;
+  }
+
+  .login-error.animate-out {
+    animation: animate__fadeOutUp 400ms ease both;
+  }
+</style>
+
+<body>
+  <div class="icon-start">
+    <img class="animate__zoomInDown" src="img/logoblanc.png">
+  </div>
+  <img src="img/logoblanc.png" alt="Logo EmballageBI" class="logo-blanc">
+  <div class="login-container">
+
+    <h1>Connectez-vous</h1>
+    <p>Ravi de vous revoir !</p>
+    <input type="text" placeholder="Nom d'utilisateur" required>
+    <input type="password" placeholder="Mot de passe" required>
+    <div class="savemdp">
+      <div class="savemdp-souvenir">
+        <input type="checkbox" id="savemdp">
+        <label for="savemdp">Se souvenir de moi</label>
+      </div>
+      <div class="savemdp-oublier">
+        <a href="#">Mot de passe oublié ?</a>
+      </div>
+    </div>
+    <button type="submit" class="login-button">Se connecter</button>
+    <div id="loginError" class="login-error" aria-live="polite" role="status" style="display:none;"></div>
+  </div>
+
+  <!-- Overlay de bienvenue -->
+  <div id="welcomeOverlay" class="welcome-overlay" aria-hidden="true">
+    <div class="welcome-box animate__animated" id="welcomeBox">
+      <h2 id="welcomeName">Bienvenue !</h2>
+      <p>Redirection en cours…</p>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      /* ------------------ Helpers ------------------ */
+
+      // readCookie simple (name exact)
+      function readCookie(name) {
+        if (!document.cookie) return null;
+        const parts = document.cookie.split('; ');
+        for (let i = 0; i < parts.length; i++) {
+          if (parts[i].startsWith(name + '=')) {
+            return decodeURIComponent(parts[i].substring(name.length + 1));
+          }
+        }
+        return null;
+      }
+
+      // sanitize: retire caractères de contrôle et < > (simple mitigation pour affichage)
+      function safeText(v) {
+        if (v === null || v === undefined) return '';
+        return String(v).replace(/[\u0000-\u001F\u007F<>]/g, '').trim();
+      }
+
+      // Helpers to store session & csrf in a safe-ish place (localStorage fallback)
+      function storeSession(sessionId, csrfToken, remember) {
+        // prefer keeping in memory (window scoped) but persist if remember === true
+        window.API_SESSION_ID = sessionId || null;
+        window.API_CSRF_TOKEN = csrfToken || null;
+        if (remember) {
+          try {
+            localStorage.setItem('API_SESSION_ID', sessionId || '');
+            localStorage.setItem('API_CSRF_TOKEN', csrfToken || '');
+          } catch (e) { console.warn('Cannot persist session to localStorage', e); }
+        } else {
+          // remove persisted if present
+          try {
+            localStorage.removeItem('API_SESSION_ID');
+            localStorage.removeItem('API_CSRF_TOKEN');
+          } catch (e) { }
+        }
+      }
+
+      function loadPersistedSession() {
+        try {
+          const s = localStorage.getItem('API_SESSION_ID');
+          const c = localStorage.getItem('API_CSRF_TOKEN');
+          if (s) window.API_SESSION_ID = s;
+          if (c) window.API_CSRF_TOKEN = c;
+        } catch (e) { /* ignore */ }
+      }
+
+      // remove session from memory + localStorage
+      function clearLocalSession() {
+        window.API_SESSION_ID = null;
+        window.API_CSRF_TOKEN = null;
+        try {
+          localStorage.removeItem('API_SESSION_ID');
+          localStorage.removeItem('API_CSRF_TOKEN');
+        } catch (e) { }
+      }
+
+      // wrapper fetch ajoutant Authorization (session) + CSRF header si disponible
+      async function fetchWithCsrf(pathOrUrl, opts = {}) {
+        opts = Object.assign({}, opts);
+        // keep credentials include for compatibility with endpoints that still use cookies
+        opts.credentials = opts.credentials || 'include';
+        opts.headers = Object.assign({}, opts.headers || {});
+        if (!opts.headers['Accept'] && !opts.headers['accept']) opts.headers['Accept'] = 'application/json';
+
+        // Attach Authorization header if we have a session token (prefer in-memory then localStorage)
+        const sessionId = (window.API_SESSION_ID || (typeof localStorage !== 'undefined' && localStorage.getItem('API_SESSION_ID')));
+        if (sessionId && !opts.headers['Authorization']) {
+          opts.headers['Authorization'] = 'Bearer ' + sessionId;
+        }
+
+        // CSRF token: prefer stored token (from login), fallback to cookie XSRF-TOKEN
+        const csrfHeader = (window.API_CSRF_TOKEN || (typeof localStorage !== 'undefined' && localStorage.getItem('API_CSRF_TOKEN')) || readCookie('XSRF-TOKEN'));
+        if (csrfHeader && !opts.headers['X-CSRF-Token']) {
+          opts.headers['X-CSRF-Token'] = csrfHeader;
+        }
+
+        // Prefer apiFetch helper (if exists) to centralize Authorization bearer there as well
+        if (typeof window.apiFetch === 'function') {
+          // apiFetch may not include our session -> pass Authorization header explicitly
+          return window.apiFetch(pathOrUrl, opts);
+        }
+
+        // Fallback: build absolute URL using window.API_BASE if path is relative
+        try {
+          const p = String(pathOrUrl || '');
+          const url = (/^https?:\/\//i.test(p))
+            ? p
+            : ((window.API_BASE || '').replace(/\/+$/, '') + '/' + p.replace(/^\/+/, ''));
+          return fetch(url, opts);
+        } catch (e) {
+          return fetch(pathOrUrl, opts);
+        }
+      }
+
+      /* ------------------ Splash / animation (inchangé) ------------------ */
+      const MIN_DURATION = 4000;
+      const startTime = Date.now();
+      const iconStart = document.querySelector('.icon-start');
+      const indexStart = document.querySelector('.login-container');
+      const logoBlanc = document.querySelector('.logo-blanc');
+
+      const navEntries = (performance.getEntriesByType && performance.getEntriesByType('navigation')) || [];
+      const navType = navEntries.length > 0
+        ? navEntries[0].type
+        : (performance.navigation && performance.navigation.type === performance.navigation.TYPE_BACK_FORWARD
+          ? 'back_forward'
+          : 'navigate');
+      const shouldPlaySplash = (navType === 'navigate' || navType === 'reload');
+
+      document.addEventListener('DOMContentLoaded', () => {
+        try {
+          if (shouldPlaySplash) {
+            if (iconStart) iconStart.style.display = 'flex';
+            if (indexStart) indexStart.style.display = 'none';
+            if (logoBlanc) logoBlanc.style.display = 'none';
+          } else {
+            if (iconStart) iconStart.style.display = 'none';
+            if (indexStart) indexStart.style.display = 'flex';
+            if (logoBlanc) logoBlanc.style.display = 'block';
+          }
+        } catch (e) { /* silent */ }
+      });
+
+      if (shouldPlaySplash) {
+        window.addEventListener('load', () => {
+          const elapsed = Date.now() - startTime;
+          const delay = Math.max(0, MIN_DURATION - elapsed);
+          setTimeout(() => {
+            if (iconStart) iconStart.style.display = 'none';
+            if (indexStart) indexStart.style.display = 'flex';
+            if (logoBlanc) logoBlanc.style.display = 'block';
+          }, delay);
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        try {
+          const loginContainer = document.querySelector('.login-container');
+          if (loginContainer) loginContainer.classList.add('animate__animated', 'animate__fadeInDown');
+        } catch (e) { /* silent */ }
+      });
+
+      /* ------------------ Login flow ------------------ */
+      document.addEventListener('DOMContentLoaded', () => {
+        // load persisted session if exists
+        loadPersistedSession();
+
+        const loginBtn = document.querySelector('.login-button');
+        const usernameInput = document.querySelector('input[type="text"]');
+        const passwordInput = document.querySelector('input[type="password"]');
+        const rememberCheckbox = document.getElementById('savemdp');
+
+        const welcomeOverlay = document.getElementById('welcomeOverlay');
+        const welcomeBox = document.getElementById('welcomeBox');
+        const welcomeName = document.getElementById('welcomeName');
+
+        const errorEl = document.getElementById('loginError');
+
+        function showError(msg, timeout = 4000) {
+          if (!errorEl) return;
+          errorEl.textContent = safeText(msg);
+          errorEl.style.display = 'block';
+          errorEl.classList.remove('animate-out');
+          void errorEl.offsetWidth;
+          errorEl.classList.add('animate-in');
+
+          if (errorEl._hideTimer) clearTimeout(errorEl._hideTimer);
+          errorEl._hideTimer = setTimeout(hideError, timeout);
+        }
+
+        function hideError() {
+          if (!errorEl) return;
+          errorEl.classList.remove('animate-in');
+          errorEl.classList.add('animate-out');
+          setTimeout(() => {
+            errorEl.style.display = 'none';
+            errorEl.classList.remove('animate-out');
+            errorEl.textContent = '';
+          }, 420);
+        }
+
+        // hide error on input
+        const allInputs = document.querySelectorAll('.login-container input');
+        allInputs.forEach(i => i.addEventListener('input', () => { hideError(); }));
+
+        // Vérifier si déjà connecté -> redirect automatique
+        (async function checkAuth() {
+          try {
+            // fetchWithCsrf will attach Authorization header automatically if we have session stored
+            const res = await fetchWithCsrf('/auth/me', { method: 'GET' });
+            if (res && res.ok) {
+              window.location.replace('index.html');
+            } else {
+              // if 401 and we had persisted local session, clear it (stale)
+              if (res && res.status === 401) {
+                clearLocalSession();
+              }
+            }
+          } catch (e) {
+            // not logged or network error -> stay on page
+            console.debug('Not authenticated or network error on /auth/me', e);
+          }
+        })();
+
+        function showWelcomeAndRedirect(name, redirectTo = 'index.html', delay = 1500) {
+          if (!welcomeOverlay || !welcomeBox || !welcomeName) {
+            window.location.replace(redirectTo);
+            return;
+          }
+          welcomeName.textContent = `Bienvenue, ${safeText(name)} !`;
+          welcomeOverlay.style.display = 'flex';
+          welcomeOverlay.setAttribute('aria-hidden', 'false');
+
+          welcomeBox.classList.remove('animate__zoomIn');
+          void welcomeBox.offsetWidth;
+          welcomeBox.classList.add('animate__zoomIn');
+
+          setTimeout(() => {
+            welcomeOverlay.style.display = 'none';
+            window.location.replace(redirectTo);
+          }, delay);
+        }
+
+        async function doLogin(username, password, remember) {
+          try {
+            const response = await fetchWithCsrf('/auth/login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ username: username, password: password, remember: remember }),
+              credentials: 'include'
+            });
+
+            if (!response.ok) {
+              const err = await response.json().catch(() => ({ detail: 'Erreur de connexion' }));
+              throw new Error(err.detail || 'Erreur de connexion');
+            }
+
+            // parse JSON: backend should return session_id and csrf_token (see backend change)
+            const data = await response.json().catch(() => ({}));
+
+            // store session & csrf (in-memory + localStorage if remember checked)
+            try {
+              if (data && data.session_id && typeof setLocalBearer === 'function') {
+                setLocalBearer(data.session_id);
+              }
+              else {
+                // if backend didn't return session_id, fallback to any token returned as 'token'
+                if (data && data.token) {
+                  // store as bearer for compatibility
+                  storeSession(data.token, data.csrf_token || '', !!remember);
+                }
+              }
+            } catch (e) { /* ignore */ }
+
+            // also support old code paths where token returned as 'token'
+            if (data && data.token) {
+              try {
+                if (typeof setLocalBearer === 'function') {
+                  setLocalBearer(data.token);
+                } else {
+                  localStorage.setItem('API_BEARER_TOKEN', data.token);
+                  window.__API__LOCAL_BEARER = data.token;
+                }
+              } catch (e) { console.warn('Impossible de stocker le token localement', e); }
+            }
+
+            // Determine displayName: prefer `data.user` then fallback to /auth/me call
+            let displayName = (data.user && (data.user.nom_complet || data.user.username)) || '';
+
+            if (!displayName) {
+              try {
+                const me = await fetchWithCsrf('/auth/me', { method: 'GET' });
+                if (me && me.ok) {
+                  const meData = await me.json().catch(() => ({}));
+                  displayName = meData.nom || meData.username || meData.id || username;
+                }
+              } catch (e) { /* ignore */ }
+            }
+
+            showWelcomeAndRedirect(displayName || username);
+          } catch (error) {
+            showError(error.message || 'Erreur');
+          }
+        }
+
+        // Attach click handler and Enter key support
+        if (loginBtn) {
+          loginBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const username = (usernameInput && usernameInput.value || '').trim();
+            const password = (passwordInput && passwordInput.value) || '';
+            const remember = (rememberCheckbox && rememberCheckbox.checked) || false;
+            if (!username || !password) {
+              showError('Nom d’utilisateur et mot de passe requis');
+              return;
+            }
+            doLogin(username, password, remember);
+          });
+        }
+
+        // allow "Enter" key to submit when focus is in username or password
+        [usernameInput, passwordInput].forEach(inp => {
+          if (!inp) return;
+          inp.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              if (loginBtn && !loginBtn.disabled) loginBtn.click();
+            }
+          });
+        });
+
+        // Expose a small logout helper to call from other parts of the front
+        window.logoutClient = async function () {
+          try {
+            // call logout endpoint with Authorization header (fetchWithCsrf picks up session)
+            await fetchWithCsrf('/auth/logout', { method: 'POST' });
+          } catch (e) { /* ignore */ }
+          clearLocalSession();
+          // also try to remove server cookies by navigating to logout GET route
+          try { window.location.href = '/auth/logout'; } catch (e) { }
+        };
+
+      }); // DOMContentLoaded
+    })();
+  </script>
+
+
+
+</body>
+
+</html>
