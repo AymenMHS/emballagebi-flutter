@@ -32,18 +32,44 @@ jobs:
         with:
           flutter-version: '3.10.6'
 
-      - name: Install Android SDK components
+      - name: Install Android command-line tools and SDK components
+        # Télécharge et installe cmdline-tools (sdkmanager), puis installe platform-tools, platforms, build-tools
         run: |
-          # Ensure sdkmanager is available and install required components
-          yes | sdkmanager --install "platform-tools" "platforms;android-33" "build-tools;33.0.2" "cmdline-tools;latest"
+          set -e
+          echo "Creating Android SDK root at $ANDROID_SDK_ROOT"
+          sudo mkdir -p $ANDROID_SDK_ROOT
+          sudo chown $USER:$USER $ANDROID_SDK_ROOT
+
+          echo "Downloading Android command line tools..."
+          # NOTE: si ce lien casse dans le futur, remplace par la version la plus récente disponible sur developer.android.com
+          wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O /tmp/cmdline-tools.zip
+
+          echo "Unzipping to $ANDROID_SDK_ROOT/cmdline-tools"
+          sudo unzip -q /tmp/cmdline-tools.zip -d $ANDROID_SDK_ROOT/cmdline-tools
+          # normaliser le dossier en "latest"
+          if [ -d "$ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools" ]; then
+            sudo mv $ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools $ANDROID_SDK_ROOT/cmdline-tools/latest || true
+          fi
+
+          export PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$PATH
+          which sdkmanager || { echo "sdkmanager not found after install"; exit 1; }
+
+          echo "Updating SDK manager and installing components..."
+          # Mettre à jour les composants (non interactif)
+          yes | sdkmanager --sdk_root=$ANDROID_SDK_ROOT --install "platform-tools" "platforms;android-33" "build-tools;33.0.2" "cmdline-tools;latest"
+
+          echo "Accepting licenses..."
+          # Accept licenses (si 'yes' n'existe pas, use printf)
+          if command -v yes >/dev/null 2>&1; then
+            yes | sdkmanager --sdk_root=$ANDROID_SDK_ROOT --licenses
+          else
+            # envoyer plusieurs 'y'
+            printf '%s\n' y y y y y | sdkmanager --sdk_root=$ANDROID_SDK_ROOT --licenses
+          fi
+
         env:
           ANDROID_SDK_ROOT: /usr/local/share/android-sdk
           PATH: /usr/local/share/android-sdk/cmdline-tools/latest/bin:${{ env.PATH }}
-
-      - name: Accept Android SDK licenses
-        run: yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
-        env:
-          ANDROID_SDK_ROOT: /usr/local/share/android-sdk
 
       - name: Flutter pub get
         run: flutter pub get
@@ -62,37 +88,5 @@ jobs:
             build/app/outputs/flutter-apk/app-debug.apk
             build/app/outputs/flutter-apk/app-release.apk
 
-# ---------------- Optional signing block (uncomment & configure secrets to enable)
-# To sign the release APK, provide these GitHub Secrets in your repository:
-# ANDROID_KEYSTORE (base64 encoded keystore file), KEYSTORE_PASSWORD, KEY_ALIAS, KEY_PASSWORD
-#
-#      - name: Decode keystore (optional)
-#        if: ${{ secrets.ANDROID_KEYSTORE != '' }}
-#        run: |
-#          echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 --decode > release.keystore
-#        env:
-#          ANDROID_SDK_ROOT: /usr/local/share/android-sdk
-#
-#      - name: Align & Sign APK (optional)
-#        if: ${{ secrets.ANDROID_KEYSTORE != '' }}
-#        run: |
-#          APK_IN=build/app/outputs/flutter-apk/app-release.apk
-#          ZIPALIGNED=app-release-aligned.apk
-#          SIGNED=app-release-signed.apk
-#
-#          # zipalign (comes with build-tools)
-#          /usr/local/share/android-sdk/build-tools/33.0.2/zipalign -v -p 4 "$APK_IN" "$ZIPALIGNED"
-#
-#          # apksigner (comes with build-tools)
-#          /usr/local/share/android-sdk/build-tools/33.0.2/apksigner sign \
-#            --ks release.keystore \
-#            --ks-pass pass:${{ secrets.KEYSTORE_PASSWORD }} \
-#            --key-pass pass:${{ secrets.KEY_PASSWORD }} \
-#            --out "$SIGNED" "$ZIPALIGNED"
-#
-#      - name: Upload signed APK (optional)
-#        if: ${{ secrets.ANDROID_KEYSTORE != '' }}
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: signed-apk
-#          path: app-release-signed.apk
+# Optional signing block commented out - enable and configure secrets if you want signed APKs
+# (ANDROID_KEYSTORE = base64 keystore, KEYSTORE_PASSWORD, KEY_ALIAS, KEY_PASSWORD)
