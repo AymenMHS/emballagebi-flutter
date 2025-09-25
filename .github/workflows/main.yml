@@ -9,9 +9,9 @@ jobs:
   build-apk:
     runs-on: ubuntu-latest
 
+    # Définit le SDK Android dans le home du runner pour éviter sudo
     env:
-      # installer le SDK dans le home de l'utilisateur runner (pas dans /usr/local)
-      ANDROID_SDK_ROOT: $HOME/Android/Sdk
+      ANDROID_SDK_ROOT: ${{ runner.home }}/Android/Sdk
 
     steps:
       - name: Checkout repository
@@ -52,11 +52,9 @@ jobs:
           if [ -d "$ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools" ]; then
             mv "$ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools" "$ANDROID_SDK_ROOT/cmdline-tools/latest" || true
           else
-            # si la structure est différente, tente de renommer
             mv "$ANDROID_SDK_ROOT/cmdline-tools" "$ANDROID_SDK_ROOT/cmdline-tools/latest" 2>/dev/null || true
           fi
 
-          # Exposer sdkmanager pour cette étape
           export PATH="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$PATH"
 
           if ! command -v sdkmanager >/dev/null 2>&1; then
@@ -66,11 +64,9 @@ jobs:
           fi
 
           echo "Installing platform-tools, platforms and build-tools..."
-          # installer les composants Android nécessaires
-          yes | sdkmanager --sdk_root="$ANDROID_SDK_ROOT" "platform-tools" "platforms;android-33" "build-tools;33.0.2" "cmdline-tools;latest"
+          printf '%s\n' y | sdkmanager --sdk_root="$ANDROID_SDK_ROOT" "platform-tools" "platforms;android-33" "build-tools;33.0.2" "cmdline-tools;latest"
 
           echo "Accepting licenses..."
-          # Accept licenses (printf utilisé pour être robustes)
           printf '%s\n' y y y y y | sdkmanager --sdk_root="$ANDROID_SDK_ROOT" --licenses
 
           # Persist environment for the following steps in the workflow
@@ -79,7 +75,7 @@ jobs:
           echo "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin" >> $GITHUB_PATH
 
         env:
-          ANDROID_SDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}
+          ANDROID_SDK_ROOT: ${{ runner.home }}/Android/Sdk
 
       - name: Flutter pub get
         run: flutter pub get
@@ -97,6 +93,3 @@ jobs:
           path: |
             build/app/outputs/flutter-apk/app-debug.apk
             build/app/outputs/flutter-apk/app-release.apk
-
-# Optional signing block commented out - enable and configure secrets if you want signed APKs
-# (ANDROID_KEYSTORE = base64 keystore, KEYSTORE_PASSWORD, KEY_ALIAS, KEY_PASSWORD)
