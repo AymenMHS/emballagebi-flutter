@@ -8,8 +8,10 @@ on:
 jobs:
   build-apk:
     runs-on: ubuntu-latest
+
     env:
-      ANDROID_SDK_ROOT: /usr/local/share/android-sdk
+      # installer le SDK dans le home de l'utilisateur runner (pas dans /usr/local)
+      ANDROID_SDK_ROOT: $HOME/Android/Sdk
 
     steps:
       - name: Checkout repository
@@ -32,44 +34,52 @@ jobs:
         with:
           flutter-version: '3.10.6'
 
-      - name: Install Android command-line tools and SDK components
-        # Télécharge et installe cmdline-tools (sdkmanager), puis installe platform-tools, platforms, build-tools
+      - name: Install Android command-line tools and SDK components (no sudo)
         run: |
           set -e
-          echo "Creating Android SDK root at $ANDROID_SDK_ROOT"
-          sudo mkdir -p $ANDROID_SDK_ROOT
-          sudo chown $USER:$USER $ANDROID_SDK_ROOT
+
+          echo "ANDROID_SDK_ROOT = $ANDROID_SDK_ROOT"
+          mkdir -p "$ANDROID_SDK_ROOT"
+          mkdir -p "$ANDROID_SDK_ROOT/cmdline-tools"
 
           echo "Downloading Android command line tools..."
-          # NOTE: si ce lien casse dans le futur, remplace par la version la plus récente disponible sur developer.android.com
-          wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O /tmp/cmdline-tools.zip
+          curl -sSL https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -o /tmp/cmdline-tools.zip
 
           echo "Unzipping to $ANDROID_SDK_ROOT/cmdline-tools"
-          sudo unzip -q /tmp/cmdline-tools.zip -d $ANDROID_SDK_ROOT/cmdline-tools
-          # normaliser le dossier en "latest"
+          unzip -q /tmp/cmdline-tools.zip -d "$ANDROID_SDK_ROOT/cmdline-tools"
+
+          # Normaliser vers "latest"
           if [ -d "$ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools" ]; then
-            sudo mv $ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools $ANDROID_SDK_ROOT/cmdline-tools/latest || true
+            mv "$ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools" "$ANDROID_SDK_ROOT/cmdline-tools/latest" || true
+          else
+            # si la structure est différente, tente de renommer
+            mv "$ANDROID_SDK_ROOT/cmdline-tools" "$ANDROID_SDK_ROOT/cmdline-tools/latest" 2>/dev/null || true
           fi
 
-          export PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$PATH
-          which sdkmanager || { echo "sdkmanager not found after install"; exit 1; }
+          # Exposer sdkmanager pour cette étape
+          export PATH="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$PATH"
 
-          echo "Updating SDK manager and installing components..."
-          # Mettre à jour les composants (non interactif)
-          yes | sdkmanager --sdk_root=$ANDROID_SDK_ROOT --install "platform-tools" "platforms;android-33" "build-tools;33.0.2" "cmdline-tools;latest"
+          if ! command -v sdkmanager >/dev/null 2>&1; then
+            echo "Erreur: sdkmanager introuvable après installation"
+            ls -la "$ANDROID_SDK_ROOT/cmdline-tools"
+            exit 1
+          fi
+
+          echo "Installing platform-tools, platforms and build-tools..."
+          # installer les composants Android nécessaires
+          yes | sdkmanager --sdk_root="$ANDROID_SDK_ROOT" "platform-tools" "platforms;android-33" "build-tools;33.0.2" "cmdline-tools;latest"
 
           echo "Accepting licenses..."
-          # Accept licenses (si 'yes' n'existe pas, use printf)
-          if command -v yes >/dev/null 2>&1; then
-            yes | sdkmanager --sdk_root=$ANDROID_SDK_ROOT --licenses
-          else
-            # envoyer plusieurs 'y'
-            printf '%s\n' y y y y y | sdkmanager --sdk_root=$ANDROID_SDK_ROOT --licenses
-          fi
+          # Accept licenses (printf utilisé pour être robustes)
+          printf '%s\n' y y y y y | sdkmanager --sdk_root="$ANDROID_SDK_ROOT" --licenses
+
+          # Persist environment for the following steps in the workflow
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
+          echo "$ANDROID_SDK_ROOT/platform-tools" >> $GITHUB_PATH
+          echo "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin" >> $GITHUB_PATH
 
         env:
-          ANDROID_SDK_ROOT: /usr/local/share/android-sdk
-          PATH: /usr/local/share/android-sdk/cmdline-tools/latest/bin:${{ env.PATH }}
+          ANDROID_SDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}
 
       - name: Flutter pub get
         run: flutter pub get
