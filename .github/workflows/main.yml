@@ -10,8 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ANDROID_SDK_ROOT: /usr/local/share/android-sdk
+
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Cache Pub
@@ -20,7 +21,7 @@ jobs:
           path: ~/.pub-cache
           key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.yaml') }}
 
-      - name: Setup Java
+      - name: Setup Java (Temurin 17)
         uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -29,14 +30,20 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: stable
+          flutter-version: '3.10.6'
 
       - name: Install Android SDK components
         run: |
+          # Ensure sdkmanager is available and install required components
           yes | sdkmanager --install "platform-tools" "platforms;android-33" "build-tools;33.0.2" "cmdline-tools;latest"
         env:
           ANDROID_SDK_ROOT: /usr/local/share/android-sdk
           PATH: /usr/local/share/android-sdk/cmdline-tools/latest/bin:${{ env.PATH }}
+
+      - name: Accept Android SDK licenses
+        run: yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
+        env:
+          ANDROID_SDK_ROOT: /usr/local/share/android-sdk
 
       - name: Flutter pub get
         run: flutter pub get
@@ -44,7 +51,7 @@ jobs:
       - name: Build debug APK
         run: flutter build apk --debug --no-shrink
 
-      - name: Build release APK
+      - name: Build release APK (unsigned)
         run: flutter build apk --release --no-shrink
 
       - name: Upload artifacts (debug & release)
@@ -54,3 +61,38 @@ jobs:
           path: |
             build/app/outputs/flutter-apk/app-debug.apk
             build/app/outputs/flutter-apk/app-release.apk
+
+# ---------------- Optional signing block (uncomment & configure secrets to enable)
+# To sign the release APK, provide these GitHub Secrets in your repository:
+# ANDROID_KEYSTORE (base64 encoded keystore file), KEYSTORE_PASSWORD, KEY_ALIAS, KEY_PASSWORD
+#
+#      - name: Decode keystore (optional)
+#        if: ${{ secrets.ANDROID_KEYSTORE != '' }}
+#        run: |
+#          echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 --decode > release.keystore
+#        env:
+#          ANDROID_SDK_ROOT: /usr/local/share/android-sdk
+#
+#      - name: Align & Sign APK (optional)
+#        if: ${{ secrets.ANDROID_KEYSTORE != '' }}
+#        run: |
+#          APK_IN=build/app/outputs/flutter-apk/app-release.apk
+#          ZIPALIGNED=app-release-aligned.apk
+#          SIGNED=app-release-signed.apk
+#
+#          # zipalign (comes with build-tools)
+#          /usr/local/share/android-sdk/build-tools/33.0.2/zipalign -v -p 4 "$APK_IN" "$ZIPALIGNED"
+#
+#          # apksigner (comes with build-tools)
+#          /usr/local/share/android-sdk/build-tools/33.0.2/apksigner sign \
+#            --ks release.keystore \
+#            --ks-pass pass:${{ secrets.KEYSTORE_PASSWORD }} \
+#            --key-pass pass:${{ secrets.KEY_PASSWORD }} \
+#            --out "$SIGNED" "$ZIPALIGNED"
+#
+#      - name: Upload signed APK (optional)
+#        if: ${{ secrets.ANDROID_KEYSTORE != '' }}
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: signed-apk
+#          path: app-release-signed.apk
